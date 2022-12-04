@@ -1,0 +1,68 @@
+import 'package:isar/isar.dart';
+import 'package:xxim_core_flutter/xxim_core_flutter.dart';
+import 'package:xxim_sdk_flutter/src/callback/subscribe_callback.dart';
+import 'package:xxim_sdk_flutter/src/listener/conv_listener.dart';
+import 'package:xxim_sdk_flutter/src/listener/isar_listener.dart';
+import 'package:xxim_sdk_flutter/src/listener/msg_listener.dart';
+import 'package:xxim_sdk_flutter/src/listener/notice_listener.dart';
+import 'package:xxim_sdk_flutter/src/listener/pull_listener.dart';
+import 'package:xxim_sdk_flutter/src/listener/unread_listener.dart';
+import 'package:xxim_sdk_flutter/src/manager/conv_manager.dart';
+import 'package:xxim_sdk_flutter/src/manager/msg_manager.dart';
+import 'package:xxim_sdk_flutter/src/manager/sdk_manager.dart';
+
+class XXIMSDK {
+  XXIMCore? _xximCore;
+  SDKManager? _sdkManager;
+  late ConvManager convManager;
+  late MsgManager msgManager;
+
+  /// 初始化
+  void init({
+    required Params params,
+    Duration autoPullTime = const Duration(seconds: 30),
+    int pullMsgCount = 300,
+    List<CollectionSchema> isarSchemas = const [],
+    required String isarDirectory,
+    bool isarInspector = false,
+    required SubscribeCallback subscribeCallback,
+    IsarListener? isarListener,
+    ConnectListener? connectListener,
+    PullListener? pullListener,
+    ConvListener? convListener,
+    MsgListener? msgListener,
+    NoticeListener? noticeListener,
+    UnreadListener? unreadListener,
+  }) {
+    _xximCore = XXIMCore()
+      ..init(
+        params: params,
+        connectListener: connectListener,
+        receivePushListener: ReceivePushListener(
+          onPushMsgDataList: (msgDataList) {
+            _sdkManager?.onPushMsgDataList(msgDataList.msgDataList);
+          },
+          onPushNoticeDataList: (noticeDataList) {
+            _sdkManager?.onPushNoticeDataList(noticeDataList.noticeDataList);
+          },
+        ),
+      );
+    _sdkManager = SDKManager(
+      xximCore: _xximCore!,
+      autoPullTime: autoPullTime,
+      pullMsgCount: pullMsgCount,
+      isarSchemas: isarSchemas,
+      isarDirectory: isarDirectory,
+      isarInspector: isarInspector,
+      subscribeCallback: subscribeCallback,
+      isarListener: isarListener,
+      pullListener: pullListener,
+      convListener: convListener,
+      msgListener: msgListener,
+      noticeListener: noticeListener,
+      unreadListener: unreadListener,
+    );
+    msgManager = MsgManager(_sdkManager!);
+    convManager = ConvManager(_sdkManager!, msgManager);
+  }
+}
