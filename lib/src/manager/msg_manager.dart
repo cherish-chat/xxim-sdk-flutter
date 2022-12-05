@@ -1,7 +1,323 @@
+import 'package:isar/isar.dart';
+import 'package:xxim_core_flutter/xxim_core_flutter.dart';
+import 'package:xxim_sdk_flutter/src/constant/content_type.dart';
 import 'package:xxim_sdk_flutter/src/manager/sdk_manager.dart';
+import 'package:xxim_sdk_flutter/src/model/msg_model.dart';
+import 'package:xxim_sdk_flutter/src/model/record_model.dart';
+import 'package:xxim_sdk_flutter/src/model/sdk_content.dart';
+import 'package:xxim_sdk_flutter/src/tool/sdk_tool.dart';
 
 class MsgManager {
   final SDKManager _sdkManager;
 
   MsgManager(this._sdkManager);
+
+  /// 获取消息列表
+  Future<List<MsgModel>> getMsgList({
+    required String convId,
+    int? contentType,
+    int? maxSeq,
+    int size = 150,
+  }) async {
+    Future<List<MsgModel>> getList(
+      int minSeq,
+      int maxSeq, {
+      bool includeUpper = true,
+      bool? deleted,
+    }) {
+      return _getCustomMsgList(
+        filter: FilterGroup.and([
+          FilterCondition.equalTo(
+            property: "convId",
+            value: convId,
+          ),
+          if (contentType != null)
+            FilterCondition.equalTo(
+              property: "contentType",
+              value: contentType,
+            ),
+          FilterCondition.between(
+            property: "seq",
+            lower: minSeq,
+            includeLower: false,
+            upper: maxSeq,
+            includeUpper: includeUpper,
+          ),
+          if (deleted != null)
+            FilterCondition.equalTo(
+              property: "deleted",
+              value: deleted,
+            ),
+        ]),
+        sortBy: [
+          const SortProperty(
+            property: "seq",
+            sort: Sort.desc,
+          ),
+        ],
+      );
+    }
+
+    bool includeUpper = maxSeq == null;
+    if (maxSeq == null) {
+      MsgModel? msgModel = await _sdkManager
+          .msgModels()
+          .filter()
+          .convIdEqualTo(convId)
+          .sortBySeqDesc()
+          .findFirst();
+      if (msgModel != null) {
+        maxSeq = msgModel.seq;
+      } else {
+        RecordModel? recordModel = await _sdkManager
+            .recordModels()
+            .filter()
+            .convIdEqualTo(convId)
+            .findFirst();
+        if (recordModel != null) {
+          maxSeq = recordModel.maxSeq;
+        }
+      }
+    }
+    if (maxSeq == null) return [];
+    if (maxSeq == 1) maxSeq = 0;
+    RecordModel? recordModel = await _sdkManager
+        .recordModels()
+        .filter()
+        .convIdEqualTo(convId)
+        .findFirst();
+    int minSeq = maxSeq - size;
+    if (recordModel != null) {
+      minSeq = minSeq > recordModel.minSeq ? minSeq : recordModel.minSeq;
+    } else {
+      minSeq = minSeq > 0 ? minSeq : 0;
+    }
+    if (minSeq < 0) minSeq = 0;
+    if (maxSeq <= minSeq) return [];
+    List<String> expectList = SDKTool.generateSeqList(maxSeq, minSeq);
+    List<MsgModel> list = await getList(
+      minSeq,
+      maxSeq,
+    );
+    if (expectList.length - list.length != 0) {
+      List<String> seqList = [];
+      for (String seq in expectList) {
+        int index = list.indexWhere((msgModel) {
+          return seq == msgModel.seq.toString();
+        });
+        if (index == -1) {
+          seqList.add(seq);
+        }
+      }
+      if (seqList.isNotEmpty) {
+        await _sdkManager.pullMsgDataList(
+          [
+            BatchGetMsgListByConvIdReq_Item(
+              convId: convId,
+              seqList: seqList,
+            ),
+          ],
+          push: false,
+        );
+      }
+    }
+    return getList(
+      minSeq,
+      maxSeq,
+      includeUpper: includeUpper,
+      deleted: false,
+    );
+  }
+
+  /// 获取自定义消息列表
+  Future<List<MsgModel>> _getCustomMsgList({
+    List<WhereClause> whereClauses = const [],
+    bool whereDistinct = false,
+    Sort whereSort = Sort.asc,
+    FilterOperation? filter,
+    List<SortProperty> sortBy = const [],
+    List<DistinctProperty> distinctBy = const [],
+    int? offset,
+    int? limit,
+    String? property,
+  }) {
+    return _sdkManager
+        .msgModels()
+        .buildQuery<MsgModel>(
+          whereClauses: whereClauses,
+          whereDistinct: whereDistinct,
+          whereSort: whereSort,
+          filter: filter,
+          sortBy: sortBy,
+          distinctBy: distinctBy,
+          offset: offset,
+          limit: limit,
+          property: property,
+        )
+        .findAll();
+  }
+
+  /// 获取单条消息
+  Future<MsgModel?> getSingleMsg({
+    required String clientMsgId,
+  }) async {
+    MsgModel? msgModel = await _sdkManager
+        .msgModels()
+        .filter()
+        .clientMsgIdEqualTo(clientMsgId)
+        .findFirst();
+    if (msgModel != null) return msgModel;
+    msgModel = await _sdkManager.pullMsgDataById(
+      clientMsgId: clientMsgId,
+      push: false,
+    );
+    return msgModel;
+  }
+
+  /// 发送正在输入
+  Future<bool> sendTyping({
+    required String convId,
+    required TypingContent content,
+    String ext = "",
+  }) async {
+    return sendMsgList(
+      msgModelList: [
+        await _sdkManager.createMsg(
+          convId: convId,
+          contentType: ContentType.typing,
+          content: content.toJson(),
+          offlinePush: MsgOfflinePushModel(
+            title: "",
+            content: "",
+            payload: "",
+          ),
+          options: MsgOptionsModel(
+            storageForServer: false,
+            storageForClient: false,
+            needDecrypt: false,
+            offlinePush: false,
+            updateConvMsg: false,
+            updateUnreadCount: false,
+          ),
+          ext: ext,
+        ),
+      ],
+    );
+  }
+
+  /// 发送已读消息
+  Future<bool> sendRead({
+    required String convId,
+    required ReadContent content,
+    bool storageForServer = true,
+    bool storageForClient = true,
+    String ext = "",
+  }) async {
+    return sendMsgList(
+      msgModelList: [
+        await _sdkManager.createMsg(
+          convId: convId,
+          contentType: ContentType.read,
+          content: content.toJson(),
+          offlinePush: MsgOfflinePushModel(
+            title: "",
+            content: "",
+            payload: "",
+          ),
+          options: MsgOptionsModel(
+            storageForServer: storageForServer,
+            storageForClient: storageForClient,
+            needDecrypt: false,
+            offlinePush: false,
+            updateConvMsg: false,
+            updateUnreadCount: false,
+          ),
+          ext: ext,
+        ),
+      ],
+    );
+  }
+
+  /// 发送撤回消息
+  Future<bool> sendRevoke({
+    required String clientMsgId,
+    required RevokeContent content,
+    String ext = "",
+  }) async {
+    MsgModel? msgModel = await getSingleMsg(
+      clientMsgId: clientMsgId,
+    );
+    if (msgModel == null) return false;
+    msgModel.contentType = ContentType.revoke;
+    msgModel.content = content.toJson();
+    msgModel.offlinePush.content = content.content;
+    msgModel.ext = ext;
+    return sendMsgList(
+      msgModelList: [
+        msgModel,
+      ],
+    );
+  }
+
+  /// 发送消息列表
+  Future<bool> sendMsgList({
+    required List<MsgModel> msgModelList,
+  }) {
+    return _sdkManager.sendMsgList(
+      msgModelList: msgModelList,
+    );
+  }
+
+  /// 更新消息
+  Future upsertMsg({
+    required MsgModel msgModel,
+    bool includeMsgConv = false,
+  }) {
+    return _sdkManager.upsertMsg(
+      msgModel: msgModel,
+      includeMsgConv: includeMsgConv,
+    );
+  }
+
+  /// 删除消息
+  Future<bool> deleteMsg({
+    required String clientMsgId,
+  }) async {
+    MsgModel? msgModel = await _sdkManager
+        .msgModels()
+        .filter()
+        .clientMsgIdEqualTo(clientMsgId)
+        .findFirst();
+    if (msgModel == null) return true;
+    msgModel.contentType = ContentType.unknown;
+    msgModel.content = "";
+    msgModel.deleted = true;
+    await _sdkManager.isar.writeTxn(() async {
+      await _sdkManager.msgModels().put(msgModel);
+    });
+    return true;
+  }
+
+  /// 清空消息
+  Future<bool> clearMsg({
+    required String convId,
+  }) async {
+    List<MsgModel> list = await _sdkManager
+        .msgModels()
+        .filter()
+        .convIdEqualTo(
+          convId,
+        )
+        .findAll();
+    if (list.isEmpty) return true;
+    await _sdkManager.isar.writeTxn(() async {
+      for (MsgModel msgModel in list) {
+        msgModel.contentType = ContentType.unknown;
+        msgModel.content = "";
+        msgModel.deleted = true;
+      }
+      await _sdkManager.msgModels().putAll(list);
+    });
+    return true;
+  }
 }

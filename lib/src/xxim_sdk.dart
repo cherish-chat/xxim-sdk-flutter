@@ -65,4 +65,75 @@ class XXIMSDK {
     msgManager = MsgManager(_sdkManager!);
     convManager = ConvManager(_sdkManager!, msgManager);
   }
+
+  /// 登录
+  Future login({
+    required String apiUrl,
+    required String wsUrl,
+    required String token,
+    required String userId,
+    required String networkUsed,
+    String? isarName,
+    List<String>? convIdList,
+  }) async {
+    await _sdkManager?.openDatabase(
+      userId: userId,
+      isarName: isarName,
+    );
+    connect(
+      apiUrl: apiUrl,
+      wsUrl: wsUrl,
+      token: token,
+      userId: userId,
+      networkUsed: networkUsed,
+      convIdList: convIdList,
+    );
+  }
+
+  /// 登出
+  Future logout() async {
+    await _sdkManager?.closeDatabase();
+    disconnect();
+  }
+
+  /// 连接
+  void connect({
+    required String apiUrl,
+    required String wsUrl,
+    required String token,
+    required String userId,
+    required String networkUsed,
+    List<String>? convIdList,
+  }) {
+    _xximCore?.login(
+      apiUrl: apiUrl,
+      wsUrl: wsUrl,
+      token: token,
+      userId: userId,
+      networkUsed: networkUsed,
+    );
+    openPullSubscribe(
+      convIdList: convIdList,
+    );
+  }
+
+  /// 断连
+  void disconnect() {
+    _xximCore?.logout();
+    closePullSubscribe();
+  }
+
+  /// 打开拉取订阅
+  void openPullSubscribe({
+    List<String>? convIdList,
+  }) {
+    _sdkManager?.openPullSubscribe(
+      convIdList: convIdList,
+    );
+  }
+
+  /// 关闭拉取订阅
+  void closePullSubscribe() {
+    _sdkManager?.closePullSubscribe();
+  }
 }

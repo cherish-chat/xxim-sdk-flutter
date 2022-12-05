@@ -22,29 +22,39 @@ const ConvModelSchema = CollectionSchema(
       name: r'convId',
       type: IsarType.string,
     ),
-    r'draftModel': PropertySchema(
+    r'deleted': PropertySchema(
       id: 1,
+      name: r'deleted',
+      type: IsarType.bool,
+    ),
+    r'draftModel': PropertySchema(
+      id: 2,
       name: r'draftModel',
       type: IsarType.object,
       target: r'DraftModel',
     ),
     r'hidden': PropertySchema(
-      id: 2,
+      id: 3,
       name: r'hidden',
       type: IsarType.bool,
     ),
     r'msgId': PropertySchema(
-      id: 3,
+      id: 4,
       name: r'msgId',
       type: IsarType.string,
     ),
     r'noticeId': PropertySchema(
-      id: 4,
+      id: 5,
       name: r'noticeId',
       type: IsarType.string,
     ),
+    r'time': PropertySchema(
+      id: 6,
+      name: r'time',
+      type: IsarType.long,
+    ),
     r'unreadCount': PropertySchema(
-      id: 5,
+      id: 7,
       name: r'unreadCount',
       type: IsarType.long,
     )
@@ -153,16 +163,18 @@ void _convModelSerialize(
   Map<Type, List<int>> allOffsets,
 ) {
   writer.writeString(offsets[0], object.convId);
+  writer.writeBool(offsets[1], object.deleted);
   writer.writeObject<DraftModel>(
-    offsets[1],
+    offsets[2],
     allOffsets,
     DraftModelSchema.serialize,
     object.draftModel,
   );
-  writer.writeBool(offsets[2], object.hidden);
-  writer.writeString(offsets[3], object.msgId);
-  writer.writeString(offsets[4], object.noticeId);
-  writer.writeLong(offsets[5], object.unreadCount);
+  writer.writeBool(offsets[3], object.hidden);
+  writer.writeString(offsets[4], object.msgId);
+  writer.writeString(offsets[5], object.noticeId);
+  writer.writeLong(offsets[6], object.time);
+  writer.writeLong(offsets[7], object.unreadCount);
 }
 
 ConvModel _convModelDeserialize(
@@ -173,15 +185,17 @@ ConvModel _convModelDeserialize(
 ) {
   final object = ConvModel(
     convId: reader.readString(offsets[0]),
+    deleted: reader.readBoolOrNull(offsets[1]) ?? false,
     draftModel: reader.readObjectOrNull<DraftModel>(
-      offsets[1],
+      offsets[2],
       DraftModelSchema.deserialize,
       allOffsets,
     ),
-    hidden: reader.readBoolOrNull(offsets[2]) ?? false,
-    msgId: reader.readStringOrNull(offsets[3]),
-    noticeId: reader.readStringOrNull(offsets[4]),
-    unreadCount: reader.readLongOrNull(offsets[5]) ?? 0,
+    hidden: reader.readBoolOrNull(offsets[3]) ?? false,
+    msgId: reader.readStringOrNull(offsets[4]),
+    noticeId: reader.readStringOrNull(offsets[5]),
+    time: reader.readLongOrNull(offsets[6]) ?? 0,
+    unreadCount: reader.readLongOrNull(offsets[7]) ?? 0,
   );
   object.id = id;
   return object;
@@ -197,18 +211,22 @@ P _convModelDeserializeProp<P>(
     case 0:
       return (reader.readString(offset)) as P;
     case 1:
+      return (reader.readBoolOrNull(offset) ?? false) as P;
+    case 2:
       return (reader.readObjectOrNull<DraftModel>(
         offset,
         DraftModelSchema.deserialize,
         allOffsets,
       )) as P;
-    case 2:
-      return (reader.readBoolOrNull(offset) ?? false) as P;
     case 3:
-      return (reader.readStringOrNull(offset)) as P;
+      return (reader.readBoolOrNull(offset) ?? false) as P;
     case 4:
       return (reader.readStringOrNull(offset)) as P;
     case 5:
+      return (reader.readStringOrNull(offset)) as P;
+    case 6:
+      return (reader.readLongOrNull(offset) ?? 0) as P;
+    case 7:
       return (reader.readLongOrNull(offset) ?? 0) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
@@ -709,6 +727,16 @@ extension ConvModelQueryFilter
     });
   }
 
+  QueryBuilder<ConvModel, ConvModel, QAfterFilterCondition> deletedEqualTo(
+      bool value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'deleted',
+        value: value,
+      ));
+    });
+  }
+
   QueryBuilder<ConvModel, ConvModel, QAfterFilterCondition> draftModelIsNull() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(const FilterCondition.isNull(
@@ -1083,6 +1111,59 @@ extension ConvModelQueryFilter
     });
   }
 
+  QueryBuilder<ConvModel, ConvModel, QAfterFilterCondition> timeEqualTo(
+      int value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'time',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<ConvModel, ConvModel, QAfterFilterCondition> timeGreaterThan(
+    int value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'time',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<ConvModel, ConvModel, QAfterFilterCondition> timeLessThan(
+    int value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'time',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<ConvModel, ConvModel, QAfterFilterCondition> timeBetween(
+    int lower,
+    int upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'time',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+      ));
+    });
+  }
+
   QueryBuilder<ConvModel, ConvModel, QAfterFilterCondition> unreadCountEqualTo(
       int value) {
     return QueryBuilder.apply(this, (query) {
@@ -1164,6 +1245,18 @@ extension ConvModelQuerySortBy on QueryBuilder<ConvModel, ConvModel, QSortBy> {
     });
   }
 
+  QueryBuilder<ConvModel, ConvModel, QAfterSortBy> sortByDeleted() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'deleted', Sort.asc);
+    });
+  }
+
+  QueryBuilder<ConvModel, ConvModel, QAfterSortBy> sortByDeletedDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'deleted', Sort.desc);
+    });
+  }
+
   QueryBuilder<ConvModel, ConvModel, QAfterSortBy> sortByHidden() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'hidden', Sort.asc);
@@ -1200,6 +1293,18 @@ extension ConvModelQuerySortBy on QueryBuilder<ConvModel, ConvModel, QSortBy> {
     });
   }
 
+  QueryBuilder<ConvModel, ConvModel, QAfterSortBy> sortByTime() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'time', Sort.asc);
+    });
+  }
+
+  QueryBuilder<ConvModel, ConvModel, QAfterSortBy> sortByTimeDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'time', Sort.desc);
+    });
+  }
+
   QueryBuilder<ConvModel, ConvModel, QAfterSortBy> sortByUnreadCount() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'unreadCount', Sort.asc);
@@ -1224,6 +1329,18 @@ extension ConvModelQuerySortThenBy
   QueryBuilder<ConvModel, ConvModel, QAfterSortBy> thenByConvIdDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'convId', Sort.desc);
+    });
+  }
+
+  QueryBuilder<ConvModel, ConvModel, QAfterSortBy> thenByDeleted() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'deleted', Sort.asc);
+    });
+  }
+
+  QueryBuilder<ConvModel, ConvModel, QAfterSortBy> thenByDeletedDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'deleted', Sort.desc);
     });
   }
 
@@ -1275,6 +1392,18 @@ extension ConvModelQuerySortThenBy
     });
   }
 
+  QueryBuilder<ConvModel, ConvModel, QAfterSortBy> thenByTime() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'time', Sort.asc);
+    });
+  }
+
+  QueryBuilder<ConvModel, ConvModel, QAfterSortBy> thenByTimeDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'time', Sort.desc);
+    });
+  }
+
   QueryBuilder<ConvModel, ConvModel, QAfterSortBy> thenByUnreadCount() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'unreadCount', Sort.asc);
@@ -1294,6 +1423,12 @@ extension ConvModelQueryWhereDistinct
       {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'convId', caseSensitive: caseSensitive);
+    });
+  }
+
+  QueryBuilder<ConvModel, ConvModel, QDistinct> distinctByDeleted() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'deleted');
     });
   }
 
@@ -1317,6 +1452,12 @@ extension ConvModelQueryWhereDistinct
     });
   }
 
+  QueryBuilder<ConvModel, ConvModel, QDistinct> distinctByTime() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'time');
+    });
+  }
+
   QueryBuilder<ConvModel, ConvModel, QDistinct> distinctByUnreadCount() {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'unreadCount');
@@ -1335,6 +1476,12 @@ extension ConvModelQueryProperty
   QueryBuilder<ConvModel, String, QQueryOperations> convIdProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'convId');
+    });
+  }
+
+  QueryBuilder<ConvModel, bool, QQueryOperations> deletedProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'deleted');
     });
   }
 
@@ -1362,6 +1509,12 @@ extension ConvModelQueryProperty
     });
   }
 
+  QueryBuilder<ConvModel, int, QQueryOperations> timeProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'time');
+    });
+  }
+
   QueryBuilder<ConvModel, int, QQueryOperations> unreadCountProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'unreadCount');
@@ -1385,10 +1538,10 @@ const DraftModelSchema = Schema(
       name: r'content',
       type: IsarType.string,
     ),
-    r'time': PropertySchema(
+    r'ext': PropertySchema(
       id: 1,
-      name: r'time',
-      type: IsarType.long,
+      name: r'ext',
+      type: IsarType.string,
     )
   },
   estimateSize: _draftModelEstimateSize,
@@ -1409,6 +1562,12 @@ int _draftModelEstimateSize(
       bytesCount += 3 + value.length * 3;
     }
   }
+  {
+    final value = object.ext;
+    if (value != null) {
+      bytesCount += 3 + value.length * 3;
+    }
+  }
   return bytesCount;
 }
 
@@ -1419,7 +1578,7 @@ void _draftModelSerialize(
   Map<Type, List<int>> allOffsets,
 ) {
   writer.writeString(offsets[0], object.content);
-  writer.writeLong(offsets[1], object.time);
+  writer.writeString(offsets[1], object.ext);
 }
 
 DraftModel _draftModelDeserialize(
@@ -1430,7 +1589,7 @@ DraftModel _draftModelDeserialize(
 ) {
   final object = DraftModel(
     content: reader.readStringOrNull(offsets[0]),
-    time: reader.readLongOrNull(offsets[1]),
+    ext: reader.readStringOrNull(offsets[1]),
   );
   return object;
 }
@@ -1445,7 +1604,7 @@ P _draftModelDeserializeProp<P>(
     case 0:
       return (reader.readStringOrNull(offset)) as P;
     case 1:
-      return (reader.readLongOrNull(offset)) as P;
+      return (reader.readStringOrNull(offset)) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
   }
@@ -1602,71 +1761,148 @@ extension DraftModelQueryFilter
     });
   }
 
-  QueryBuilder<DraftModel, DraftModel, QAfterFilterCondition> timeIsNull() {
+  QueryBuilder<DraftModel, DraftModel, QAfterFilterCondition> extIsNull() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(const FilterCondition.isNull(
-        property: r'time',
+        property: r'ext',
       ));
     });
   }
 
-  QueryBuilder<DraftModel, DraftModel, QAfterFilterCondition> timeIsNotNull() {
+  QueryBuilder<DraftModel, DraftModel, QAfterFilterCondition> extIsNotNull() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(const FilterCondition.isNotNull(
-        property: r'time',
+        property: r'ext',
       ));
     });
   }
 
-  QueryBuilder<DraftModel, DraftModel, QAfterFilterCondition> timeEqualTo(
-      int? value) {
+  QueryBuilder<DraftModel, DraftModel, QAfterFilterCondition> extEqualTo(
+    String? value, {
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'time',
+        property: r'ext',
         value: value,
+        caseSensitive: caseSensitive,
       ));
     });
   }
 
-  QueryBuilder<DraftModel, DraftModel, QAfterFilterCondition> timeGreaterThan(
-    int? value, {
+  QueryBuilder<DraftModel, DraftModel, QAfterFilterCondition> extGreaterThan(
+    String? value, {
     bool include = false,
+    bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.greaterThan(
         include: include,
-        property: r'time',
+        property: r'ext',
         value: value,
+        caseSensitive: caseSensitive,
       ));
     });
   }
 
-  QueryBuilder<DraftModel, DraftModel, QAfterFilterCondition> timeLessThan(
-    int? value, {
+  QueryBuilder<DraftModel, DraftModel, QAfterFilterCondition> extLessThan(
+    String? value, {
     bool include = false,
+    bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.lessThan(
         include: include,
-        property: r'time',
+        property: r'ext',
         value: value,
+        caseSensitive: caseSensitive,
       ));
     });
   }
 
-  QueryBuilder<DraftModel, DraftModel, QAfterFilterCondition> timeBetween(
-    int? lower,
-    int? upper, {
+  QueryBuilder<DraftModel, DraftModel, QAfterFilterCondition> extBetween(
+    String? lower,
+    String? upper, {
     bool includeLower = true,
     bool includeUpper = true,
+    bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.between(
-        property: r'time',
+        property: r'ext',
         lower: lower,
         includeLower: includeLower,
         upper: upper,
         includeUpper: includeUpper,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<DraftModel, DraftModel, QAfterFilterCondition> extStartsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.startsWith(
+        property: r'ext',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<DraftModel, DraftModel, QAfterFilterCondition> extEndsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.endsWith(
+        property: r'ext',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<DraftModel, DraftModel, QAfterFilterCondition> extContains(
+      String value,
+      {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.contains(
+        property: r'ext',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<DraftModel, DraftModel, QAfterFilterCondition> extMatches(
+      String pattern,
+      {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.matches(
+        property: r'ext',
+        wildcard: pattern,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<DraftModel, DraftModel, QAfterFilterCondition> extIsEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'ext',
+        value: '',
+      ));
+    });
+  }
+
+  QueryBuilder<DraftModel, DraftModel, QAfterFilterCondition> extIsNotEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        property: r'ext',
+        value: '',
       ));
     });
   }

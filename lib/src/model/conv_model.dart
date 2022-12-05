@@ -14,10 +14,12 @@ class ConvModel {
   String? msgId;
   @Index()
   String? noticeId;
+  int time;
   @Index()
   int unreadCount;
   DraftModel? draftModel;
   bool hidden;
+  bool deleted;
 
   @ignore
   MsgModel? msgModel;
@@ -28,19 +30,21 @@ class ConvModel {
     required this.convId,
     this.msgId,
     this.noticeId,
+    this.time = 0,
     this.unreadCount = 0,
     this.draftModel,
     this.hidden = false,
+    this.deleted = false,
   });
 }
 
 @Embedded()
 class DraftModel {
   String? content;
-  int? time;
+  String? ext;
 
   DraftModel({
     this.content,
-    this.time,
+    this.ext,
   });
 }

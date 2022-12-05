@@ -30,6 +30,7 @@ class MsgModel {
   String ext;
   int sendStatus;
   int sendProgress;
+  bool deleted;
 
   MsgModel({
     required this.clientMsgId,
@@ -48,6 +49,7 @@ class MsgModel {
     this.ext = "",
     this.sendStatus = SendStatus.sending,
     this.sendProgress = 0,
+    this.deleted = false,
   });
 
   static MsgModel fromProto(MsgData msgData) {

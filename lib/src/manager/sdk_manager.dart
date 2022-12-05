@@ -251,6 +251,27 @@ class SDKManager {
     return msgModelList;
   }
 
+  /// 拉取消息
+  Future<MsgModel?> pullMsgDataById({
+    String? serverMsgId,
+    String? clientMsgId,
+    required bool push,
+  }) async {
+    GetMsgByIdResp? resp = await xximCore.getMsgById(
+      req: GetMsgByIdReq(
+        serverMsgId: serverMsgId,
+        clientMsgId: clientMsgId,
+        push: push,
+      ),
+    );
+    if (push || resp == null) return null;
+    MsgModel? msgModel;
+    await isar.writeTxn(() async {
+      msgModel = await _handleMsg(resp.msgData);
+    });
+    return msgModel;
+  }
+
   /// 推送消息
   void onPushMsgDataList(
     List<MsgData> msgDataList,
@@ -371,11 +392,15 @@ class SDKManager {
       if (model != null) {
         if (msgModel.seq > model.seq) {
           convModel.msgId = msgModel.clientMsgId;
+          convModel.time = msgModel.serverTime;
           convModel.hidden = false;
+          convModel.deleted = false;
         }
       } else {
         convModel.msgId = msgModel.clientMsgId;
+        convModel.time = msgModel.serverTime;
         convModel.hidden = false;
+        convModel.deleted = false;
       }
     }
     if (msgModel.options.updateUnreadCount == true &&
@@ -447,11 +472,15 @@ class SDKManager {
       if (model != null) {
         if (model.noticeId != noticeModel.noticeId) {
           convModel.noticeId = noticeModel.noticeId;
+          convModel.time = noticeModel.createTime;
           convModel.hidden = false;
+          convModel.deleted = false;
         }
       } else {
         convModel.noticeId = noticeModel.noticeId;
+        convModel.time = noticeModel.createTime;
         convModel.hidden = false;
+        convModel.deleted = false;
       }
     }
     await convModels().put(convModel);
@@ -505,8 +534,8 @@ class SDKManager {
     return msgModel;
   }
 
-  /// 发送消息
-  Future sendMsg({
+  /// 发送消息列表
+  Future<bool> sendMsgList({
     required List<MsgModel> msgModelList,
   }) async {
     bool? status = await xximCore.sendMsgList(

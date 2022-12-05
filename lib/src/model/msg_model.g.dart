@@ -47,55 +47,60 @@ const MsgModelSchema = CollectionSchema(
       name: r'convId',
       type: IsarType.string,
     ),
-    r'ext': PropertySchema(
+    r'deleted': PropertySchema(
       id: 6,
+      name: r'deleted',
+      type: IsarType.bool,
+    ),
+    r'ext': PropertySchema(
+      id: 7,
       name: r'ext',
       type: IsarType.string,
     ),
     r'offlinePush': PropertySchema(
-      id: 7,
+      id: 8,
       name: r'offlinePush',
       type: IsarType.object,
       target: r'MsgOfflinePushModel',
     ),
     r'options': PropertySchema(
-      id: 8,
+      id: 9,
       name: r'options',
       type: IsarType.object,
       target: r'MsgOptionsModel',
     ),
     r'sendProgress': PropertySchema(
-      id: 9,
+      id: 10,
       name: r'sendProgress',
       type: IsarType.long,
     ),
     r'sendStatus': PropertySchema(
-      id: 10,
+      id: 11,
       name: r'sendStatus',
       type: IsarType.long,
     ),
     r'senderId': PropertySchema(
-      id: 11,
+      id: 12,
       name: r'senderId',
       type: IsarType.string,
     ),
     r'senderInfo': PropertySchema(
-      id: 12,
+      id: 13,
       name: r'senderInfo',
       type: IsarType.string,
     ),
     r'seq': PropertySchema(
-      id: 13,
+      id: 14,
       name: r'seq',
       type: IsarType.long,
     ),
     r'serverMsgId': PropertySchema(
-      id: 14,
+      id: 15,
       name: r'serverMsgId',
       type: IsarType.string,
     ),
     r'serverTime': PropertySchema(
-      id: 15,
+      id: 16,
       name: r'serverTime',
       type: IsarType.long,
     )
@@ -229,26 +234,27 @@ void _msgModelSerialize(
   writer.writeString(offsets[3], object.content);
   writer.writeLong(offsets[4], object.contentType);
   writer.writeString(offsets[5], object.convId);
-  writer.writeString(offsets[6], object.ext);
+  writer.writeBool(offsets[6], object.deleted);
+  writer.writeString(offsets[7], object.ext);
   writer.writeObject<MsgOfflinePushModel>(
-    offsets[7],
+    offsets[8],
     allOffsets,
     MsgOfflinePushModelSchema.serialize,
     object.offlinePush,
   );
   writer.writeObject<MsgOptionsModel>(
-    offsets[8],
+    offsets[9],
     allOffsets,
     MsgOptionsModelSchema.serialize,
     object.options,
   );
-  writer.writeLong(offsets[9], object.sendProgress);
-  writer.writeLong(offsets[10], object.sendStatus);
-  writer.writeString(offsets[11], object.senderId);
-  writer.writeString(offsets[12], object.senderInfo);
-  writer.writeLong(offsets[13], object.seq);
-  writer.writeString(offsets[14], object.serverMsgId);
-  writer.writeLong(offsets[15], object.serverTime);
+  writer.writeLong(offsets[10], object.sendProgress);
+  writer.writeLong(offsets[11], object.sendStatus);
+  writer.writeString(offsets[12], object.senderId);
+  writer.writeString(offsets[13], object.senderInfo);
+  writer.writeLong(offsets[14], object.seq);
+  writer.writeString(offsets[15], object.serverMsgId);
+  writer.writeLong(offsets[16], object.serverTime);
 }
 
 MsgModel _msgModelDeserialize(
@@ -264,26 +270,27 @@ MsgModel _msgModelDeserialize(
     content: reader.readString(offsets[3]),
     contentType: reader.readLong(offsets[4]),
     convId: reader.readString(offsets[5]),
-    ext: reader.readStringOrNull(offsets[6]) ?? "",
+    deleted: reader.readBoolOrNull(offsets[6]) ?? false,
+    ext: reader.readStringOrNull(offsets[7]) ?? "",
     offlinePush: reader.readObjectOrNull<MsgOfflinePushModel>(
-          offsets[7],
+          offsets[8],
           MsgOfflinePushModelSchema.deserialize,
           allOffsets,
         ) ??
         MsgOfflinePushModel(),
     options: reader.readObjectOrNull<MsgOptionsModel>(
-          offsets[8],
+          offsets[9],
           MsgOptionsModelSchema.deserialize,
           allOffsets,
         ) ??
         MsgOptionsModel(),
-    sendProgress: reader.readLongOrNull(offsets[9]) ?? 0,
-    sendStatus: reader.readLongOrNull(offsets[10]) ?? SendStatus.sending,
-    senderId: reader.readString(offsets[11]),
-    senderInfo: reader.readStringOrNull(offsets[12]) ?? "",
-    seq: reader.readLong(offsets[13]),
-    serverMsgId: reader.readStringOrNull(offsets[14]),
-    serverTime: reader.readLong(offsets[15]),
+    sendProgress: reader.readLongOrNull(offsets[10]) ?? 0,
+    sendStatus: reader.readLongOrNull(offsets[11]) ?? SendStatus.sending,
+    senderId: reader.readString(offsets[12]),
+    senderInfo: reader.readStringOrNull(offsets[13]) ?? "",
+    seq: reader.readLong(offsets[14]),
+    serverMsgId: reader.readStringOrNull(offsets[15]),
+    serverTime: reader.readLong(offsets[16]),
   );
   object.id = id;
   return object;
@@ -309,34 +316,36 @@ P _msgModelDeserializeProp<P>(
     case 5:
       return (reader.readString(offset)) as P;
     case 6:
-      return (reader.readStringOrNull(offset) ?? "") as P;
+      return (reader.readBoolOrNull(offset) ?? false) as P;
     case 7:
+      return (reader.readStringOrNull(offset) ?? "") as P;
+    case 8:
       return (reader.readObjectOrNull<MsgOfflinePushModel>(
             offset,
             MsgOfflinePushModelSchema.deserialize,
             allOffsets,
           ) ??
           MsgOfflinePushModel()) as P;
-    case 8:
+    case 9:
       return (reader.readObjectOrNull<MsgOptionsModel>(
             offset,
             MsgOptionsModelSchema.deserialize,
             allOffsets,
           ) ??
           MsgOptionsModel()) as P;
-    case 9:
-      return (reader.readLongOrNull(offset) ?? 0) as P;
     case 10:
-      return (reader.readLongOrNull(offset) ?? SendStatus.sending) as P;
+      return (reader.readLongOrNull(offset) ?? 0) as P;
     case 11:
-      return (reader.readString(offset)) as P;
+      return (reader.readLongOrNull(offset) ?? SendStatus.sending) as P;
     case 12:
-      return (reader.readStringOrNull(offset) ?? "") as P;
+      return (reader.readString(offset)) as P;
     case 13:
-      return (reader.readLong(offset)) as P;
+      return (reader.readStringOrNull(offset) ?? "") as P;
     case 14:
-      return (reader.readStringOrNull(offset)) as P;
+      return (reader.readLong(offset)) as P;
     case 15:
+      return (reader.readStringOrNull(offset)) as P;
+    case 16:
       return (reader.readLong(offset)) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
@@ -1429,6 +1438,16 @@ extension MsgModelQueryFilter
     });
   }
 
+  QueryBuilder<MsgModel, MsgModel, QAfterFilterCondition> deletedEqualTo(
+      bool value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'deleted',
+        value: value,
+      ));
+    });
+  }
+
   QueryBuilder<MsgModel, MsgModel, QAfterFilterCondition> extEqualTo(
     String value, {
     bool caseSensitive = true,
@@ -2316,6 +2335,18 @@ extension MsgModelQuerySortBy on QueryBuilder<MsgModel, MsgModel, QSortBy> {
     });
   }
 
+  QueryBuilder<MsgModel, MsgModel, QAfterSortBy> sortByDeleted() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'deleted', Sort.asc);
+    });
+  }
+
+  QueryBuilder<MsgModel, MsgModel, QAfterSortBy> sortByDeletedDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'deleted', Sort.desc);
+    });
+  }
+
   QueryBuilder<MsgModel, MsgModel, QAfterSortBy> sortByExt() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'ext', Sort.asc);
@@ -2475,6 +2506,18 @@ extension MsgModelQuerySortThenBy
     });
   }
 
+  QueryBuilder<MsgModel, MsgModel, QAfterSortBy> thenByDeleted() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'deleted', Sort.asc);
+    });
+  }
+
+  QueryBuilder<MsgModel, MsgModel, QAfterSortBy> thenByDeletedDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'deleted', Sort.desc);
+    });
+  }
+
   QueryBuilder<MsgModel, MsgModel, QAfterSortBy> thenByExt() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'ext', Sort.asc);
@@ -2625,6 +2668,12 @@ extension MsgModelQueryWhereDistinct
     });
   }
 
+  QueryBuilder<MsgModel, MsgModel, QDistinct> distinctByDeleted() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'deleted');
+    });
+  }
+
   QueryBuilder<MsgModel, MsgModel, QDistinct> distinctByExt(
       {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
@@ -2719,6 +2768,12 @@ extension MsgModelQueryProperty
   QueryBuilder<MsgModel, String, QQueryOperations> convIdProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'convId');
+    });
+  }
+
+  QueryBuilder<MsgModel, bool, QQueryOperations> deletedProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'deleted');
     });
   }
 
