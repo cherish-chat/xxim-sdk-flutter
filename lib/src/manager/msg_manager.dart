@@ -169,8 +169,8 @@ class MsgManager {
         .findAll();
   }
 
-  /// 拉取单条消息
-  Future<MsgModel?> pullSingleMsg({
+  /// 拉取云端消息
+  Future<MsgModel?> pullCloudMsg({
     required String clientMsgId,
     bool push = false,
   }) {
@@ -190,6 +190,7 @@ class MsgManager {
       msgModelList: [
         await _sdkManager.createMsg(
           convId: convId,
+          atUsers: [],
           contentType: ContentType.typing,
           content: content.toJson(),
           offlinePush: MsgOfflinePushModel(
@@ -223,6 +224,7 @@ class MsgManager {
       msgModelList: [
         await _sdkManager.createMsg(
           convId: convId,
+          atUsers: [],
           contentType: ContentType.read,
           content: content.toJson(),
           offlinePush: MsgOfflinePushModel(
@@ -265,12 +267,196 @@ class MsgManager {
     );
   }
 
+  /// 创建文本消息
+  Future<MsgModel> createText({
+    required String convId,
+    List<String> atUsers = const [],
+    required String text,
+    required MsgOfflinePushModel offlinePush,
+    String ext = "",
+  }) {
+    return _sdkManager.createMsg(
+      convId: convId,
+      atUsers: atUsers,
+      contentType: ContentType.text,
+      content: text,
+      offlinePush: offlinePush,
+      options: MsgOptionsModel(
+        storageForServer: true,
+        storageForClient: true,
+        needDecrypt: true,
+        offlinePush: true,
+        updateConvMsg: true,
+        updateUnreadCount: true,
+      ),
+      ext: ext,
+    );
+  }
+
+  /// 创建图片消息
+  Future<MsgModel> createPicture({
+    required String convId,
+    List<String> atUsers = const [],
+    required PictureContent content,
+    required MsgOfflinePushModel offlinePush,
+    String ext = "",
+  }) {
+    return _sdkManager.createMsg(
+      convId: convId,
+      atUsers: atUsers,
+      contentType: ContentType.picture,
+      content: content.toJson(),
+      offlinePush: offlinePush,
+      options: MsgOptionsModel(
+        storageForServer: true,
+        storageForClient: true,
+        needDecrypt: true,
+        offlinePush: true,
+        updateConvMsg: true,
+        updateUnreadCount: true,
+      ),
+      ext: ext,
+    );
+  }
+
+  /// 创建语音消息
+  Future<MsgModel> createAudio({
+    required String convId,
+    List<String> atUsers = const [],
+    required AudioContent content,
+    required MsgOfflinePushModel offlinePush,
+    String ext = "",
+  }) {
+    return _sdkManager.createMsg(
+      convId: convId,
+      atUsers: atUsers,
+      contentType: ContentType.audio,
+      content: content.toJson(),
+      offlinePush: offlinePush,
+      options: MsgOptionsModel(
+        storageForServer: true,
+        storageForClient: true,
+        needDecrypt: true,
+        offlinePush: true,
+        updateConvMsg: true,
+        updateUnreadCount: true,
+      ),
+      ext: ext,
+    );
+  }
+
+  /// 创建视频消息
+  Future<MsgModel> createVideo({
+    required String convId,
+    List<String> atUsers = const [],
+    required VideoContent content,
+    required MsgOfflinePushModel offlinePush,
+    String ext = "",
+  }) {
+    return _sdkManager.createMsg(
+      convId: convId,
+      atUsers: atUsers,
+      contentType: ContentType.video,
+      content: content.toJson(),
+      offlinePush: offlinePush,
+      options: MsgOptionsModel(
+        storageForServer: true,
+        storageForClient: true,
+        needDecrypt: true,
+        offlinePush: true,
+        updateConvMsg: true,
+        updateUnreadCount: true,
+      ),
+      ext: ext,
+    );
+  }
+
+  /// 创建文件消息
+  Future<MsgModel> createFile({
+    required String convId,
+    List<String> atUsers = const [],
+    required FileContent content,
+    required MsgOfflinePushModel offlinePush,
+    String ext = "",
+  }) {
+    return _sdkManager.createMsg(
+      convId: convId,
+      atUsers: atUsers,
+      contentType: ContentType.file,
+      content: content.toJson(),
+      offlinePush: offlinePush,
+      options: MsgOptionsModel(
+        storageForServer: true,
+        storageForClient: true,
+        needDecrypt: true,
+        offlinePush: true,
+        updateConvMsg: true,
+        updateUnreadCount: true,
+      ),
+      ext: ext,
+    );
+  }
+
+  /// 创建位置消息
+  Future<MsgModel> createLocation({
+    required String convId,
+    List<String> atUsers = const [],
+    required LocationContent content,
+    required MsgOfflinePushModel offlinePush,
+    String ext = "",
+  }) {
+    return _sdkManager.createMsg(
+      convId: convId,
+      atUsers: atUsers,
+      contentType: ContentType.location,
+      content: content.toJson(),
+      offlinePush: offlinePush,
+      options: MsgOptionsModel(
+        storageForServer: true,
+        storageForClient: true,
+        needDecrypt: true,
+        offlinePush: true,
+        updateConvMsg: true,
+        updateUnreadCount: true,
+      ),
+      ext: ext,
+    );
+  }
+
+  /// 创建名片消息
+  Future<MsgModel> createCard({
+    required String convId,
+    List<String> atUsers = const [],
+    required CardContent content,
+    required MsgOfflinePushModel offlinePush,
+    String ext = "",
+  }) {
+    return _sdkManager.createMsg(
+      convId: convId,
+      atUsers: atUsers,
+      contentType: ContentType.card,
+      content: content.toJson(),
+      offlinePush: offlinePush,
+      options: MsgOptionsModel(
+        storageForServer: true,
+        storageForClient: true,
+        needDecrypt: true,
+        offlinePush: true,
+        updateConvMsg: true,
+        updateUnreadCount: true,
+      ),
+      ext: ext,
+    );
+  }
+
   /// 发送消息列表
   Future<bool> sendMsgList({
     required List<MsgModel> msgModelList,
+    int deliverAfter = 0,
   }) {
     return _sdkManager.sendMsgList(
       msgModelList: msgModelList,
+      deliverAfter: deliverAfter,
     );
   }
 

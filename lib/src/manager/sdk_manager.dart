@@ -508,7 +508,7 @@ class SDKManager {
     int? serverTime,
     String senderInfo = "",
     required String convId,
-    List<String> atUsers = const [],
+    required List<String> atUsers,
     required int contentType,
     required String content,
     required MsgOptionsModel options,
@@ -547,6 +547,7 @@ class SDKManager {
   /// 发送消息列表
   Future<bool> sendMsgList({
     required List<MsgModel> msgModelList,
+    required int deliverAfter,
   }) async {
     bool? status = await xximCore.sendMsgList(
       req: SendMsgListReq(
@@ -578,7 +579,7 @@ class SDKManager {
             ext: utf8.encode(msgModel.ext),
           );
         }).toList(),
-        deliverAfter: 0,
+        deliverAfter: deliverAfter,
       ),
     );
     for (MsgModel msgModel in msgModelList) {

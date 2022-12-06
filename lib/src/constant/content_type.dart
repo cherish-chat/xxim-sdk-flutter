@@ -6,7 +6,7 @@ class ContentType {
   static const int revoke = 3; // 撤回
 
   static const int text = 11; // 文本
-  static const int image = 12; // 图片
+  static const int picture = 12; // 图片
   static const int audio = 13; // 语音
   static const int video = 14; // 视频
   static const int file = 15; // 文件
