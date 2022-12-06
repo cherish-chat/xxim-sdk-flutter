@@ -128,6 +128,16 @@ class XXIMSDK {
     closePullSubscribe();
   }
 
+  /// 是否连接
+  bool isConnect() {
+    return _xximCore?.isLogin() ?? false;
+  }
+
+  /// 修改语言
+  void setLanguage(String language) {
+    _xximCore?.setLanguage(language);
+  }
+
   /// 打开拉取订阅
   void openPullSubscribe({
     List<String>? convIdList,

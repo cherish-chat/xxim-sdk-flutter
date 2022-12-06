@@ -5,9 +5,23 @@ import 'package:uuid/uuid.dart';
 
 class SDKTool {
   static const Uuid _uuid = Uuid();
+  static const String separator = "-";
+  static const String singlePrefix = "single:";
+  static const String groupPrefix = "group:";
 
   static String getClientMsgId() {
     return _uuid.v1().replaceAll("-", "");
+  }
+
+  static String singleConvId(String id1, String id2) {
+    if (id1.compareTo(id2) < 0) {
+      return singlePrefix + id1 + separator + id2;
+    }
+    return singlePrefix + id2 + separator + id1;
+  }
+
+  static String groupConvId(String groupId) {
+    return groupPrefix + groupId;
   }
 
   static List<String> generateSeqList(int minSeq, int maxSeq) {
