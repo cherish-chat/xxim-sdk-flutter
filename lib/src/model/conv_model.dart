@@ -11,7 +11,9 @@ class ConvModel {
   @Index()
   String convId;
   @Index()
-  String? msgId;
+  int convType;
+  @Index()
+  String? clientMsgId;
   @Index()
   String? noticeId;
   int time;
@@ -28,7 +30,8 @@ class ConvModel {
 
   ConvModel({
     required this.convId,
-    this.msgId,
+    required this.convType,
+    this.clientMsgId,
     this.noticeId,
     this.time = 0,
     this.unreadCount = 0,

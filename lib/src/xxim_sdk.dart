@@ -9,6 +9,7 @@ import 'package:xxim_sdk_flutter/src/listener/pull_listener.dart';
 import 'package:xxim_sdk_flutter/src/listener/unread_listener.dart';
 import 'package:xxim_sdk_flutter/src/manager/conv_manager.dart';
 import 'package:xxim_sdk_flutter/src/manager/msg_manager.dart';
+import 'package:xxim_sdk_flutter/src/manager/notice_manager.dart';
 import 'package:xxim_sdk_flutter/src/manager/sdk_manager.dart';
 
 class XXIMSDK {
@@ -16,13 +17,15 @@ class XXIMSDK {
   SDKManager? _sdkManager;
   late ConvManager convManager;
   late MsgManager msgManager;
+  late NoticeManager noticeManager;
 
   /// 初始化
   void init({
     required Params params,
-    Duration autoPullTime = const Duration(seconds: 30),
-    int pullMsgCount = 300,
+    Duration autoPullTime = const Duration(seconds: 20),
+    int pullMsgCount = 200,
     List<CollectionSchema> isarSchemas = const [],
+    int isarMaxSizeMiB = 5120,
     required String isarDirectory,
     bool isarInspector = false,
     required SubscribeCallback subscribeCallback,
@@ -52,6 +55,7 @@ class XXIMSDK {
       autoPullTime: autoPullTime,
       pullMsgCount: pullMsgCount,
       isarSchemas: isarSchemas,
+      isarMaxSizeMiB: isarMaxSizeMiB,
       isarDirectory: isarDirectory,
       isarInspector: isarInspector,
       subscribeCallback: subscribeCallback,
@@ -63,7 +67,8 @@ class XXIMSDK {
       unreadListener: unreadListener,
     );
     msgManager = MsgManager(_sdkManager!);
-    convManager = ConvManager(_sdkManager!, msgManager);
+    noticeManager = NoticeManager(_sdkManager!);
+    convManager = ConvManager(_sdkManager!, msgManager, noticeManager);
   }
 
   /// 登录

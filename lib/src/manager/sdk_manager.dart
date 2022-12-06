@@ -4,6 +4,7 @@ import 'package:isar/isar.dart';
 import 'package:xxim_core_flutter/xxim_core_flutter.dart';
 import 'package:xxim_sdk_flutter/src/callback/subscribe_callback.dart';
 import 'package:xxim_sdk_flutter/src/constant/content_type.dart';
+import 'package:xxim_sdk_flutter/src/constant/conv_type.dart';
 import 'package:xxim_sdk_flutter/src/constant/send_status.dart';
 import 'package:xxim_sdk_flutter/src/listener/conv_listener.dart';
 import 'package:xxim_sdk_flutter/src/listener/isar_listener.dart';
@@ -25,6 +26,7 @@ class SDKManager {
   final int pullMsgCount;
   final List<CollectionSchema> isarSchemas;
   final String isarDirectory;
+  final int isarMaxSizeMiB;
   final bool isarInspector;
   final SubscribeCallback subscribeCallback;
   final IsarListener? isarListener;
@@ -39,6 +41,7 @@ class SDKManager {
     required this.autoPullTime,
     required this.pullMsgCount,
     required this.isarSchemas,
+    required this.isarMaxSizeMiB,
     required this.isarDirectory,
     required this.isarInspector,
     required this.subscribeCallback,
@@ -76,6 +79,7 @@ class SDKManager {
         ],
         directory: isarDirectory,
         name: isarName,
+        maxSizeMiB: isarMaxSizeMiB,
         inspector: isarInspector,
       );
     }
@@ -380,24 +384,27 @@ class SDKManager {
           msgModel.convId,
         )
         .findFirst();
-    convModel ??= ConvModel(convId: msgModel.convId);
+    convModel ??= ConvModel(
+      convId: msgModel.convId,
+      convType: ConvType.msg,
+    );
     MsgModel? model;
-    if (convModel.msgId != null) {
+    if (convModel.clientMsgId != null) {
       model = await msgModels()
           .filter()
-          .clientMsgIdEqualTo(convModel.msgId!)
+          .clientMsgIdEqualTo(convModel.clientMsgId!)
           .findFirst();
     }
     if (msgModel.options.updateConvMsg == true) {
       if (model != null) {
         if (msgModel.seq > model.seq) {
-          convModel.msgId = msgModel.clientMsgId;
+          convModel.clientMsgId = msgModel.clientMsgId;
           convModel.time = msgModel.serverTime;
           convModel.hidden = false;
           convModel.deleted = false;
         }
       } else {
-        convModel.msgId = msgModel.clientMsgId;
+        convModel.clientMsgId = msgModel.clientMsgId;
         convModel.time = msgModel.serverTime;
         convModel.hidden = false;
         convModel.deleted = false;
@@ -460,7 +467,10 @@ class SDKManager {
           noticeModel.convId,
         )
         .findFirst();
-    convModel ??= ConvModel(convId: noticeModel.convId);
+    convModel ??= ConvModel(
+      convId: noticeModel.convId,
+      convType: ConvType.notice,
+    );
     NoticeModel? model;
     if (convModel.noticeId != null) {
       model = await noticeModels()

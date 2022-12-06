@@ -20,6 +20,7 @@ class NoticeModel {
   String content;
   NoticeOptionsModel options;
   String ext;
+  bool deleted;
 
   NoticeModel({
     required this.convId,
@@ -32,6 +33,7 @@ class NoticeModel {
     required this.content,
     required this.options,
     required this.ext,
+    this.deleted = false,
   });
 
   static NoticeModel fromProto(NoticeData noticeData) {

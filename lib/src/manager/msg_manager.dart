@@ -17,55 +17,13 @@ class MsgManager {
     required String convId,
     int? contentType,
     int? maxSeq,
-    int size = 150,
+    int size = 50,
   }) async {
-    Future<List<MsgModel>> getList(
-      int minSeq,
-      int maxSeq, {
-      bool includeUpper = true,
-      bool? deleted,
-    }) {
-      return _getCustomMsgList(
-        filter: FilterGroup.and([
-          FilterCondition.equalTo(
-            property: "convId",
-            value: convId,
-          ),
-          if (contentType != null)
-            FilterCondition.equalTo(
-              property: "contentType",
-              value: contentType,
-            ),
-          FilterCondition.between(
-            property: "seq",
-            lower: minSeq,
-            includeLower: false,
-            upper: maxSeq,
-            includeUpper: includeUpper,
-          ),
-          if (deleted != null)
-            FilterCondition.equalTo(
-              property: "deleted",
-              value: deleted,
-            ),
-        ]),
-        sortBy: [
-          const SortProperty(
-            property: "seq",
-            sort: Sort.desc,
-          ),
-        ],
-      );
-    }
-
     bool includeUpper = maxSeq == null;
     if (maxSeq == null) {
-      MsgModel? msgModel = await _sdkManager
-          .msgModels()
-          .filter()
-          .convIdEqualTo(convId)
-          .sortBySeqDesc()
-          .findFirst();
+      MsgModel? msgModel = await getFirstMsg(
+        convId: convId,
+      );
       if (msgModel != null) {
         maxSeq = msgModel.seq;
       } else {
@@ -95,7 +53,9 @@ class MsgManager {
     if (minSeq < 0) minSeq = 0;
     if (maxSeq <= minSeq) return [];
     List<String> expectList = SDKTool.generateSeqList(maxSeq, minSeq);
-    List<MsgModel> list = await getList(
+    List<MsgModel> list = await _getMsgList(
+      convId,
+      contentType,
       minSeq,
       maxSeq,
     );
@@ -121,7 +81,9 @@ class MsgManager {
         );
       }
     }
-    return getList(
+    return _getMsgList(
+      convId,
+      contentType,
       minSeq,
       maxSeq,
       includeUpper: includeUpper,
@@ -129,49 +91,93 @@ class MsgManager {
     );
   }
 
-  /// 获取自定义消息列表
-  Future<List<MsgModel>> _getCustomMsgList({
-    List<WhereClause> whereClauses = const [],
-    bool whereDistinct = false,
-    Sort whereSort = Sort.asc,
-    FilterOperation? filter,
-    List<SortProperty> sortBy = const [],
-    List<DistinctProperty> distinctBy = const [],
-    int? offset,
-    int? limit,
-    String? property,
+  Future<List<MsgModel>> _getMsgList(
+    String convId,
+    int? contentType,
+    int minSeq,
+    int maxSeq, {
+    bool includeUpper = true,
+    bool? deleted,
+  }) {
+    return _sdkManager.msgModels().buildQuery<MsgModel>(
+      filter: FilterGroup.and([
+        FilterCondition.equalTo(
+          property: "convId",
+          value: convId,
+        ),
+        if (contentType != null)
+          FilterCondition.equalTo(
+            property: "contentType",
+            value: contentType,
+          ),
+        FilterCondition.between(
+          property: "seq",
+          lower: minSeq,
+          includeLower: false,
+          upper: maxSeq,
+          includeUpper: includeUpper,
+        ),
+        if (deleted != null)
+          FilterCondition.equalTo(
+            property: "deleted",
+            value: deleted,
+          ),
+      ]),
+      sortBy: [
+        const SortProperty(
+          property: "seq",
+          sort: Sort.desc,
+        ),
+      ],
+    ).findAll();
+  }
+
+  /// 获取首个消息
+  Future<MsgModel?> getFirstMsg({
+    required String convId,
   }) {
     return _sdkManager
         .msgModels()
-        .buildQuery<MsgModel>(
-          whereClauses: whereClauses,
-          whereDistinct: whereDistinct,
-          whereSort: whereSort,
-          filter: filter,
-          sortBy: sortBy,
-          distinctBy: distinctBy,
-          offset: offset,
-          limit: limit,
-          property: property,
-        )
-        .findAll();
+        .filter()
+        .convIdEqualTo(convId)
+        .sortBySeqDesc()
+        .findFirst();
   }
 
   /// 获取单条消息
   Future<MsgModel?> getSingleMsg({
     required String clientMsgId,
-  }) async {
-    MsgModel? msgModel = await _sdkManager
+  }) {
+    return _sdkManager
         .msgModels()
         .filter()
         .clientMsgIdEqualTo(clientMsgId)
         .findFirst();
-    if (msgModel != null) return msgModel;
-    msgModel = await _sdkManager.pullMsgDataById(
+  }
+
+  /// 获取多条消息
+  Future<List<MsgModel>> getMultipleMsg({
+    required List<String> clientMsgIdList,
+  }) {
+    return _sdkManager
+        .msgModels()
+        .filter()
+        .anyOf(
+          clientMsgIdList,
+          (q, element) => q.clientMsgIdEqualTo(element),
+        )
+        .findAll();
+  }
+
+  /// 拉取单条消息
+  Future<MsgModel?> pullSingleMsg({
+    required String clientMsgId,
+    bool push = false,
+  }) {
+    return _sdkManager.pullMsgDataById(
       clientMsgId: clientMsgId,
-      push: false,
+      push: push,
     );
-    return msgModel;
   }
 
   /// 发送正在输入
@@ -280,7 +286,7 @@ class MsgManager {
   }
 
   /// 删除消息
-  Future<bool> deleteMsg({
+  Future deleteMsg({
     required String clientMsgId,
   }) async {
     MsgModel? msgModel = await _sdkManager
@@ -288,18 +294,17 @@ class MsgManager {
         .filter()
         .clientMsgIdEqualTo(clientMsgId)
         .findFirst();
-    if (msgModel == null) return true;
+    if (msgModel == null) return;
     msgModel.contentType = ContentType.unknown;
     msgModel.content = "";
     msgModel.deleted = true;
     await _sdkManager.isar.writeTxn(() async {
       await _sdkManager.msgModels().put(msgModel);
     });
-    return true;
   }
 
   /// 清空消息
-  Future<bool> clearMsg({
+  Future clearMsg({
     required String convId,
   }) async {
     List<MsgModel> list = await _sdkManager
@@ -309,7 +314,7 @@ class MsgManager {
           convId,
         )
         .findAll();
-    if (list.isEmpty) return true;
+    if (list.isEmpty) return;
     await _sdkManager.isar.writeTxn(() async {
       for (MsgModel msgModel in list) {
         msgModel.contentType = ContentType.unknown;
@@ -318,6 +323,5 @@ class MsgManager {
       }
       await _sdkManager.msgModels().putAll(list);
     });
-    return true;
   }
 }

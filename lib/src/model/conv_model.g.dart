@@ -17,44 +17,49 @@ const ConvModelSchema = CollectionSchema(
   name: r'ConvModel',
   id: -3815468939617515110,
   properties: {
-    r'convId': PropertySchema(
+    r'clientMsgId': PropertySchema(
       id: 0,
+      name: r'clientMsgId',
+      type: IsarType.string,
+    ),
+    r'convId': PropertySchema(
+      id: 1,
       name: r'convId',
       type: IsarType.string,
     ),
+    r'convType': PropertySchema(
+      id: 2,
+      name: r'convType',
+      type: IsarType.long,
+    ),
     r'deleted': PropertySchema(
-      id: 1,
+      id: 3,
       name: r'deleted',
       type: IsarType.bool,
     ),
     r'draftModel': PropertySchema(
-      id: 2,
+      id: 4,
       name: r'draftModel',
       type: IsarType.object,
       target: r'DraftModel',
     ),
     r'hidden': PropertySchema(
-      id: 3,
+      id: 5,
       name: r'hidden',
       type: IsarType.bool,
     ),
-    r'msgId': PropertySchema(
-      id: 4,
-      name: r'msgId',
-      type: IsarType.string,
-    ),
     r'noticeId': PropertySchema(
-      id: 5,
+      id: 6,
       name: r'noticeId',
       type: IsarType.string,
     ),
     r'time': PropertySchema(
-      id: 6,
+      id: 7,
       name: r'time',
       type: IsarType.long,
     ),
     r'unreadCount': PropertySchema(
-      id: 7,
+      id: 8,
       name: r'unreadCount',
       type: IsarType.long,
     )
@@ -78,14 +83,27 @@ const ConvModelSchema = CollectionSchema(
         )
       ],
     ),
-    r'msgId': IndexSchema(
-      id: 8574845111581175867,
-      name: r'msgId',
+    r'convType': IndexSchema(
+      id: 6593274480720196002,
+      name: r'convType',
       unique: false,
       replace: false,
       properties: [
         IndexPropertySchema(
-          name: r'msgId',
+          name: r'convType',
+          type: IndexType.value,
+          caseSensitive: false,
+        )
+      ],
+    ),
+    r'clientMsgId': IndexSchema(
+      id: 4995524746589355915,
+      name: r'clientMsgId',
+      unique: false,
+      replace: false,
+      properties: [
+        IndexPropertySchema(
+          name: r'clientMsgId',
           type: IndexType.hash,
           caseSensitive: true,
         )
@@ -132,6 +150,12 @@ int _convModelEstimateSize(
   Map<Type, List<int>> allOffsets,
 ) {
   var bytesCount = offsets.last;
+  {
+    final value = object.clientMsgId;
+    if (value != null) {
+      bytesCount += 3 + value.length * 3;
+    }
+  }
   bytesCount += 3 + object.convId.length * 3;
   {
     final value = object.draftModel;
@@ -139,12 +163,6 @@ int _convModelEstimateSize(
       bytesCount += 3 +
           DraftModelSchema.estimateSize(
               value, allOffsets[DraftModel]!, allOffsets);
-    }
-  }
-  {
-    final value = object.msgId;
-    if (value != null) {
-      bytesCount += 3 + value.length * 3;
     }
   }
   {
@@ -162,19 +180,20 @@ void _convModelSerialize(
   List<int> offsets,
   Map<Type, List<int>> allOffsets,
 ) {
-  writer.writeString(offsets[0], object.convId);
-  writer.writeBool(offsets[1], object.deleted);
+  writer.writeString(offsets[0], object.clientMsgId);
+  writer.writeString(offsets[1], object.convId);
+  writer.writeLong(offsets[2], object.convType);
+  writer.writeBool(offsets[3], object.deleted);
   writer.writeObject<DraftModel>(
-    offsets[2],
+    offsets[4],
     allOffsets,
     DraftModelSchema.serialize,
     object.draftModel,
   );
-  writer.writeBool(offsets[3], object.hidden);
-  writer.writeString(offsets[4], object.msgId);
-  writer.writeString(offsets[5], object.noticeId);
-  writer.writeLong(offsets[6], object.time);
-  writer.writeLong(offsets[7], object.unreadCount);
+  writer.writeBool(offsets[5], object.hidden);
+  writer.writeString(offsets[6], object.noticeId);
+  writer.writeLong(offsets[7], object.time);
+  writer.writeLong(offsets[8], object.unreadCount);
 }
 
 ConvModel _convModelDeserialize(
@@ -184,18 +203,19 @@ ConvModel _convModelDeserialize(
   Map<Type, List<int>> allOffsets,
 ) {
   final object = ConvModel(
-    convId: reader.readString(offsets[0]),
-    deleted: reader.readBoolOrNull(offsets[1]) ?? false,
+    clientMsgId: reader.readStringOrNull(offsets[0]),
+    convId: reader.readString(offsets[1]),
+    convType: reader.readLong(offsets[2]),
+    deleted: reader.readBoolOrNull(offsets[3]) ?? false,
     draftModel: reader.readObjectOrNull<DraftModel>(
-      offsets[2],
+      offsets[4],
       DraftModelSchema.deserialize,
       allOffsets,
     ),
-    hidden: reader.readBoolOrNull(offsets[3]) ?? false,
-    msgId: reader.readStringOrNull(offsets[4]),
-    noticeId: reader.readStringOrNull(offsets[5]),
-    time: reader.readLongOrNull(offsets[6]) ?? 0,
-    unreadCount: reader.readLongOrNull(offsets[7]) ?? 0,
+    hidden: reader.readBoolOrNull(offsets[5]) ?? false,
+    noticeId: reader.readStringOrNull(offsets[6]),
+    time: reader.readLongOrNull(offsets[7]) ?? 0,
+    unreadCount: reader.readLongOrNull(offsets[8]) ?? 0,
   );
   object.id = id;
   return object;
@@ -209,24 +229,26 @@ P _convModelDeserializeProp<P>(
 ) {
   switch (propertyId) {
     case 0:
-      return (reader.readString(offset)) as P;
+      return (reader.readStringOrNull(offset)) as P;
     case 1:
-      return (reader.readBoolOrNull(offset) ?? false) as P;
+      return (reader.readString(offset)) as P;
     case 2:
+      return (reader.readLong(offset)) as P;
+    case 3:
+      return (reader.readBoolOrNull(offset) ?? false) as P;
+    case 4:
       return (reader.readObjectOrNull<DraftModel>(
         offset,
         DraftModelSchema.deserialize,
         allOffsets,
       )) as P;
-    case 3:
-      return (reader.readBoolOrNull(offset) ?? false) as P;
-    case 4:
-      return (reader.readStringOrNull(offset)) as P;
     case 5:
-      return (reader.readStringOrNull(offset)) as P;
+      return (reader.readBoolOrNull(offset) ?? false) as P;
     case 6:
-      return (reader.readLongOrNull(offset) ?? 0) as P;
+      return (reader.readStringOrNull(offset)) as P;
     case 7:
+      return (reader.readLongOrNull(offset) ?? 0) as P;
+    case 8:
       return (reader.readLongOrNull(offset) ?? 0) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
@@ -250,6 +272,14 @@ extension ConvModelQueryWhereSort
   QueryBuilder<ConvModel, ConvModel, QAfterWhere> anyId() {
     return QueryBuilder.apply(this, (query) {
       return query.addWhereClause(const IdWhereClause.any());
+    });
+  }
+
+  QueryBuilder<ConvModel, ConvModel, QAfterWhere> anyConvType() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(
+        const IndexWhereClause.any(indexName: r'convType'),
+      );
     });
   }
 
@@ -374,19 +404,109 @@ extension ConvModelQueryWhere
     });
   }
 
-  QueryBuilder<ConvModel, ConvModel, QAfterWhereClause> msgIdIsNull() {
+  QueryBuilder<ConvModel, ConvModel, QAfterWhereClause> convTypeEqualTo(
+      int convType) {
     return QueryBuilder.apply(this, (query) {
       return query.addWhereClause(IndexWhereClause.equalTo(
-        indexName: r'msgId',
+        indexName: r'convType',
+        value: [convType],
+      ));
+    });
+  }
+
+  QueryBuilder<ConvModel, ConvModel, QAfterWhereClause> convTypeNotEqualTo(
+      int convType) {
+    return QueryBuilder.apply(this, (query) {
+      if (query.whereSort == Sort.asc) {
+        return query
+            .addWhereClause(IndexWhereClause.between(
+              indexName: r'convType',
+              lower: [],
+              upper: [convType],
+              includeUpper: false,
+            ))
+            .addWhereClause(IndexWhereClause.between(
+              indexName: r'convType',
+              lower: [convType],
+              includeLower: false,
+              upper: [],
+            ));
+      } else {
+        return query
+            .addWhereClause(IndexWhereClause.between(
+              indexName: r'convType',
+              lower: [convType],
+              includeLower: false,
+              upper: [],
+            ))
+            .addWhereClause(IndexWhereClause.between(
+              indexName: r'convType',
+              lower: [],
+              upper: [convType],
+              includeUpper: false,
+            ));
+      }
+    });
+  }
+
+  QueryBuilder<ConvModel, ConvModel, QAfterWhereClause> convTypeGreaterThan(
+    int convType, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(IndexWhereClause.between(
+        indexName: r'convType',
+        lower: [convType],
+        includeLower: include,
+        upper: [],
+      ));
+    });
+  }
+
+  QueryBuilder<ConvModel, ConvModel, QAfterWhereClause> convTypeLessThan(
+    int convType, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(IndexWhereClause.between(
+        indexName: r'convType',
+        lower: [],
+        upper: [convType],
+        includeUpper: include,
+      ));
+    });
+  }
+
+  QueryBuilder<ConvModel, ConvModel, QAfterWhereClause> convTypeBetween(
+    int lowerConvType,
+    int upperConvType, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(IndexWhereClause.between(
+        indexName: r'convType',
+        lower: [lowerConvType],
+        includeLower: includeLower,
+        upper: [upperConvType],
+        includeUpper: includeUpper,
+      ));
+    });
+  }
+
+  QueryBuilder<ConvModel, ConvModel, QAfterWhereClause> clientMsgIdIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(IndexWhereClause.equalTo(
+        indexName: r'clientMsgId',
         value: [null],
       ));
     });
   }
 
-  QueryBuilder<ConvModel, ConvModel, QAfterWhereClause> msgIdIsNotNull() {
+  QueryBuilder<ConvModel, ConvModel, QAfterWhereClause> clientMsgIdIsNotNull() {
     return QueryBuilder.apply(this, (query) {
       return query.addWhereClause(IndexWhereClause.between(
-        indexName: r'msgId',
+        indexName: r'clientMsgId',
         lower: [null],
         includeLower: false,
         upper: [],
@@ -394,45 +514,45 @@ extension ConvModelQueryWhere
     });
   }
 
-  QueryBuilder<ConvModel, ConvModel, QAfterWhereClause> msgIdEqualTo(
-      String? msgId) {
+  QueryBuilder<ConvModel, ConvModel, QAfterWhereClause> clientMsgIdEqualTo(
+      String? clientMsgId) {
     return QueryBuilder.apply(this, (query) {
       return query.addWhereClause(IndexWhereClause.equalTo(
-        indexName: r'msgId',
-        value: [msgId],
+        indexName: r'clientMsgId',
+        value: [clientMsgId],
       ));
     });
   }
 
-  QueryBuilder<ConvModel, ConvModel, QAfterWhereClause> msgIdNotEqualTo(
-      String? msgId) {
+  QueryBuilder<ConvModel, ConvModel, QAfterWhereClause> clientMsgIdNotEqualTo(
+      String? clientMsgId) {
     return QueryBuilder.apply(this, (query) {
       if (query.whereSort == Sort.asc) {
         return query
             .addWhereClause(IndexWhereClause.between(
-              indexName: r'msgId',
+              indexName: r'clientMsgId',
               lower: [],
-              upper: [msgId],
+              upper: [clientMsgId],
               includeUpper: false,
             ))
             .addWhereClause(IndexWhereClause.between(
-              indexName: r'msgId',
-              lower: [msgId],
+              indexName: r'clientMsgId',
+              lower: [clientMsgId],
               includeLower: false,
               upper: [],
             ));
       } else {
         return query
             .addWhereClause(IndexWhereClause.between(
-              indexName: r'msgId',
-              lower: [msgId],
+              indexName: r'clientMsgId',
+              lower: [clientMsgId],
               includeLower: false,
               upper: [],
             ))
             .addWhereClause(IndexWhereClause.between(
-              indexName: r'msgId',
+              indexName: r'clientMsgId',
               lower: [],
-              upper: [msgId],
+              upper: [clientMsgId],
               includeUpper: false,
             ));
       }
@@ -597,6 +717,158 @@ extension ConvModelQueryWhere
 
 extension ConvModelQueryFilter
     on QueryBuilder<ConvModel, ConvModel, QFilterCondition> {
+  QueryBuilder<ConvModel, ConvModel, QAfterFilterCondition>
+      clientMsgIdIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNull(
+        property: r'clientMsgId',
+      ));
+    });
+  }
+
+  QueryBuilder<ConvModel, ConvModel, QAfterFilterCondition>
+      clientMsgIdIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNotNull(
+        property: r'clientMsgId',
+      ));
+    });
+  }
+
+  QueryBuilder<ConvModel, ConvModel, QAfterFilterCondition> clientMsgIdEqualTo(
+    String? value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'clientMsgId',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<ConvModel, ConvModel, QAfterFilterCondition>
+      clientMsgIdGreaterThan(
+    String? value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'clientMsgId',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<ConvModel, ConvModel, QAfterFilterCondition> clientMsgIdLessThan(
+    String? value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'clientMsgId',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<ConvModel, ConvModel, QAfterFilterCondition> clientMsgIdBetween(
+    String? lower,
+    String? upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'clientMsgId',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<ConvModel, ConvModel, QAfterFilterCondition>
+      clientMsgIdStartsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.startsWith(
+        property: r'clientMsgId',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<ConvModel, ConvModel, QAfterFilterCondition> clientMsgIdEndsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.endsWith(
+        property: r'clientMsgId',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<ConvModel, ConvModel, QAfterFilterCondition> clientMsgIdContains(
+      String value,
+      {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.contains(
+        property: r'clientMsgId',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<ConvModel, ConvModel, QAfterFilterCondition> clientMsgIdMatches(
+      String pattern,
+      {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.matches(
+        property: r'clientMsgId',
+        wildcard: pattern,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<ConvModel, ConvModel, QAfterFilterCondition>
+      clientMsgIdIsEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'clientMsgId',
+        value: '',
+      ));
+    });
+  }
+
+  QueryBuilder<ConvModel, ConvModel, QAfterFilterCondition>
+      clientMsgIdIsNotEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        property: r'clientMsgId',
+        value: '',
+      ));
+    });
+  }
+
   QueryBuilder<ConvModel, ConvModel, QAfterFilterCondition> convIdEqualTo(
     String value, {
     bool caseSensitive = true,
@@ -727,6 +999,59 @@ extension ConvModelQueryFilter
     });
   }
 
+  QueryBuilder<ConvModel, ConvModel, QAfterFilterCondition> convTypeEqualTo(
+      int value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'convType',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<ConvModel, ConvModel, QAfterFilterCondition> convTypeGreaterThan(
+    int value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'convType',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<ConvModel, ConvModel, QAfterFilterCondition> convTypeLessThan(
+    int value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'convType',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<ConvModel, ConvModel, QAfterFilterCondition> convTypeBetween(
+    int lower,
+    int upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'convType',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+      ));
+    });
+  }
+
   QueryBuilder<ConvModel, ConvModel, QAfterFilterCondition> deletedEqualTo(
       bool value) {
     return QueryBuilder.apply(this, (query) {
@@ -813,152 +1138,6 @@ extension ConvModelQueryFilter
         includeLower: includeLower,
         upper: upper,
         includeUpper: includeUpper,
-      ));
-    });
-  }
-
-  QueryBuilder<ConvModel, ConvModel, QAfterFilterCondition> msgIdIsNull() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(const FilterCondition.isNull(
-        property: r'msgId',
-      ));
-    });
-  }
-
-  QueryBuilder<ConvModel, ConvModel, QAfterFilterCondition> msgIdIsNotNull() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(const FilterCondition.isNotNull(
-        property: r'msgId',
-      ));
-    });
-  }
-
-  QueryBuilder<ConvModel, ConvModel, QAfterFilterCondition> msgIdEqualTo(
-    String? value, {
-    bool caseSensitive = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'msgId',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<ConvModel, ConvModel, QAfterFilterCondition> msgIdGreaterThan(
-    String? value, {
-    bool include = false,
-    bool caseSensitive = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        include: include,
-        property: r'msgId',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<ConvModel, ConvModel, QAfterFilterCondition> msgIdLessThan(
-    String? value, {
-    bool include = false,
-    bool caseSensitive = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.lessThan(
-        include: include,
-        property: r'msgId',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<ConvModel, ConvModel, QAfterFilterCondition> msgIdBetween(
-    String? lower,
-    String? upper, {
-    bool includeLower = true,
-    bool includeUpper = true,
-    bool caseSensitive = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.between(
-        property: r'msgId',
-        lower: lower,
-        includeLower: includeLower,
-        upper: upper,
-        includeUpper: includeUpper,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<ConvModel, ConvModel, QAfterFilterCondition> msgIdStartsWith(
-    String value, {
-    bool caseSensitive = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.startsWith(
-        property: r'msgId',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<ConvModel, ConvModel, QAfterFilterCondition> msgIdEndsWith(
-    String value, {
-    bool caseSensitive = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.endsWith(
-        property: r'msgId',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<ConvModel, ConvModel, QAfterFilterCondition> msgIdContains(
-      String value,
-      {bool caseSensitive = true}) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.contains(
-        property: r'msgId',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<ConvModel, ConvModel, QAfterFilterCondition> msgIdMatches(
-      String pattern,
-      {bool caseSensitive = true}) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.matches(
-        property: r'msgId',
-        wildcard: pattern,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<ConvModel, ConvModel, QAfterFilterCondition> msgIdIsEmpty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'msgId',
-        value: '',
-      ));
-    });
-  }
-
-  QueryBuilder<ConvModel, ConvModel, QAfterFilterCondition> msgIdIsNotEmpty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        property: r'msgId',
-        value: '',
       ));
     });
   }
@@ -1233,6 +1412,18 @@ extension ConvModelQueryLinks
     on QueryBuilder<ConvModel, ConvModel, QFilterCondition> {}
 
 extension ConvModelQuerySortBy on QueryBuilder<ConvModel, ConvModel, QSortBy> {
+  QueryBuilder<ConvModel, ConvModel, QAfterSortBy> sortByClientMsgId() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'clientMsgId', Sort.asc);
+    });
+  }
+
+  QueryBuilder<ConvModel, ConvModel, QAfterSortBy> sortByClientMsgIdDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'clientMsgId', Sort.desc);
+    });
+  }
+
   QueryBuilder<ConvModel, ConvModel, QAfterSortBy> sortByConvId() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'convId', Sort.asc);
@@ -1242,6 +1433,18 @@ extension ConvModelQuerySortBy on QueryBuilder<ConvModel, ConvModel, QSortBy> {
   QueryBuilder<ConvModel, ConvModel, QAfterSortBy> sortByConvIdDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'convId', Sort.desc);
+    });
+  }
+
+  QueryBuilder<ConvModel, ConvModel, QAfterSortBy> sortByConvType() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'convType', Sort.asc);
+    });
+  }
+
+  QueryBuilder<ConvModel, ConvModel, QAfterSortBy> sortByConvTypeDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'convType', Sort.desc);
     });
   }
 
@@ -1266,18 +1469,6 @@ extension ConvModelQuerySortBy on QueryBuilder<ConvModel, ConvModel, QSortBy> {
   QueryBuilder<ConvModel, ConvModel, QAfterSortBy> sortByHiddenDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'hidden', Sort.desc);
-    });
-  }
-
-  QueryBuilder<ConvModel, ConvModel, QAfterSortBy> sortByMsgId() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'msgId', Sort.asc);
-    });
-  }
-
-  QueryBuilder<ConvModel, ConvModel, QAfterSortBy> sortByMsgIdDesc() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'msgId', Sort.desc);
     });
   }
 
@@ -1320,6 +1511,18 @@ extension ConvModelQuerySortBy on QueryBuilder<ConvModel, ConvModel, QSortBy> {
 
 extension ConvModelQuerySortThenBy
     on QueryBuilder<ConvModel, ConvModel, QSortThenBy> {
+  QueryBuilder<ConvModel, ConvModel, QAfterSortBy> thenByClientMsgId() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'clientMsgId', Sort.asc);
+    });
+  }
+
+  QueryBuilder<ConvModel, ConvModel, QAfterSortBy> thenByClientMsgIdDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'clientMsgId', Sort.desc);
+    });
+  }
+
   QueryBuilder<ConvModel, ConvModel, QAfterSortBy> thenByConvId() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'convId', Sort.asc);
@@ -1329,6 +1532,18 @@ extension ConvModelQuerySortThenBy
   QueryBuilder<ConvModel, ConvModel, QAfterSortBy> thenByConvIdDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'convId', Sort.desc);
+    });
+  }
+
+  QueryBuilder<ConvModel, ConvModel, QAfterSortBy> thenByConvType() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'convType', Sort.asc);
+    });
+  }
+
+  QueryBuilder<ConvModel, ConvModel, QAfterSortBy> thenByConvTypeDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'convType', Sort.desc);
     });
   }
 
@@ -1365,18 +1580,6 @@ extension ConvModelQuerySortThenBy
   QueryBuilder<ConvModel, ConvModel, QAfterSortBy> thenByIdDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'id', Sort.desc);
-    });
-  }
-
-  QueryBuilder<ConvModel, ConvModel, QAfterSortBy> thenByMsgId() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'msgId', Sort.asc);
-    });
-  }
-
-  QueryBuilder<ConvModel, ConvModel, QAfterSortBy> thenByMsgIdDesc() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'msgId', Sort.desc);
     });
   }
 
@@ -1419,10 +1622,23 @@ extension ConvModelQuerySortThenBy
 
 extension ConvModelQueryWhereDistinct
     on QueryBuilder<ConvModel, ConvModel, QDistinct> {
+  QueryBuilder<ConvModel, ConvModel, QDistinct> distinctByClientMsgId(
+      {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'clientMsgId', caseSensitive: caseSensitive);
+    });
+  }
+
   QueryBuilder<ConvModel, ConvModel, QDistinct> distinctByConvId(
       {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'convId', caseSensitive: caseSensitive);
+    });
+  }
+
+  QueryBuilder<ConvModel, ConvModel, QDistinct> distinctByConvType() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'convType');
     });
   }
 
@@ -1435,13 +1651,6 @@ extension ConvModelQueryWhereDistinct
   QueryBuilder<ConvModel, ConvModel, QDistinct> distinctByHidden() {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'hidden');
-    });
-  }
-
-  QueryBuilder<ConvModel, ConvModel, QDistinct> distinctByMsgId(
-      {bool caseSensitive = true}) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addDistinctBy(r'msgId', caseSensitive: caseSensitive);
     });
   }
 
@@ -1473,9 +1682,21 @@ extension ConvModelQueryProperty
     });
   }
 
+  QueryBuilder<ConvModel, String?, QQueryOperations> clientMsgIdProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'clientMsgId');
+    });
+  }
+
   QueryBuilder<ConvModel, String, QQueryOperations> convIdProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'convId');
+    });
+  }
+
+  QueryBuilder<ConvModel, int, QQueryOperations> convTypeProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'convType');
     });
   }
 
@@ -1494,12 +1715,6 @@ extension ConvModelQueryProperty
   QueryBuilder<ConvModel, bool, QQueryOperations> hiddenProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'hidden');
-    });
-  }
-
-  QueryBuilder<ConvModel, String?, QQueryOperations> msgIdProperty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addPropertyName(r'msgId');
     });
   }
 

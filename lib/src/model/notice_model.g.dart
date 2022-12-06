@@ -37,34 +37,39 @@ const NoticeModelSchema = CollectionSchema(
       name: r'createTime',
       type: IsarType.long,
     ),
-    r'ext': PropertySchema(
+    r'deleted': PropertySchema(
       id: 4,
+      name: r'deleted',
+      type: IsarType.bool,
+    ),
+    r'ext': PropertySchema(
+      id: 5,
       name: r'ext',
       type: IsarType.string,
     ),
     r'noticeId': PropertySchema(
-      id: 5,
+      id: 6,
       name: r'noticeId',
       type: IsarType.string,
     ),
     r'options': PropertySchema(
-      id: 6,
+      id: 7,
       name: r'options',
       type: IsarType.object,
       target: r'NoticeOptionsModel',
     ),
     r'title': PropertySchema(
-      id: 7,
+      id: 8,
       name: r'title',
       type: IsarType.string,
     ),
     r'unreadAbsolute': PropertySchema(
-      id: 8,
+      id: 9,
       name: r'unreadAbsolute',
       type: IsarType.bool,
     ),
     r'unreadCount': PropertySchema(
-      id: 9,
+      id: 10,
       name: r'unreadCount',
       type: IsarType.long,
     )
@@ -137,17 +142,18 @@ void _noticeModelSerialize(
   writer.writeLong(offsets[1], object.contentType);
   writer.writeString(offsets[2], object.convId);
   writer.writeLong(offsets[3], object.createTime);
-  writer.writeString(offsets[4], object.ext);
-  writer.writeString(offsets[5], object.noticeId);
+  writer.writeBool(offsets[4], object.deleted);
+  writer.writeString(offsets[5], object.ext);
+  writer.writeString(offsets[6], object.noticeId);
   writer.writeObject<NoticeOptionsModel>(
-    offsets[6],
+    offsets[7],
     allOffsets,
     NoticeOptionsModelSchema.serialize,
     object.options,
   );
-  writer.writeString(offsets[7], object.title);
-  writer.writeBool(offsets[8], object.unreadAbsolute);
-  writer.writeLong(offsets[9], object.unreadCount);
+  writer.writeString(offsets[8], object.title);
+  writer.writeBool(offsets[9], object.unreadAbsolute);
+  writer.writeLong(offsets[10], object.unreadCount);
 }
 
 NoticeModel _noticeModelDeserialize(
@@ -161,17 +167,18 @@ NoticeModel _noticeModelDeserialize(
     contentType: reader.readLong(offsets[1]),
     convId: reader.readString(offsets[2]),
     createTime: reader.readLong(offsets[3]),
-    ext: reader.readString(offsets[4]),
-    noticeId: reader.readString(offsets[5]),
+    deleted: reader.readBoolOrNull(offsets[4]) ?? false,
+    ext: reader.readString(offsets[5]),
+    noticeId: reader.readString(offsets[6]),
     options: reader.readObjectOrNull<NoticeOptionsModel>(
-          offsets[6],
+          offsets[7],
           NoticeOptionsModelSchema.deserialize,
           allOffsets,
         ) ??
         NoticeOptionsModel(),
-    title: reader.readString(offsets[7]),
-    unreadAbsolute: reader.readBool(offsets[8]),
-    unreadCount: reader.readLong(offsets[9]),
+    title: reader.readString(offsets[8]),
+    unreadAbsolute: reader.readBool(offsets[9]),
+    unreadCount: reader.readLong(offsets[10]),
   );
   object.id = id;
   return object;
@@ -193,21 +200,23 @@ P _noticeModelDeserializeProp<P>(
     case 3:
       return (reader.readLong(offset)) as P;
     case 4:
-      return (reader.readString(offset)) as P;
+      return (reader.readBoolOrNull(offset) ?? false) as P;
     case 5:
       return (reader.readString(offset)) as P;
     case 6:
+      return (reader.readString(offset)) as P;
+    case 7:
       return (reader.readObjectOrNull<NoticeOptionsModel>(
             offset,
             NoticeOptionsModelSchema.deserialize,
             allOffsets,
           ) ??
           NoticeOptionsModel()) as P;
-    case 7:
-      return (reader.readString(offset)) as P;
     case 8:
-      return (reader.readBool(offset)) as P;
+      return (reader.readString(offset)) as P;
     case 9:
+      return (reader.readBool(offset)) as P;
+    case 10:
       return (reader.readLong(offset)) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
@@ -773,6 +782,16 @@ extension NoticeModelQueryFilter
         includeLower: includeLower,
         upper: upper,
         includeUpper: includeUpper,
+      ));
+    });
+  }
+
+  QueryBuilder<NoticeModel, NoticeModel, QAfterFilterCondition> deletedEqualTo(
+      bool value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'deleted',
+        value: value,
       ));
     });
   }
@@ -1358,6 +1377,18 @@ extension NoticeModelQuerySortBy
     });
   }
 
+  QueryBuilder<NoticeModel, NoticeModel, QAfterSortBy> sortByDeleted() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'deleted', Sort.asc);
+    });
+  }
+
+  QueryBuilder<NoticeModel, NoticeModel, QAfterSortBy> sortByDeletedDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'deleted', Sort.desc);
+    });
+  }
+
   QueryBuilder<NoticeModel, NoticeModel, QAfterSortBy> sortByExt() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'ext', Sort.asc);
@@ -1470,6 +1501,18 @@ extension NoticeModelQuerySortThenBy
     });
   }
 
+  QueryBuilder<NoticeModel, NoticeModel, QAfterSortBy> thenByDeleted() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'deleted', Sort.asc);
+    });
+  }
+
+  QueryBuilder<NoticeModel, NoticeModel, QAfterSortBy> thenByDeletedDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'deleted', Sort.desc);
+    });
+  }
+
   QueryBuilder<NoticeModel, NoticeModel, QAfterSortBy> thenByExt() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'ext', Sort.asc);
@@ -1572,6 +1615,12 @@ extension NoticeModelQueryWhereDistinct
     });
   }
 
+  QueryBuilder<NoticeModel, NoticeModel, QDistinct> distinctByDeleted() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'deleted');
+    });
+  }
+
   QueryBuilder<NoticeModel, NoticeModel, QDistinct> distinctByExt(
       {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
@@ -1635,6 +1684,12 @@ extension NoticeModelQueryProperty
   QueryBuilder<NoticeModel, int, QQueryOperations> createTimeProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'createTime');
+    });
+  }
+
+  QueryBuilder<NoticeModel, bool, QQueryOperations> deletedProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'deleted');
     });
   }
 
