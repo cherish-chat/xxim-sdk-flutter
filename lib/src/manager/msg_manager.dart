@@ -193,11 +193,6 @@ class MsgManager {
           atUsers: [],
           contentType: ContentType.typing,
           content: content.toJson(),
-          offlinePush: MsgOfflinePushModel(
-            title: "",
-            content: "",
-            payload: "",
-          ),
           options: MsgOptionsModel(
             storageForServer: false,
             storageForClient: false,
@@ -205,6 +200,11 @@ class MsgManager {
             offlinePush: false,
             updateConvMsg: false,
             updateUnreadCount: false,
+          ),
+          offlinePush: MsgOfflinePushModel(
+            title: "",
+            content: "",
+            payload: "",
           ),
           ext: ext,
         ),
@@ -227,11 +227,6 @@ class MsgManager {
           atUsers: [],
           contentType: ContentType.read,
           content: content.toJson(),
-          offlinePush: MsgOfflinePushModel(
-            title: "",
-            content: "",
-            payload: "",
-          ),
           options: MsgOptionsModel(
             storageForServer: storageForServer,
             storageForClient: storageForClient,
@@ -239,6 +234,11 @@ class MsgManager {
             offlinePush: false,
             updateConvMsg: false,
             updateUnreadCount: false,
+          ),
+          offlinePush: MsgOfflinePushModel(
+            title: "",
+            content: "",
+            payload: "",
           ),
           ext: ext,
         ),
@@ -258,6 +258,7 @@ class MsgManager {
     if (msgModel == null) return false;
     msgModel.contentType = ContentType.revoke;
     msgModel.content = content.toJson();
+    msgModel.options.needDecrypt = false;
     msgModel.offlinePush.content = content.content;
     msgModel.ext = ext;
     return sendMsgList(
@@ -280,7 +281,6 @@ class MsgManager {
       atUsers: atUsers,
       contentType: ContentType.text,
       content: text,
-      offlinePush: offlinePush,
       options: MsgOptionsModel(
         storageForServer: true,
         storageForClient: true,
@@ -289,6 +289,7 @@ class MsgManager {
         updateConvMsg: true,
         updateUnreadCount: true,
       ),
+      offlinePush: offlinePush,
       ext: ext,
     );
   }
@@ -306,7 +307,6 @@ class MsgManager {
       atUsers: atUsers,
       contentType: ContentType.picture,
       content: content.toJson(),
-      offlinePush: offlinePush,
       options: MsgOptionsModel(
         storageForServer: true,
         storageForClient: true,
@@ -315,6 +315,7 @@ class MsgManager {
         updateConvMsg: true,
         updateUnreadCount: true,
       ),
+      offlinePush: offlinePush,
       ext: ext,
     );
   }
@@ -332,7 +333,6 @@ class MsgManager {
       atUsers: atUsers,
       contentType: ContentType.audio,
       content: content.toJson(),
-      offlinePush: offlinePush,
       options: MsgOptionsModel(
         storageForServer: true,
         storageForClient: true,
@@ -341,6 +341,7 @@ class MsgManager {
         updateConvMsg: true,
         updateUnreadCount: true,
       ),
+      offlinePush: offlinePush,
       ext: ext,
     );
   }
@@ -358,7 +359,6 @@ class MsgManager {
       atUsers: atUsers,
       contentType: ContentType.video,
       content: content.toJson(),
-      offlinePush: offlinePush,
       options: MsgOptionsModel(
         storageForServer: true,
         storageForClient: true,
@@ -367,6 +367,7 @@ class MsgManager {
         updateConvMsg: true,
         updateUnreadCount: true,
       ),
+      offlinePush: offlinePush,
       ext: ext,
     );
   }
@@ -384,7 +385,6 @@ class MsgManager {
       atUsers: atUsers,
       contentType: ContentType.file,
       content: content.toJson(),
-      offlinePush: offlinePush,
       options: MsgOptionsModel(
         storageForServer: true,
         storageForClient: true,
@@ -393,6 +393,7 @@ class MsgManager {
         updateConvMsg: true,
         updateUnreadCount: true,
       ),
+      offlinePush: offlinePush,
       ext: ext,
     );
   }
@@ -410,7 +411,6 @@ class MsgManager {
       atUsers: atUsers,
       contentType: ContentType.location,
       content: content.toJson(),
-      offlinePush: offlinePush,
       options: MsgOptionsModel(
         storageForServer: true,
         storageForClient: true,
@@ -419,6 +419,7 @@ class MsgManager {
         updateConvMsg: true,
         updateUnreadCount: true,
       ),
+      offlinePush: offlinePush,
       ext: ext,
     );
   }
@@ -436,7 +437,6 @@ class MsgManager {
       atUsers: atUsers,
       contentType: ContentType.card,
       content: content.toJson(),
-      offlinePush: offlinePush,
       options: MsgOptionsModel(
         storageForServer: true,
         storageForClient: true,
@@ -445,6 +445,7 @@ class MsgManager {
         updateConvMsg: true,
         updateUnreadCount: true,
       ),
+      offlinePush: offlinePush,
       ext: ext,
     );
   }

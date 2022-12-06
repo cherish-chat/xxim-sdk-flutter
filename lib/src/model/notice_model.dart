@@ -45,9 +45,9 @@ class NoticeModel {
       createTime: int.parse(noticeData.createTime),
       title: noticeData.title,
       contentType: noticeData.contentType,
-      content: SDKTool.decode(noticeData.content),
+      content: SDKTool.utf8Decode(noticeData.content),
       options: NoticeOptionsModel.fromProto(noticeData.options),
-      ext: SDKTool.decode(noticeData.ext),
+      ext: SDKTool.utf8Decode(noticeData.ext),
     );
   }
 }

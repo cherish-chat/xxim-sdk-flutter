@@ -53,21 +53,28 @@ class MsgModel {
   });
 
   static MsgModel fromProto(MsgData msgData) {
+    MsgOptionsModel options = MsgOptionsModel.fromProto(msgData.options);
     return MsgModel(
       clientMsgId: msgData.clientMsgId,
       serverMsgId: msgData.serverMsgId,
       clientTime: int.parse(msgData.clientTime),
       serverTime: int.parse(msgData.serverTime),
       senderId: msgData.senderId,
-      senderInfo: SDKTool.decode(msgData.senderInfo),
+      senderInfo: SDKTool.utf8Decode(msgData.senderInfo),
       convId: msgData.convId,
       atUsers: msgData.atUsers,
       contentType: msgData.contentType,
-      content: SDKTool.decode(msgData.content),
+      content: options.needDecrypt == true
+          ? SDKTool.aesDecode(
+              key: msgData.clientMsgId,
+              iv: msgData.convId,
+              bytes: msgData.content,
+            )
+          : SDKTool.utf8Decode(msgData.content),
       seq: int.parse(msgData.seq),
-      options: MsgOptionsModel.fromProto(msgData.options),
+      options: options,
       offlinePush: MsgOfflinePushModel.fromProto(msgData.offlinePush),
-      ext: SDKTool.decode(msgData.ext),
+      ext: SDKTool.utf8Decode(msgData.ext),
     );
   }
 }

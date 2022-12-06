@@ -1,4 +1,6 @@
 import 'dart:convert';
+import 'dart:typed_data';
+import 'package:encrypt/encrypt.dart';
 import 'package:uuid/uuid.dart';
 
 class SDKTool {
@@ -14,14 +16,45 @@ class SDKTool {
     });
   }
 
-  static List<int> encode(String content) {
+  static List<int> utf8Encode(String content) {
     return utf8.encode(content);
   }
 
-  static String decode(dynamic content) {
-    if (content is List<int>) {
-      return utf8.decode(content);
-    }
-    return content;
+  static String utf8Decode(List<int> bytes) {
+    return utf8.decode(bytes);
+  }
+
+  static List<int> aesEncode({
+    required String key,
+    required String iv,
+    required String value,
+  }) {
+    Encrypter encrypter = Encrypter(AES(
+      Key.fromUtf8(key),
+      mode: AESMode.cbc,
+      padding: "PKCS7",
+    ));
+    Encrypted encrypted = encrypter.encrypt(
+      value,
+      iv: IV.fromUtf8(iv),
+    );
+    return encrypted.bytes;
+  }
+
+  static String aesDecode({
+    required String key,
+    required String iv,
+    required List<int> bytes,
+  }) {
+    Encrypter encrypter = Encrypter(AES(
+      Key.fromUtf8(key),
+      mode: AESMode.cbc,
+      padding: "PKCS7",
+    ));
+    String source = encrypter.decrypt(
+      Encrypted(Uint8List.fromList(bytes)),
+      iv: IV.fromUtf8(iv),
+    );
+    return source;
   }
 }

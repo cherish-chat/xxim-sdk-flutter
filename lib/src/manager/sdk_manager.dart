@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:convert';
 import 'package:isar/isar.dart';
 import 'package:xxim_core_flutter/xxim_core_flutter.dart';
 import 'package:xxim_sdk_flutter/src/callback/subscribe_callback.dart';
@@ -557,11 +556,17 @@ class SDKManager {
             clientTime: msgModel.clientTime.toString(),
             serverTime: msgModel.serverTime.toString(),
             senderId: msgModel.senderId,
-            senderInfo: utf8.encode(msgModel.senderInfo),
+            senderInfo: SDKTool.utf8Encode(msgModel.senderInfo),
             convId: msgModel.convId,
             atUsers: msgModel.atUsers,
             contentType: msgModel.contentType,
-            content: utf8.encode(msgModel.content),
+            content: msgModel.options.needDecrypt == true
+                ? SDKTool.aesEncode(
+                    key: msgModel.clientMsgId,
+                    iv: msgModel.convId,
+                    value: msgModel.content,
+                  )
+                : SDKTool.utf8Encode(msgModel.content),
             seq: msgModel.seq.toString(),
             options: MsgData_Options(
               storageForServer: msgModel.options.storageForServer,
@@ -576,7 +581,7 @@ class SDKManager {
               content: msgModel.offlinePush.content,
               payload: msgModel.offlinePush.payload,
             ),
-            ext: utf8.encode(msgModel.ext),
+            ext: SDKTool.utf8Encode(msgModel.ext),
           );
         }).toList(),
         deliverAfter: deliverAfter,
