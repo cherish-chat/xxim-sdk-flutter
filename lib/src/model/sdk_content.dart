@@ -333,16 +333,127 @@ class MergeContent {
 }
 
 /// 表情消息
-class EmojiContent {}
+class EmojiContent {
+  String coverUrl;
+  String emojiUrl;
+
+  EmojiContent({
+    required this.coverUrl,
+    required this.emojiUrl,
+  });
+
+  static EmojiContent fromJson(String content) {
+    Map<String, dynamic> map = json.decode(content);
+    return EmojiContent(
+      coverUrl: map["coverUrl"],
+      emojiUrl: map["emojiUrl"],
+    );
+  }
+
+  String toJson() {
+    return json.encode({
+      "coverUrl": coverUrl,
+      "emojiUrl": emojiUrl,
+    });
+  }
+}
 
 /// 命令消息
-class CommandContent {}
+class CommandContent {
+  String command;
+
+  CommandContent({
+    required this.command,
+  });
+
+  static CommandContent fromJson(String content) {
+    Map<String, dynamic> map = json.decode(content);
+    return CommandContent(
+      command: map["command"],
+    );
+  }
+
+  String toJson() {
+    return json.encode({
+      "command": command,
+    });
+  }
+}
 
 /// 富文本消息
-class RichTxtContent {}
+class RichTxtContent {
+  List<Map> list;
+
+  RichTxtContent({
+    required this.list,
+  });
+
+  static RichTxtContent fromJson(String content) {
+    Map<String, dynamic> map = json.decode(content);
+    return RichTxtContent(
+      list: map["list"],
+    );
+  }
+
+  String toJson() {
+    return json.encode({
+      "list": list,
+    });
+  }
+}
 
 /// 标记消息
-class MarkdownContent {}
+class MarkdownContent {
+  String title;
+  String content;
+  String? actions;
+
+  MarkdownContent({
+    required this.title,
+    required this.content,
+    this.actions,
+  });
+
+  static MarkdownContent fromJson(String content) {
+    Map<String, dynamic> map = json.decode(content);
+    return MarkdownContent(
+      title: map["title"],
+      content: map["content"],
+      actions: map["actions"],
+    );
+  }
+
+  String toJson() {
+    return json.encode({
+      "title": title,
+      "content": content,
+      "actions": actions,
+    });
+  }
+}
 
 /// 自定义消息
-class CustomContent {}
+class CustomContent {
+  String data;
+  String? ext;
+
+  CustomContent({
+    required this.data,
+    this.ext,
+  });
+
+  static CustomContent fromJson(String content) {
+    Map<String, dynamic> map = json.decode(content);
+    return CustomContent(
+      data: map["data"],
+      ext: map["ext"],
+    );
+  }
+
+  String toJson() {
+    return json.encode({
+      "data": data,
+      "ext": ext,
+    });
+  }
+}

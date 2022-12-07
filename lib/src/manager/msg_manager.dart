@@ -495,6 +495,146 @@ class MsgManager {
     );
   }
 
+  /// 创建表情消息
+  Future<MsgModel> createEmoji({
+    required String convId,
+    List<String> atUsers = const [],
+    required EmojiContent content,
+    MsgOptionsModel? options,
+    required MsgOfflinePushModel offlinePush,
+    String ext = "",
+  }) {
+    return _sdkManager.createMsg(
+      convId: convId,
+      atUsers: atUsers,
+      contentType: ContentType.emoji,
+      content: content.toJson(),
+      options: options ??
+          MsgOptionsModel(
+            storageForServer: true,
+            storageForClient: true,
+            needDecrypt: true,
+            offlinePush: true,
+            updateConvMsg: true,
+            updateUnreadCount: true,
+          ),
+      offlinePush: offlinePush,
+      ext: ext,
+    );
+  }
+
+  /// 创建命令消息
+  Future<MsgModel> createCommand({
+    required String convId,
+    List<String> atUsers = const [],
+    required CommandContent content,
+    MsgOptionsModel? options,
+    required MsgOfflinePushModel offlinePush,
+    String ext = "",
+  }) {
+    return _sdkManager.createMsg(
+      convId: convId,
+      atUsers: atUsers,
+      contentType: ContentType.command,
+      content: content.toJson(),
+      options: options ??
+          MsgOptionsModel(
+            storageForServer: true,
+            storageForClient: true,
+            needDecrypt: true,
+            offlinePush: true,
+            updateConvMsg: true,
+            updateUnreadCount: true,
+          ),
+      offlinePush: offlinePush,
+      ext: ext,
+    );
+  }
+
+  /// 创建富文本消息
+  Future<MsgModel> createRichTxt({
+    required String convId,
+    List<String> atUsers = const [],
+    required RichTxtContent content,
+    MsgOptionsModel? options,
+    required MsgOfflinePushModel offlinePush,
+    String ext = "",
+  }) {
+    return _sdkManager.createMsg(
+      convId: convId,
+      atUsers: atUsers,
+      contentType: ContentType.richTxt,
+      content: content.toJson(),
+      options: options ??
+          MsgOptionsModel(
+            storageForServer: true,
+            storageForClient: true,
+            needDecrypt: true,
+            offlinePush: true,
+            updateConvMsg: true,
+            updateUnreadCount: true,
+          ),
+      offlinePush: offlinePush,
+      ext: ext,
+    );
+  }
+
+  /// 创建标记消息
+  Future<MsgModel> createMarkdown({
+    required String convId,
+    List<String> atUsers = const [],
+    required MarkdownContent content,
+    MsgOptionsModel? options,
+    required MsgOfflinePushModel offlinePush,
+    String ext = "",
+  }) {
+    return _sdkManager.createMsg(
+      convId: convId,
+      atUsers: atUsers,
+      contentType: ContentType.markdown,
+      content: content.toJson(),
+      options: options ??
+          MsgOptionsModel(
+            storageForServer: true,
+            storageForClient: true,
+            needDecrypt: true,
+            offlinePush: true,
+            updateConvMsg: true,
+            updateUnreadCount: true,
+          ),
+      offlinePush: offlinePush,
+      ext: ext,
+    );
+  }
+
+  /// 创建自定义消息
+  Future<MsgModel> createCustom({
+    required String convId,
+    List<String> atUsers = const [],
+    required CustomContent content,
+    MsgOptionsModel? options,
+    required MsgOfflinePushModel offlinePush,
+    String ext = "",
+  }) {
+    return _sdkManager.createMsg(
+      convId: convId,
+      atUsers: atUsers,
+      contentType: ContentType.custom,
+      content: content.toJson(),
+      options: options ??
+          MsgOptionsModel(
+            storageForServer: true,
+            storageForClient: true,
+            needDecrypt: true,
+            offlinePush: true,
+            updateConvMsg: true,
+            updateUnreadCount: true,
+          ),
+      offlinePush: offlinePush,
+      ext: ext,
+    );
+  }
+
   /// 发送消息列表
   Future<bool> sendMsgList({
     required List<MsgModel> msgModelList,
