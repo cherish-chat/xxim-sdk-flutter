@@ -256,9 +256,12 @@ class MsgManager {
       clientMsgId: clientMsgId,
     );
     if (msgModel == null) return false;
+    if (content.contentType == null && content.content == null) {
+      content.contentType = msgModel.contentType;
+      content.content = msgModel.content;
+    }
     msgModel.contentType = ContentType.revoke;
     msgModel.content = content.toJson();
-    msgModel.options.needDecrypt = false;
     msgModel.offlinePush.content = content.content;
     msgModel.ext = ext;
     return sendMsgList(
@@ -273,6 +276,7 @@ class MsgManager {
     required String convId,
     List<String> atUsers = const [],
     required String text,
+    MsgOptionsModel? options,
     required MsgOfflinePushModel offlinePush,
     String ext = "",
   }) {
@@ -281,14 +285,15 @@ class MsgManager {
       atUsers: atUsers,
       contentType: ContentType.text,
       content: text,
-      options: MsgOptionsModel(
-        storageForServer: true,
-        storageForClient: true,
-        needDecrypt: true,
-        offlinePush: true,
-        updateConvMsg: true,
-        updateUnreadCount: true,
-      ),
+      options: options ??
+          MsgOptionsModel(
+            storageForServer: true,
+            storageForClient: true,
+            needDecrypt: true,
+            offlinePush: true,
+            updateConvMsg: true,
+            updateUnreadCount: true,
+          ),
       offlinePush: offlinePush,
       ext: ext,
     );
@@ -299,6 +304,7 @@ class MsgManager {
     required String convId,
     List<String> atUsers = const [],
     required PictureContent content,
+    MsgOptionsModel? options,
     required MsgOfflinePushModel offlinePush,
     String ext = "",
   }) {
@@ -307,14 +313,15 @@ class MsgManager {
       atUsers: atUsers,
       contentType: ContentType.picture,
       content: content.toJson(),
-      options: MsgOptionsModel(
-        storageForServer: true,
-        storageForClient: true,
-        needDecrypt: true,
-        offlinePush: true,
-        updateConvMsg: true,
-        updateUnreadCount: true,
-      ),
+      options: options ??
+          MsgOptionsModel(
+            storageForServer: true,
+            storageForClient: true,
+            needDecrypt: true,
+            offlinePush: true,
+            updateConvMsg: true,
+            updateUnreadCount: true,
+          ),
       offlinePush: offlinePush,
       ext: ext,
     );
@@ -325,6 +332,7 @@ class MsgManager {
     required String convId,
     List<String> atUsers = const [],
     required AudioContent content,
+    MsgOptionsModel? options,
     required MsgOfflinePushModel offlinePush,
     String ext = "",
   }) {
@@ -333,14 +341,15 @@ class MsgManager {
       atUsers: atUsers,
       contentType: ContentType.audio,
       content: content.toJson(),
-      options: MsgOptionsModel(
-        storageForServer: true,
-        storageForClient: true,
-        needDecrypt: true,
-        offlinePush: true,
-        updateConvMsg: true,
-        updateUnreadCount: true,
-      ),
+      options: options ??
+          MsgOptionsModel(
+            storageForServer: true,
+            storageForClient: true,
+            needDecrypt: true,
+            offlinePush: true,
+            updateConvMsg: true,
+            updateUnreadCount: true,
+          ),
       offlinePush: offlinePush,
       ext: ext,
     );
@@ -351,6 +360,7 @@ class MsgManager {
     required String convId,
     List<String> atUsers = const [],
     required VideoContent content,
+    MsgOptionsModel? options,
     required MsgOfflinePushModel offlinePush,
     String ext = "",
   }) {
@@ -359,14 +369,15 @@ class MsgManager {
       atUsers: atUsers,
       contentType: ContentType.video,
       content: content.toJson(),
-      options: MsgOptionsModel(
-        storageForServer: true,
-        storageForClient: true,
-        needDecrypt: true,
-        offlinePush: true,
-        updateConvMsg: true,
-        updateUnreadCount: true,
-      ),
+      options: options ??
+          MsgOptionsModel(
+            storageForServer: true,
+            storageForClient: true,
+            needDecrypt: true,
+            offlinePush: true,
+            updateConvMsg: true,
+            updateUnreadCount: true,
+          ),
       offlinePush: offlinePush,
       ext: ext,
     );
@@ -377,6 +388,7 @@ class MsgManager {
     required String convId,
     List<String> atUsers = const [],
     required FileContent content,
+    MsgOptionsModel? options,
     required MsgOfflinePushModel offlinePush,
     String ext = "",
   }) {
@@ -385,14 +397,15 @@ class MsgManager {
       atUsers: atUsers,
       contentType: ContentType.file,
       content: content.toJson(),
-      options: MsgOptionsModel(
-        storageForServer: true,
-        storageForClient: true,
-        needDecrypt: true,
-        offlinePush: true,
-        updateConvMsg: true,
-        updateUnreadCount: true,
-      ),
+      options: options ??
+          MsgOptionsModel(
+            storageForServer: true,
+            storageForClient: true,
+            needDecrypt: true,
+            offlinePush: true,
+            updateConvMsg: true,
+            updateUnreadCount: true,
+          ),
       offlinePush: offlinePush,
       ext: ext,
     );
@@ -403,6 +416,7 @@ class MsgManager {
     required String convId,
     List<String> atUsers = const [],
     required LocationContent content,
+    MsgOptionsModel? options,
     required MsgOfflinePushModel offlinePush,
     String ext = "",
   }) {
@@ -411,14 +425,15 @@ class MsgManager {
       atUsers: atUsers,
       contentType: ContentType.location,
       content: content.toJson(),
-      options: MsgOptionsModel(
-        storageForServer: true,
-        storageForClient: true,
-        needDecrypt: true,
-        offlinePush: true,
-        updateConvMsg: true,
-        updateUnreadCount: true,
-      ),
+      options: options ??
+          MsgOptionsModel(
+            storageForServer: true,
+            storageForClient: true,
+            needDecrypt: true,
+            offlinePush: true,
+            updateConvMsg: true,
+            updateUnreadCount: true,
+          ),
       offlinePush: offlinePush,
       ext: ext,
     );
@@ -429,6 +444,7 @@ class MsgManager {
     required String convId,
     List<String> atUsers = const [],
     required CardContent content,
+    MsgOptionsModel? options,
     required MsgOfflinePushModel offlinePush,
     String ext = "",
   }) {
@@ -437,14 +453,183 @@ class MsgManager {
       atUsers: atUsers,
       contentType: ContentType.card,
       content: content.toJson(),
-      options: MsgOptionsModel(
-        storageForServer: true,
-        storageForClient: true,
-        needDecrypt: true,
-        offlinePush: true,
-        updateConvMsg: true,
-        updateUnreadCount: true,
-      ),
+      options: options ??
+          MsgOptionsModel(
+            storageForServer: true,
+            storageForClient: true,
+            needDecrypt: true,
+            offlinePush: true,
+            updateConvMsg: true,
+            updateUnreadCount: true,
+          ),
+      offlinePush: offlinePush,
+      ext: ext,
+    );
+  }
+
+  /// 创建合并消息
+  Future<MsgModel> createMerge({
+    required String convId,
+    List<String> atUsers = const [],
+    required MergeContent content,
+    MsgOptionsModel? options,
+    required MsgOfflinePushModel offlinePush,
+    String ext = "",
+  }) {
+    return _sdkManager.createMsg(
+      convId: convId,
+      atUsers: atUsers,
+      contentType: ContentType.merge,
+      content: content.toJson(),
+      options: options ??
+          MsgOptionsModel(
+            storageForServer: true,
+            storageForClient: true,
+            needDecrypt: true,
+            offlinePush: true,
+            updateConvMsg: true,
+            updateUnreadCount: true,
+          ),
+      offlinePush: offlinePush,
+      ext: ext,
+    );
+  }
+
+  /// 创建表情消息
+  Future<MsgModel> createEmoji({
+    required String convId,
+    List<String> atUsers = const [],
+    required EmojiContent content,
+    MsgOptionsModel? options,
+    required MsgOfflinePushModel offlinePush,
+    String ext = "",
+  }) {
+    return _sdkManager.createMsg(
+      convId: convId,
+      atUsers: atUsers,
+      contentType: ContentType.emoji,
+      content: content.toJson(),
+      options: options ??
+          MsgOptionsModel(
+            storageForServer: true,
+            storageForClient: true,
+            needDecrypt: true,
+            offlinePush: true,
+            updateConvMsg: true,
+            updateUnreadCount: true,
+          ),
+      offlinePush: offlinePush,
+      ext: ext,
+    );
+  }
+
+  /// 创建命令消息
+  Future<MsgModel> createCommand({
+    required String convId,
+    List<String> atUsers = const [],
+    required CommandContent content,
+    MsgOptionsModel? options,
+    required MsgOfflinePushModel offlinePush,
+    String ext = "",
+  }) {
+    return _sdkManager.createMsg(
+      convId: convId,
+      atUsers: atUsers,
+      contentType: ContentType.command,
+      content: content.toJson(),
+      options: options ??
+          MsgOptionsModel(
+            storageForServer: true,
+            storageForClient: true,
+            needDecrypt: true,
+            offlinePush: true,
+            updateConvMsg: true,
+            updateUnreadCount: true,
+          ),
+      offlinePush: offlinePush,
+      ext: ext,
+    );
+  }
+
+  /// 创建富文本消息
+  Future<MsgModel> createRichTxt({
+    required String convId,
+    List<String> atUsers = const [],
+    required RichTxtContent content,
+    MsgOptionsModel? options,
+    required MsgOfflinePushModel offlinePush,
+    String ext = "",
+  }) {
+    return _sdkManager.createMsg(
+      convId: convId,
+      atUsers: atUsers,
+      contentType: ContentType.richTxt,
+      content: content.toJson(),
+      options: options ??
+          MsgOptionsModel(
+            storageForServer: true,
+            storageForClient: true,
+            needDecrypt: true,
+            offlinePush: true,
+            updateConvMsg: true,
+            updateUnreadCount: true,
+          ),
+      offlinePush: offlinePush,
+      ext: ext,
+    );
+  }
+
+  /// 创建标记消息
+  Future<MsgModel> createMarkdown({
+    required String convId,
+    List<String> atUsers = const [],
+    required MarkdownContent content,
+    MsgOptionsModel? options,
+    required MsgOfflinePushModel offlinePush,
+    String ext = "",
+  }) {
+    return _sdkManager.createMsg(
+      convId: convId,
+      atUsers: atUsers,
+      contentType: ContentType.markdown,
+      content: content.toJson(),
+      options: options ??
+          MsgOptionsModel(
+            storageForServer: true,
+            storageForClient: true,
+            needDecrypt: true,
+            offlinePush: true,
+            updateConvMsg: true,
+            updateUnreadCount: true,
+          ),
+      offlinePush: offlinePush,
+      ext: ext,
+    );
+  }
+
+  /// 创建自定义消息
+  Future<MsgModel> createCustom({
+    required String convId,
+    List<String> atUsers = const [],
+    required CustomContent content,
+    MsgOptionsModel? options,
+    required MsgOfflinePushModel offlinePush,
+    String ext = "",
+  }) {
+    return _sdkManager.createMsg(
+      convId: convId,
+      atUsers: atUsers,
+      contentType: ContentType.custom,
+      content: content.toJson(),
+      options: options ??
+          MsgOptionsModel(
+            storageForServer: true,
+            storageForClient: true,
+            needDecrypt: true,
+            offlinePush: true,
+            updateConvMsg: true,
+            updateUnreadCount: true,
+          ),
       offlinePush: offlinePush,
       ext: ext,
     );
