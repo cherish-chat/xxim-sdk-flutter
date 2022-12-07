@@ -307,7 +307,30 @@ class CardContent {
 }
 
 /// 合并消息
-class MergeContent {}
+class MergeContent {
+  String mergeName;
+  Map<int, String> mergeMap;
+
+  MergeContent({
+    required this.mergeName,
+    required this.mergeMap,
+  });
+
+  static MergeContent fromJson(String content) {
+    Map<String, dynamic> map = json.decode(content);
+    return MergeContent(
+      mergeName: map["mergeName"],
+      mergeMap: map["mergeMap"],
+    );
+  }
+
+  String toJson() {
+    return json.encode({
+      "mergeName": mergeName,
+      "mergeMap": mergeMap,
+    });
+  }
+}
 
 /// 表情消息
 class EmojiContent {}
