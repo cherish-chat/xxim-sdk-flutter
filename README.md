@@ -14,7 +14,7 @@
 
 问题参考：[Pana Issues](https://github.com/dart-lang/pana/issues/891)
 
-💪 Building with sound null safety 💪
+放心使用，因为它：💪 Building with sound null safety 💪
 
 ## 初始化
 
@@ -251,7 +251,7 @@
        ext: "",
      );
 
-### 创建文本、图片、语音、视频、文件、位置、名片消息
+### 创建文本、图片、语音、视频、文件、位置、名片、合并、表情、命令、富文本、标记、自定义消息
 
      MsgModel msgModel = await sdk.msgManager.createText(...);
      MsgModel msgModel = await sdk.msgManager.createPicture(...);
@@ -260,6 +260,12 @@
      MsgModel msgModel = await sdk.msgManager.createFile(...);
      MsgModel msgModel = await sdk.msgManager.createLocation(...);
      MsgModel msgModel = await sdk.msgManager.createCard(...);
+     MsgModel msgModel = await sdk.msgManager.createMerge(...);
+     MsgModel msgModel = await sdk.msgManager.createEmoji(...);
+     MsgModel msgModel = await sdk.msgManager.createCommand(...);
+     MsgModel msgModel = await sdk.msgManager.createRichTxt(...);
+     MsgModel msgModel = await sdk.msgManager.createMarkdown(...);
+     MsgModel msgModel = await sdk.msgManager.createCustom(...);
 
 ### 发送消息列表
 
