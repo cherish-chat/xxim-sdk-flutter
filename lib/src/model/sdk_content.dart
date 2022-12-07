@@ -42,21 +42,29 @@ class ReadContent {
 
 /// 撤回消息
 class RevokeContent {
-  String content;
+  String text;
+  int? contentType;
+  String? content;
 
   RevokeContent({
-    required this.content,
+    required this.text,
+    this.contentType,
+    this.content,
   });
 
   static RevokeContent fromJson(String content) {
     Map<String, dynamic> map = json.decode(content);
     return RevokeContent(
+      text: map["text"],
+      contentType: map["contentType"],
       content: map["content"],
     );
   }
 
   String toJson() {
     return json.encode({
+      "text": text,
+      "contentType": contentType,
       "content": content,
     });
   }
@@ -70,7 +78,6 @@ class PictureContent {
   int width;
   int height;
   int size;
-  String? ext;
 
   PictureContent({
     required this.pictureName,
@@ -79,7 +86,6 @@ class PictureContent {
     this.width = 0,
     this.height = 0,
     this.size = 0,
-    this.ext,
   });
 
   static PictureContent fromJson(String content) {
@@ -91,7 +97,6 @@ class PictureContent {
       width: map["width"],
       height: map["height"],
       size: map["size"],
-      ext: map["ext"],
     );
   }
 
@@ -103,7 +108,6 @@ class PictureContent {
       "width": width,
       "height": height,
       "size": size,
-      "ext": ext,
     });
   }
 }
@@ -116,7 +120,6 @@ class AudioContent {
   List<int> decibels;
   int duration;
   int size;
-  String? ext;
 
   AudioContent({
     required this.audioName,
@@ -125,7 +128,6 @@ class AudioContent {
     this.decibels = const [],
     this.duration = 0,
     this.size = 0,
-    this.ext,
   });
 
   static AudioContent fromJson(String content) {
@@ -137,7 +139,6 @@ class AudioContent {
       decibels: map["decibels"],
       duration: map["duration"],
       size: map["size"],
-      ext: map["ext"],
     );
   }
 
@@ -149,7 +150,6 @@ class AudioContent {
       "decibels": decibels,
       "duration": duration,
       "size": size,
-      "ext": ext,
     });
   }
 }
@@ -165,7 +165,6 @@ class VideoContent {
   int duration;
   int width;
   int height;
-  String? ext;
 
   VideoContent({
     required this.coverName,
@@ -177,7 +176,6 @@ class VideoContent {
     this.duration = 0,
     this.width = 0,
     this.height = 0,
-    this.ext,
   });
 
   static VideoContent fromJson(String content) {
@@ -192,7 +190,6 @@ class VideoContent {
       duration: map["duration"],
       width: map["width"],
       height: map["height"],
-      ext: map["ext"],
     );
   }
 
@@ -207,7 +204,6 @@ class VideoContent {
       "duration": duration,
       "width": width,
       "height": height,
-      "ext": ext,
     });
   }
 }
@@ -219,7 +215,6 @@ class FileContent {
   String fileUrl;
   String type;
   int size;
-  String? ext;
 
   FileContent({
     required this.fileName,
@@ -227,7 +222,6 @@ class FileContent {
     required this.fileUrl,
     this.type = "",
     this.size = 0,
-    this.ext,
   });
 
   static FileContent fromJson(String content) {
@@ -238,7 +232,6 @@ class FileContent {
       fileUrl: map["fileUrl"],
       type: map["type"],
       size: map["size"],
-      ext: map["ext"],
     );
   }
 
@@ -249,7 +242,6 @@ class FileContent {
       "fileUrl": fileUrl,
       "type": type,
       "size": size,
-      "ext": ext,
     });
   }
 }
@@ -259,13 +251,11 @@ class LocationContent {
   double latitude;
   double longitude;
   String? address;
-  String? ext;
 
   LocationContent({
     required this.latitude,
     required this.longitude,
     this.address = "",
-    this.ext,
   });
 
   static LocationContent fromJson(String content) {
@@ -274,7 +264,6 @@ class LocationContent {
       latitude: map["latitude"],
       longitude: map["longitude"],
       address: map["address"],
-      ext: map["ext"],
     );
   }
 
@@ -283,7 +272,6 @@ class LocationContent {
       "latitude": latitude,
       "longitude": longitude,
       "address": address,
-      "ext": ext,
     });
   }
 }
@@ -293,13 +281,11 @@ class CardContent {
   String userId;
   String nickname;
   String avatar;
-  String? ext;
 
   CardContent({
     required this.userId,
     required this.nickname,
     required this.avatar,
-    this.ext,
   });
 
   static CardContent fromJson(String content) {
@@ -308,7 +294,6 @@ class CardContent {
       userId: map["userId"],
       nickname: map["nickname"],
       avatar: map["avatar"],
-      ext: map["ext"],
     );
   }
 
@@ -317,7 +302,6 @@ class CardContent {
       "userId": userId,
       "nickname": nickname,
       "avatar": avatar,
-      "ext": ext,
     });
   }
 }

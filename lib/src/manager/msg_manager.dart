@@ -256,6 +256,10 @@ class MsgManager {
       clientMsgId: clientMsgId,
     );
     if (msgModel == null) return false;
+    if (content.contentType == null && content.content == null) {
+      content.contentType = msgModel.contentType;
+      content.content = msgModel.content;
+    }
     msgModel.contentType = ContentType.revoke;
     msgModel.content = content.toJson();
     msgModel.options.needDecrypt = false;
