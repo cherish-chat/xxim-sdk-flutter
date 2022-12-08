@@ -23,11 +23,14 @@ class XXIMSDK {
   /// 初始化
   void init({
     required Params params,
-    required AESParams aesParams,
+    AESParams aesParams = const AESParams(
+      key: "a7a13a5debdf05f6a2696c2b58cc0cec",
+      iv: "ebdf05f6a2696c2b",
+    ),
     Duration autoPullTime = const Duration(seconds: 20),
     int pullMsgCount = 200,
     List<CollectionSchema> isarSchemas = const [],
-    int isarMaxSizeMiB = 5120,
+    int isarMaxSizeMiB = 2048,
     required String isarDirectory,
     bool isarInspector = false,
     required SubscribeCallback subscribeCallback,
