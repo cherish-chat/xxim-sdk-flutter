@@ -1,6 +1,7 @@
 import 'package:isar/isar.dart';
 import 'package:xxim_core_flutter/xxim_core_flutter.dart';
-import 'package:xxim_sdk_flutter/src/constant/send_status.dart';
+import 'package:xxim_sdk_flutter/src/common/aes_params.dart';
+import 'package:xxim_sdk_flutter/src/common/send_status.dart';
 import 'package:xxim_sdk_flutter/src/tool/sdk_tool.dart';
 
 part 'msg_model.g.dart';
@@ -52,7 +53,7 @@ class MsgModel {
     this.deleted = false,
   });
 
-  static MsgModel fromProto(MsgData msgData) {
+  static MsgModel fromProto(MsgData msgData, AESParams aesParams) {
     MsgOptionsModel options = MsgOptionsModel.fromProto(msgData.options);
     return MsgModel(
       clientMsgId: msgData.clientMsgId,
@@ -66,8 +67,8 @@ class MsgModel {
       contentType: msgData.contentType,
       content: options.needDecrypt == true
           ? SDKTool.aesDecode(
-              key: msgData.clientMsgId,
-              iv: msgData.convId,
+              key: aesParams.key,
+              iv: aesParams.iv,
               bytes: msgData.content,
             )
           : SDKTool.utf8Decode(msgData.content),

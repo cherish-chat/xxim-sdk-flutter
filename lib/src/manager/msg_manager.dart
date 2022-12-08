@@ -1,6 +1,6 @@
 import 'package:isar/isar.dart';
 import 'package:xxim_core_flutter/xxim_core_flutter.dart';
-import 'package:xxim_sdk_flutter/src/constant/content_type.dart';
+import 'package:xxim_sdk_flutter/src/common/content_type.dart';
 import 'package:xxim_sdk_flutter/src/manager/sdk_manager.dart';
 import 'package:xxim_sdk_flutter/src/model/msg_model.dart';
 import 'package:xxim_sdk_flutter/src/model/record_model.dart';
