@@ -28,6 +28,10 @@
          appVersion: "",
          language: "",
        ),
+       aesParams: AESParams(
+         key: "",
+         iv: "",
+       ),
        autoPullTime: const Duration(seconds: 20),
        pullMsgCount: 200,
        isarSchemas: [],
