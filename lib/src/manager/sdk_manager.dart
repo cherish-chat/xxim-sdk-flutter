@@ -2,9 +2,10 @@ import 'dart:async';
 import 'package:isar/isar.dart';
 import 'package:xxim_core_flutter/xxim_core_flutter.dart';
 import 'package:xxim_sdk_flutter/src/callback/subscribe_callback.dart';
-import 'package:xxim_sdk_flutter/src/constant/content_type.dart';
-import 'package:xxim_sdk_flutter/src/constant/conv_type.dart';
-import 'package:xxim_sdk_flutter/src/constant/send_status.dart';
+import 'package:xxim_sdk_flutter/src/common/aes_params.dart';
+import 'package:xxim_sdk_flutter/src/common/content_type.dart';
+import 'package:xxim_sdk_flutter/src/common/conv_type.dart';
+import 'package:xxim_sdk_flutter/src/common/send_status.dart';
 import 'package:xxim_sdk_flutter/src/listener/conv_listener.dart';
 import 'package:xxim_sdk_flutter/src/listener/isar_listener.dart';
 import 'package:xxim_sdk_flutter/src/listener/msg_listener.dart';
@@ -21,6 +22,7 @@ import 'package:xxim_sdk_flutter/src/tool/sdk_tool.dart';
 
 class SDKManager {
   final XXIMCore xximCore;
+  final AESParams aesParams;
   final Duration autoPullTime;
   final int pullMsgCount;
   final List<CollectionSchema> isarSchemas;
@@ -37,6 +39,7 @@ class SDKManager {
 
   SDKManager({
     required this.xximCore,
+    required this.aesParams,
     required this.autoPullTime,
     required this.pullMsgCount,
     required this.isarSchemas,
@@ -322,7 +325,7 @@ class SDKManager {
 
   /// 处理消息
   Future<MsgModel> _handleMsg(MsgData msgData) async {
-    MsgModel msgModel = MsgModel.fromProto(msgData);
+    MsgModel msgModel = MsgModel.fromProto(msgData, aesParams);
     msgModel.sendStatus = SendStatus.success;
     await _updateMsg(msgModel);
     if (msgData.serverMsgId.isNotEmpty) {
@@ -562,8 +565,8 @@ class SDKManager {
             contentType: msgModel.contentType,
             content: msgModel.options.needDecrypt == true
                 ? SDKTool.aesEncode(
-                    key: msgModel.clientMsgId,
-                    iv: msgModel.convId,
+                    key: aesParams.key,
+                    iv: aesParams.iv,
                     value: msgModel.content,
                   )
                 : SDKTool.utf8Encode(msgModel.content),

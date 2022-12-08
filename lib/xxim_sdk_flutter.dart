@@ -3,9 +3,10 @@ library xxim_sdk_flutter;
 export 'package:xxim_core_flutter/src/connect/params.dart';
 export 'package:xxim_core_flutter/src/listener/connect_listener.dart';
 
-export 'src/constant/content_type.dart';
-export 'src/constant/conv_type.dart';
-export 'src/constant/send_status.dart';
+export 'src/common/aes_params.dart';
+export 'src/common/content_type.dart';
+export 'src/common/conv_type.dart';
+export 'src/common/send_status.dart';
 
 export 'src/listener/conv_listener.dart';
 export 'src/listener/isar_listener.dart';
