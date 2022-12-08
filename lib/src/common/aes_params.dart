@@ -2,7 +2,7 @@ class AESParams {
   final String key;
   final String iv;
 
-  AESParams({
+  const AESParams({
     required this.key,
     required this.iv,
   });
