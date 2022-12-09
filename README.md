@@ -258,7 +258,7 @@
 ### 创建文本、图片、语音、视频、文件、位置、名片、合并、表情、命令、富文本、标记、自定义消息
 
      MsgModel msgModel = await sdk.msgManager.createText(...);
-     MsgModel msgModel = await sdk.msgManager.createPicture(...);
+     MsgModel msgModel = await sdk.msgManager.createImage(...);
      MsgModel msgModel = await sdk.msgManager.createAudio(...);
      MsgModel msgModel = await sdk.msgManager.createVideo(...);
      MsgModel msgModel = await sdk.msgManager.createFile(...);
