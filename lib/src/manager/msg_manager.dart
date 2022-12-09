@@ -300,10 +300,10 @@ class MsgManager {
   }
 
   /// 创建图片消息
-  Future<MsgModel> createPicture({
+  Future<MsgModel> createImage({
     required String convId,
     List<String> atUsers = const [],
-    required PictureContent content,
+    required ImageContent content,
     MsgOptionsModel? options,
     required MsgOfflinePushModel offlinePush,
     String ext = "",
@@ -311,7 +311,7 @@ class MsgManager {
     return _sdkManager.createMsg(
       convId: convId,
       atUsers: atUsers,
-      contentType: ContentType.picture,
+      contentType: ContentType.image,
       content: content.toJson(),
       options: options ??
           MsgOptionsModel(

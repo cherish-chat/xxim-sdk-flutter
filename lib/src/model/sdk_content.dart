@@ -71,29 +71,29 @@ class RevokeContent {
 }
 
 /// 图片消息
-class PictureContent {
-  String pictureName;
-  String picturePath;
-  String pictureUrl;
+class ImageContent {
+  String imageName;
+  String imagePath;
+  String imageUrl;
   int width;
   int height;
   int size;
 
-  PictureContent({
-    required this.pictureName,
-    required this.picturePath,
-    required this.pictureUrl,
+  ImageContent({
+    required this.imageName,
+    required this.imagePath,
+    required this.imageUrl,
     this.width = 0,
     this.height = 0,
     this.size = 0,
   });
 
-  static PictureContent fromJson(String content) {
+  static ImageContent fromJson(String content) {
     Map<String, dynamic> map = json.decode(content);
-    return PictureContent(
-      pictureName: map["pictureName"],
-      picturePath: map["picturePath"],
-      pictureUrl: map["pictureUrl"],
+    return ImageContent(
+      imageName: map["imageName"],
+      imagePath: map["imagePath"],
+      imageUrl: map["imageUrl"],
       width: map["width"],
       height: map["height"],
       size: map["size"],
@@ -102,9 +102,9 @@ class PictureContent {
 
   String toJson() {
     return json.encode({
-      "pictureName": pictureName,
-      "picturePath": picturePath,
-      "pictureUrl": pictureUrl,
+      "imageName": imageName,
+      "imagePath": imagePath,
+      "imageUrl": imageUrl,
       "width": width,
       "height": height,
       "size": size,
