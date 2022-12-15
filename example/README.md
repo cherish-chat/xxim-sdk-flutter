@@ -28,10 +28,6 @@
          appVersion: "",
          language: "",
        ),
-       aesParams: AESParams(
-         key: "",
-         iv: "",
-       ),
        autoPullTime: const Duration(seconds: 20),
        pullMsgCount: 200,
        isarSchemas: [],
@@ -41,6 +37,9 @@
        subscribeCallback: SubscribeCallback(
          onConvIdList: () async {
            return [];
+         },
+         onConvAESParams: (convIdList) async {
+           return {};
          },
        ),
        isarListener: IsarListener(
