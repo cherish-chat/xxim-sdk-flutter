@@ -35,7 +35,7 @@
        autoPullTime: const Duration(seconds: 20),
        pullMsgCount: 200,
        isarSchemas: [],
-       isarMaxSizeMiB: 5120,
+       isarMaxSizeMiB: 2048,
        isarDirectory: "",
        isarInspector: false,
        subscribeCallback: SubscribeCallback(
