@@ -22,7 +22,6 @@ import 'package:xxim_sdk_flutter/src/tool/sdk_tool.dart';
 
 class SDKManager {
   final XXIMCore xximCore;
-  final AESParams aesParams;
   final Duration autoPullTime;
   final int pullMsgCount;
   final List<CollectionSchema> isarSchemas;
@@ -39,7 +38,6 @@ class SDKManager {
 
   SDKManager({
     required this.xximCore,
-    required this.aesParams,
     required this.autoPullTime,
     required this.pullMsgCount,
     required this.isarSchemas,
@@ -236,6 +234,14 @@ class SDKManager {
     _cancelTimer();
   }
 
+  Future<Map<String, AESParams>> _convAESParams(List<MsgData> msgDataList) {
+    List<String> convIdList = [];
+    for (MsgData msgData in msgDataList) {
+      convIdList.add(msgData.convId);
+    }
+    return subscribeCallback.convAESParams(convIdList);
+  }
+
   /// 拉取消息列表
   Future<List<MsgModel>?> pullMsgDataList(
     List<BatchGetMsgListByConvIdReq_Item> items, {
@@ -248,10 +254,11 @@ class SDKManager {
       ),
     );
     if (push || resp == null) return null;
+    Map<String, AESParams> convAESMap = await _convAESParams(resp.msgDataList);
     List<MsgModel> msgModelList = [];
     await isar.writeTxn(() async {
       for (MsgData msgData in resp.msgDataList) {
-        msgModelList.add(await _handleMsg(msgData));
+        msgModelList.add(await _handleMsg(msgData, convAESMap[msgData.convId]));
       }
     });
     return msgModelList;
@@ -271,9 +278,11 @@ class SDKManager {
       ),
     );
     if (push || resp == null) return null;
+    MsgData msgData = resp.msgData;
+    Map<String, AESParams> convAESMap = await _convAESParams([msgData]);
     MsgModel? msgModel;
     await isar.writeTxn(() async {
-      msgModel = await _handleMsg(resp.msgData);
+      msgModel = await _handleMsg(msgData, convAESMap[msgData.convId]);
     });
     return msgModel;
   }
@@ -283,10 +292,11 @@ class SDKManager {
     List<MsgData> msgDataList,
   ) async {
     bool isFirstPull = await msgModels().count() == 0;
+    Map<String, AESParams> convAESMap = await _convAESParams(msgDataList);
     List<MsgModel> msgModelList = [];
     await isar.writeTxn(() async {
       for (MsgData msgData in msgDataList) {
-        msgModelList.add(await _handleMsg(msgData));
+        msgModelList.add(await _handleMsg(msgData, convAESMap[msgData.convId]));
       }
     });
     if (!isFirstPull && msgModelList.isNotEmpty) {
@@ -324,7 +334,7 @@ class SDKManager {
   }
 
   /// 处理消息
-  Future<MsgModel> _handleMsg(MsgData msgData) async {
+  Future<MsgModel> _handleMsg(MsgData msgData, AESParams? aesParams) async {
     MsgModel msgModel = MsgModel.fromProto(msgData, aesParams);
     msgModel.sendStatus = SendStatus.success;
     await _updateMsg(msgModel);
@@ -551,9 +561,17 @@ class SDKManager {
     required List<MsgModel> msgModelList,
     required int deliverAfter,
   }) async {
+    List<String> convIdList = [];
+    for (MsgModel msgModel in msgModelList) {
+      convIdList.add(msgModel.convId);
+    }
+    Map<String, AESParams> convAESMap = await subscribeCallback.convAESParams(
+      convIdList,
+    );
     bool? status = await xximCore.sendMsgList(
       req: SendMsgListReq(
         msgDataList: msgModelList.map((msgModel) {
+          AESParams? aesParams = convAESMap[msgModel.convId];
           return MsgData(
             clientMsgId: msgModel.clientMsgId,
             clientTime: msgModel.clientTime.toString(),
@@ -563,7 +581,7 @@ class SDKManager {
             convId: msgModel.convId,
             atUsers: msgModel.atUsers,
             contentType: msgModel.contentType,
-            content: msgModel.options.needDecrypt == true
+            content: msgModel.options.needDecrypt == true && aesParams != null
                 ? SDKTool.aesEncode(
                     key: aesParams.key,
                     iv: aesParams.iv,

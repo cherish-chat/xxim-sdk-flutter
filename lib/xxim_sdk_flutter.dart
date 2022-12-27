@@ -3,6 +3,8 @@ library xxim_sdk_flutter;
 export 'package:xxim_core_flutter/src/connect/params.dart';
 export 'package:xxim_core_flutter/src/listener/connect_listener.dart';
 
+export 'src/callback/subscribe_callback.dart';
+
 export 'src/common/aes_params.dart';
 export 'src/common/content_type.dart';
 export 'src/common/conv_type.dart';

@@ -1,7 +1,6 @@
 import 'package:isar/isar.dart';
 import 'package:xxim_core_flutter/xxim_core_flutter.dart';
 import 'package:xxim_sdk_flutter/src/callback/subscribe_callback.dart';
-import 'package:xxim_sdk_flutter/src/common/aes_params.dart';
 import 'package:xxim_sdk_flutter/src/listener/conv_listener.dart';
 import 'package:xxim_sdk_flutter/src/listener/isar_listener.dart';
 import 'package:xxim_sdk_flutter/src/listener/msg_listener.dart';
@@ -23,10 +22,6 @@ class XXIMSDK {
   /// 初始化
   void init({
     required Params params,
-    AESParams aesParams = const AESParams(
-      key: "a7a13a5debdf05f6a2696c2b58cc0cec",
-      iv: "ebdf05f6a2696c2b",
-    ),
     Duration autoPullTime = const Duration(seconds: 20),
     int pullMsgCount = 200,
     List<CollectionSchema> isarSchemas = const [],
@@ -57,7 +52,6 @@ class XXIMSDK {
       );
     _sdkManager = SDKManager(
       xximCore: _xximCore!,
-      aesParams: aesParams,
       autoPullTime: autoPullTime,
       pullMsgCount: pullMsgCount,
       isarSchemas: isarSchemas,
