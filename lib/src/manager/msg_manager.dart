@@ -52,7 +52,7 @@ class MsgManager {
     }
     if (minSeq < 0) minSeq = 0;
     if (maxSeq <= minSeq) return [];
-    List<String> expectList = SDKTool.generateSeqList(maxSeq, minSeq);
+    List<String> expectList = SDKTool.generateSeqList(minSeq, maxSeq);
     List<MsgModel> list = await _getMsgList(
       convId,
       contentType,
