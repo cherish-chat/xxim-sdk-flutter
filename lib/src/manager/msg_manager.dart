@@ -273,6 +273,7 @@ class MsgManager {
 
   /// 创建文本消息
   Future<MsgModel> createText({
+    String senderInfo = "",
     required String convId,
     List<String> atUsers = const [],
     required String text,
@@ -281,6 +282,7 @@ class MsgManager {
     String ext = "",
   }) {
     return _sdkManager.createMsg(
+      senderInfo: senderInfo,
       convId: convId,
       atUsers: atUsers,
       contentType: ContentType.text,
@@ -301,6 +303,7 @@ class MsgManager {
 
   /// 创建图片消息
   Future<MsgModel> createImage({
+    String senderInfo = "",
     required String convId,
     List<String> atUsers = const [],
     required ImageContent content,
@@ -309,6 +312,7 @@ class MsgManager {
     String ext = "",
   }) {
     return _sdkManager.createMsg(
+      senderInfo: senderInfo,
       convId: convId,
       atUsers: atUsers,
       contentType: ContentType.image,
@@ -329,6 +333,7 @@ class MsgManager {
 
   /// 创建语音消息
   Future<MsgModel> createAudio({
+    String senderInfo = "",
     required String convId,
     List<String> atUsers = const [],
     required AudioContent content,
@@ -337,6 +342,7 @@ class MsgManager {
     String ext = "",
   }) {
     return _sdkManager.createMsg(
+      senderInfo: senderInfo,
       convId: convId,
       atUsers: atUsers,
       contentType: ContentType.audio,
@@ -357,6 +363,7 @@ class MsgManager {
 
   /// 创建视频消息
   Future<MsgModel> createVideo({
+    String senderInfo = "",
     required String convId,
     List<String> atUsers = const [],
     required VideoContent content,
@@ -365,6 +372,7 @@ class MsgManager {
     String ext = "",
   }) {
     return _sdkManager.createMsg(
+      senderInfo: senderInfo,
       convId: convId,
       atUsers: atUsers,
       contentType: ContentType.video,
@@ -385,6 +393,7 @@ class MsgManager {
 
   /// 创建文件消息
   Future<MsgModel> createFile({
+    String senderInfo = "",
     required String convId,
     List<String> atUsers = const [],
     required FileContent content,
@@ -393,6 +402,7 @@ class MsgManager {
     String ext = "",
   }) {
     return _sdkManager.createMsg(
+      senderInfo: senderInfo,
       convId: convId,
       atUsers: atUsers,
       contentType: ContentType.file,
@@ -413,6 +423,7 @@ class MsgManager {
 
   /// 创建位置消息
   Future<MsgModel> createLocation({
+    String senderInfo = "",
     required String convId,
     List<String> atUsers = const [],
     required LocationContent content,
@@ -421,6 +432,7 @@ class MsgManager {
     String ext = "",
   }) {
     return _sdkManager.createMsg(
+      senderInfo: senderInfo,
       convId: convId,
       atUsers: atUsers,
       contentType: ContentType.location,
@@ -441,6 +453,7 @@ class MsgManager {
 
   /// 创建名片消息
   Future<MsgModel> createCard({
+    String senderInfo = "",
     required String convId,
     List<String> atUsers = const [],
     required CardContent content,
@@ -449,6 +462,7 @@ class MsgManager {
     String ext = "",
   }) {
     return _sdkManager.createMsg(
+      senderInfo: senderInfo,
       convId: convId,
       atUsers: atUsers,
       contentType: ContentType.card,
@@ -469,6 +483,7 @@ class MsgManager {
 
   /// 创建合并消息
   Future<MsgModel> createMerge({
+    String senderInfo = "",
     required String convId,
     List<String> atUsers = const [],
     required MergeContent content,
@@ -477,6 +492,7 @@ class MsgManager {
     String ext = "",
   }) {
     return _sdkManager.createMsg(
+      senderInfo: senderInfo,
       convId: convId,
       atUsers: atUsers,
       contentType: ContentType.merge,
@@ -497,6 +513,7 @@ class MsgManager {
 
   /// 创建表情消息
   Future<MsgModel> createEmoji({
+    String senderInfo = "",
     required String convId,
     List<String> atUsers = const [],
     required EmojiContent content,
@@ -505,6 +522,7 @@ class MsgManager {
     String ext = "",
   }) {
     return _sdkManager.createMsg(
+      senderInfo: senderInfo,
       convId: convId,
       atUsers: atUsers,
       contentType: ContentType.emoji,
@@ -525,6 +543,7 @@ class MsgManager {
 
   /// 创建命令消息
   Future<MsgModel> createCommand({
+    String senderInfo = "",
     required String convId,
     List<String> atUsers = const [],
     required CommandContent content,
@@ -533,6 +552,7 @@ class MsgManager {
     String ext = "",
   }) {
     return _sdkManager.createMsg(
+      senderInfo: senderInfo,
       convId: convId,
       atUsers: atUsers,
       contentType: ContentType.command,
@@ -553,6 +573,7 @@ class MsgManager {
 
   /// 创建富文本消息
   Future<MsgModel> createRichTxt({
+    String senderInfo = "",
     required String convId,
     List<String> atUsers = const [],
     required RichTxtContent content,
@@ -561,6 +582,7 @@ class MsgManager {
     String ext = "",
   }) {
     return _sdkManager.createMsg(
+      senderInfo: senderInfo,
       convId: convId,
       atUsers: atUsers,
       contentType: ContentType.richTxt,
@@ -581,6 +603,7 @@ class MsgManager {
 
   /// 创建标记消息
   Future<MsgModel> createMarkdown({
+    String senderInfo = "",
     required String convId,
     List<String> atUsers = const [],
     required MarkdownContent content,
@@ -589,6 +612,7 @@ class MsgManager {
     String ext = "",
   }) {
     return _sdkManager.createMsg(
+      senderInfo: senderInfo,
       convId: convId,
       atUsers: atUsers,
       contentType: ContentType.markdown,
@@ -609,6 +633,7 @@ class MsgManager {
 
   /// 创建自定义消息
   Future<MsgModel> createCustom({
+    String senderInfo = "",
     required String convId,
     List<String> atUsers = const [],
     required CustomContent content,
@@ -617,6 +642,7 @@ class MsgManager {
     String ext = "",
   }) {
     return _sdkManager.createMsg(
+      senderInfo: senderInfo,
       convId: convId,
       atUsers: atUsers,
       contentType: ContentType.custom,
@@ -637,10 +663,12 @@ class MsgManager {
 
   /// 发送消息列表
   Future<bool> sendMsgList({
+    String? senderInfo,
     required List<MsgModel> msgModelList,
     int deliverAfter = 0,
   }) {
     return _sdkManager.sendMsgList(
+      senderInfo: senderInfo,
       msgModelList: msgModelList,
       deliverAfter: deliverAfter,
     );

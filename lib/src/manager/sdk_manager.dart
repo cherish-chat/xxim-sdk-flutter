@@ -163,7 +163,7 @@ class SDKManager {
           )
           .findAll();
       for (String convId in convIdList) {
-        RecordModel? recordModel = await _handleConvSeq(
+        RecordModel recordModel = await _handleConvSeq(
           recordModelList,
           convId,
           resp.convSeqMap[convId]!,
@@ -337,12 +337,25 @@ class SDKManager {
   Future<MsgModel> _handleMsg(MsgData msgData, AESParams? aesParams) async {
     MsgModel msgModel = MsgModel.fromProto(msgData, aesParams);
     msgModel.sendStatus = SendStatus.success;
+    await _updateRecord(msgModel);
     await _updateMsg(msgModel);
     if (msgData.serverMsgId.isNotEmpty) {
       await _updateRead(msgModel);
       await _updateMsgConv(msgModel);
     }
     return msgModel;
+  }
+
+  Future _updateRecord(MsgModel msgModel) async {
+    RecordModel? recordModel = await recordModels()
+        .filter()
+        .convIdEqualTo(msgModel.convId)
+        .findFirst();
+    if (recordModel == null) return;
+    if (msgModel.seq > recordModel.seq) {
+      recordModel.seq = msgModel.seq;
+      await recordModels().put(recordModel);
+    }
   }
 
   Future _updateMsg(MsgModel msgModel) async {
@@ -558,6 +571,7 @@ class SDKManager {
 
   /// 发送消息列表
   Future<bool> sendMsgList({
+    String? senderInfo,
     required List<MsgModel> msgModelList,
     required int deliverAfter,
   }) async {
@@ -571,6 +585,9 @@ class SDKManager {
     bool? status = await xximCore.sendMsgList(
       req: SendMsgListReq(
         msgDataList: msgModelList.map((msgModel) {
+          if (senderInfo != null) {
+            msgModel.senderInfo = senderInfo;
+          }
           AESParams? aesParams = convAESMap[msgModel.convId];
           return MsgData(
             clientMsgId: msgModel.clientMsgId,
