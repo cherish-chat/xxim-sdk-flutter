@@ -273,6 +273,7 @@
 ### 发送消息列表
 
      bool status = await sdk.msgManager.sendMsgList(
+       senderInfo: "",
        msgModelList: [],
        deliverAfter: 0,
      );
