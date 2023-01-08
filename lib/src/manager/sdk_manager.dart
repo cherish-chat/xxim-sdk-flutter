@@ -367,12 +367,28 @@ class SDKManager {
         .clientMsgIdEqualTo(msgModel.clientMsgId)
         .findFirst();
     if (model != null) {
-      model.serverMsgId = msgModel.serverMsgId;
-      model.serverTime = msgModel.serverTime;
-      model.contentType = msgModel.contentType;
-      model.content = msgModel.content;
-      model.seq = msgModel.seq;
-      await msgModels().put(model);
+      bool updated = false;
+      if (model.serverMsgId != msgModel.serverMsgId) {
+        model.serverMsgId = msgModel.serverMsgId;
+        updated = true;
+      }
+      if (model.serverTime != msgModel.serverTime) {
+        model.serverTime = msgModel.serverTime;
+        updated = true;
+      }
+      if (model.contentType != msgModel.contentType) {
+        model.contentType = msgModel.contentType;
+        updated = true;
+      }
+      if (model.content != msgModel.content) {
+        model.content = msgModel.content;
+        updated = true;
+      }
+      if (model.seq != msgModel.seq) {
+        model.seq = msgModel.seq;
+        updated = true;
+      }
+      if (updated) await msgModels().put(model);
     } else {
       await msgModels().put(msgModel);
     }
