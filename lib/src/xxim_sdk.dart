@@ -25,7 +25,7 @@ class XXIMSDK {
     Duration autoPullTime = const Duration(seconds: 20),
     int pullMsgCount = 200,
     List<CollectionSchema> isarSchemas = const [],
-    int isarMaxSizeMiB = 2048,
+    int isarMaxSizeMiB = Isar.defaultMaxSizeMiB,
     required String isarDirectory,
     bool isarInspector = false,
     required SubscribeCallback subscribeCallback,
