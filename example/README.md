@@ -20,7 +20,7 @@
 
      XXIMSDK sdk = XXIMSDK();
      sdk.init(
-       params: Params(
+       params: const Params(
          deviceModel: "",
          deviceId: "",
          osVersion: "",
@@ -28,12 +28,18 @@
          appVersion: "",
          language: "",
        ),
+       requestTimeout: const Duration(seconds: 10),
        autoPullTime: const Duration(seconds: 20),
        pullMsgCount: 200,
        isarSchemas: [],
-       isarMaxSizeMiB: 2048,
+       isarMaxSizeMiB: Isar.defaultMaxSizeMiB,
        isarDirectory: "",
        isarInspector: false,
+       connectListener: ConnectListener(
+         onConnecting: () {},
+         onSuccess: () {},
+         onClose: (code, error) {},
+       ),
        subscribeCallback: SubscribeCallback(
          onConvIdList: () async {
            return [];
@@ -44,11 +50,6 @@
        ),
        isarListener: IsarListener(
          onCreate: (isar) {},
-       ),
-       connectListener: ConnectListener(
-         onConnecting: () {},
-         onSuccess: () {},
-         onClose: ({error}) {},
        ),
        pullListener: PullListener(
          onStart: () {},
@@ -73,7 +74,6 @@
 ## 登录
 
      sdk.login(
-       apiUrl: "",
        wsUrl: "",
        token: "",
        userId: "",
@@ -89,7 +89,6 @@
 ## 连接
 
      sdk.connect(
-       apiUrl: "",
        wsUrl: "",
        token: "",
        userId: "",
@@ -105,10 +104,6 @@
 
      sdk.isConnect();
 
-## 修改语言
-
-     sdk.setLanguage("");
-
 ## 打开拉取订阅
 
      sdk.openPullSubscribe(
@@ -118,6 +113,13 @@
 ## 关闭拉取订阅
 
      sdk.closePullSubscribe();
+
+## 自定义请求
+
+     List<int>? resp = await sdk.customRequest(
+       reqId: "",
+       bytes: [],
+     );
 
 ## 会话管理
 
@@ -195,6 +197,9 @@
 
      List<MsgModel> msgList = await sdk.msgManager.getMsgList(
        convId: "",
+       contentType: ContentType.text,
+       maxSeq: null,
+       size: 100,
      );
 
 ### 获取首个消息
@@ -219,7 +224,6 @@
 
      MsgModel? msgModel = await sdk.msgManager.pullCloudMsg(
        clientMsgId: "",
-       push: true ?? false,
      );
 
 ### 发送正在输入
@@ -249,6 +253,8 @@
      bool status = await sdk.msgManager.sendRevoke(
        clientMsgId: "",
        content: RevokeContent(
+         text: "",
+         contentType: ContentType.text,
          content: "",
        ),
        ext: "",
@@ -303,6 +309,8 @@
 
      List<NoticeModel> noticeList = await sdk.noticeManager.getNoticeList(
        convId: "",
+       offset: 0,
+       limit: 10,
      );
 
 ### 获取单条通知

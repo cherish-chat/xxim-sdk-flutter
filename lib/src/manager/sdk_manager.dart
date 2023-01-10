@@ -143,6 +143,7 @@ class SDKManager {
       return;
     }
     BatchGetConvSeqResp? resp = await xximCore.batchGetConvSeq(
+      reqId: SDKTool.getUUId(),
       req: BatchGetConvSeqReq(
         convIdList: convIdList,
       ),
@@ -184,10 +185,7 @@ class SDKManager {
       }
     });
     if (items.isNotEmpty) {
-      await pullMsgDataList(
-        items,
-        push: true,
-      );
+      await pullMsgDataList(items);
     }
     pullListener?.end();
     if (_pullStatus) _startTimer();
@@ -244,16 +242,15 @@ class SDKManager {
 
   /// 拉取消息列表
   Future<List<MsgModel>?> pullMsgDataList(
-    List<BatchGetMsgListByConvIdReq_Item> items, {
-    required bool push,
-  }) async {
+    List<BatchGetMsgListByConvIdReq_Item> items,
+  ) async {
     GetMsgListResp? resp = await xximCore.batchGetMsgListByConvId(
+      reqId: SDKTool.getUUId(),
       req: BatchGetMsgListByConvIdReq(
         items: items,
-        push: push,
       ),
     );
-    if (push || resp == null) return null;
+    if (resp == null) return null;
     Map<String, AESParams> convAESMap = await _convAESParams(resp.msgDataList);
     List<MsgModel> msgModelList = [];
     await isar.writeTxn(() async {
@@ -268,16 +265,15 @@ class SDKManager {
   Future<MsgModel?> pullMsgDataById({
     String? serverMsgId,
     String? clientMsgId,
-    required bool push,
   }) async {
     GetMsgByIdResp? resp = await xximCore.getMsgById(
+      reqId: SDKTool.getUUId(),
       req: GetMsgByIdReq(
         serverMsgId: serverMsgId,
         clientMsgId: clientMsgId,
-        push: push,
       ),
     );
-    if (push || resp == null) return null;
+    if (resp == null) return null;
     MsgData msgData = resp.msgData;
     Map<String, AESParams> convAESMap = await _convAESParams([msgData]);
     MsgModel? msgModel;
@@ -322,7 +318,8 @@ class SDKManager {
     if (!isFirstPull && noticeModelList.isNotEmpty) {
       bool? status = await noticeListener?.receive(noticeModelList);
       if (status == true) {
-        await xximCore.ackNoticeDataReq(
+        await xximCore.ackNoticeData(
+          reqId: SDKTool.getUUId(),
           req: AckNoticeDataReq(
             noticeIds: noticeIds,
           ),
@@ -567,7 +564,7 @@ class SDKManager {
       seq = ++model.seq;
     }
     MsgModel msgModel = MsgModel(
-      clientMsgId: clientMsgID ?? SDKTool.getClientMsgId(),
+      clientMsgId: clientMsgID ?? SDKTool.getUUId(),
       clientTime: serverTime ?? timestamp,
       serverTime: serverTime ?? timestamp,
       senderId: userId,
@@ -598,7 +595,8 @@ class SDKManager {
     Map<String, AESParams> convAESMap = await subscribeCallback.convAESParams(
       convIdList,
     );
-    bool? status = await xximCore.sendMsgList(
+    SendMsgListResp? resp = await xximCore.sendMsgList(
+      reqId: SDKTool.getUUId(),
       req: SendMsgListReq(
         msgDataList: msgModelList.map((msgModel) {
           if (senderInfo != null) {
@@ -642,7 +640,7 @@ class SDKManager {
       ),
     );
     for (MsgModel msgModel in msgModelList) {
-      if (status == true) {
+      if (resp != null) {
         msgModel.sendStatus = SendStatus.success;
       } else {
         msgModel.sendStatus = SendStatus.failed;
@@ -652,7 +650,7 @@ class SDKManager {
         includeMsgConv: true,
       );
     }
-    return status ?? false;
+    return resp != null;
   }
 
   Future upsertMsg({

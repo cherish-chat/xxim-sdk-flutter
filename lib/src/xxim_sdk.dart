@@ -22,15 +22,16 @@ class XXIMSDK {
   /// 初始化
   void init({
     required Params params,
+    Duration requestTimeout = const Duration(seconds: 10),
     Duration autoPullTime = const Duration(seconds: 20),
     int pullMsgCount = 200,
     List<CollectionSchema> isarSchemas = const [],
     int isarMaxSizeMiB = Isar.defaultMaxSizeMiB,
     required String isarDirectory,
     bool isarInspector = false,
+    required ConnectListener connectListener,
     required SubscribeCallback subscribeCallback,
     IsarListener? isarListener,
-    ConnectListener? connectListener,
     PullListener? pullListener,
     ConvListener? convListener,
     MsgListener? msgListener,
@@ -40,6 +41,7 @@ class XXIMSDK {
     _xximCore = XXIMCore()
       ..init(
         params: params,
+        requestTimeout: requestTimeout,
         connectListener: connectListener,
         receivePushListener: ReceivePushListener(
           onPushMsgDataList: (msgDataList) {
@@ -73,7 +75,6 @@ class XXIMSDK {
 
   /// 登录
   Future login({
-    required String apiUrl,
     required String wsUrl,
     required String token,
     required String userId,
@@ -86,7 +87,6 @@ class XXIMSDK {
       isarName: isarName,
     );
     connect(
-      apiUrl: apiUrl,
       wsUrl: wsUrl,
       token: token,
       userId: userId,
@@ -103,7 +103,6 @@ class XXIMSDK {
 
   /// 连接
   void connect({
-    required String apiUrl,
     required String wsUrl,
     required String token,
     required String userId,
@@ -111,7 +110,6 @@ class XXIMSDK {
     List<String>? convIdList,
   }) {
     _xximCore?.login(
-      apiUrl: apiUrl,
       wsUrl: wsUrl,
       token: token,
       userId: userId,
@@ -133,11 +131,6 @@ class XXIMSDK {
     return _xximCore?.isLogin() ?? false;
   }
 
-  /// 修改语言
-  void setLanguage(String language) {
-    _xximCore?.setLanguage(language);
-  }
-
   /// 打开拉取订阅
   void openPullSubscribe({
     List<String>? convIdList,
@@ -150,5 +143,20 @@ class XXIMSDK {
   /// 关闭拉取订阅
   void closePullSubscribe() {
     _sdkManager?.closePullSubscribe();
+  }
+
+  /// 自定义请求
+  Future<List<int>?>? customRequest({
+    required String reqId,
+    required List<int> bytes,
+    SuccessCallback<List<int>>? onSuccess,
+    ErrorCallback? onError,
+  }) {
+    return _xximCore?.customRequest(
+      reqId: reqId,
+      bytes: bytes,
+      onSuccess: onSuccess,
+      onError: onError,
+    );
   }
 }

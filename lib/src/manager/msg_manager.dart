@@ -17,7 +17,7 @@ class MsgManager {
     required String convId,
     int? contentType,
     int? maxSeq,
-    int size = 50,
+    int size = 100,
   }) async {
     bool includeUpper = maxSeq == null;
     if (maxSeq == null) {
@@ -77,7 +77,6 @@ class MsgManager {
               seqList: seqList,
             ),
           ],
-          push: false,
         );
       }
     }
@@ -172,11 +171,9 @@ class MsgManager {
   /// 拉取云端消息
   Future<MsgModel?> pullCloudMsg({
     required String clientMsgId,
-    bool push = false,
   }) {
     return _sdkManager.pullMsgDataById(
       clientMsgId: clientMsgId,
-      push: push,
     );
   }
 

@@ -9,7 +9,7 @@ class SDKTool {
   static const String _singlePrefix = "single:";
   static const String _groupPrefix = "group:";
 
-  static String getClientMsgId() {
+  static String getUUId() {
     return _uuid.v1().replaceAll("-", "");
   }
 
