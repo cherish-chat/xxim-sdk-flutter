@@ -146,13 +146,12 @@ class XXIMSDK {
 
   /// 自定义请求
   Future<List<int>?>? customRequest({
-    required String reqId,
     required List<int> bytes,
     SuccessCallback<List<int>>? onSuccess,
     ErrorCallback? onError,
   }) {
     return _xximCore?.customRequest(
-      reqId: reqId,
+      reqId: SDKTool.getUUId(),
       bytes: bytes,
       onSuccess: onSuccess,
       onError: onError,
