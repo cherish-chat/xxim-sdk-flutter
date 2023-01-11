@@ -11,6 +11,7 @@ import 'package:xxim_sdk_flutter/src/manager/conv_manager.dart';
 import 'package:xxim_sdk_flutter/src/manager/msg_manager.dart';
 import 'package:xxim_sdk_flutter/src/manager/notice_manager.dart';
 import 'package:xxim_sdk_flutter/src/manager/sdk_manager.dart';
+import 'package:xxim_sdk_flutter/src/tool/sdk_tool.dart';
 
 class XXIMSDK {
   XXIMCore? _xximCore;
@@ -147,13 +148,12 @@ class XXIMSDK {
 
   /// 自定义请求
   Future<List<int>?>? customRequest({
-    required String reqId,
     required List<int> bytes,
     SuccessCallback<List<int>>? onSuccess,
     ErrorCallback? onError,
   }) {
     return _xximCore?.customRequest(
-      reqId: reqId,
+      reqId: SDKTool.getUUId(),
       bytes: bytes,
       onSuccess: onSuccess,
       onError: onError,
