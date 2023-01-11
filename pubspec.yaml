@@ -4,8 +4,6 @@ version: 1.0.0
 homepage: https://github.com/cherish-chat/xxim-sdk-flutter
 repository: https://github.com/cherish-chat/xxim-sdk-flutter
 
-publish_to: 'none'
-
 environment:
   sdk: '>=2.18.5 <3.0.0'
   flutter: ">=2.5.0"
@@ -21,6 +19,7 @@ dependencies:
     git:
       url: https://github.com/cherish-chat/isar-2.5.0
       path: packages/isar
+  isar_flutter_libs: 2.5.0
 
 dev_dependencies:
   flutter_test:
@@ -37,6 +36,7 @@ dependency_overrides:
     git:
       url: https://github.com/cherish-chat/isar-2.5.0
       path: packages/isar
+  isar_flutter_libs: 2.5.0
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
