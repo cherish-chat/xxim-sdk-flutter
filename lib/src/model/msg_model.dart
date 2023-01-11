@@ -22,6 +22,7 @@ class MsgModel {
   String senderInfo;
   @Index()
   String convId;
+  @AtUsersConverter()
   List<String> atUsers;
   @Index()
   int contentType;

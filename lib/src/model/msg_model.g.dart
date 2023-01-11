@@ -15,7 +15,7 @@ extension GetMsgModelCollection on Isar {
 const MsgModelSchema = CollectionSchema(
   name: 'MsgModel',
   schema:
-      '{"name":"MsgModel","idName":"id","properties":[{"name":"atUsers","type":"StringList"},{"name":"clientMsgId","type":"String"},{"name":"clientTime","type":"Long"},{"name":"content","type":"String"},{"name":"contentType","type":"Long"},{"name":"convId","type":"String"},{"name":"deleted","type":"Bool"},{"name":"ext","type":"String"},{"name":"offlinePush","type":"String"},{"name":"options","type":"String"},{"name":"sendProgress","type":"Long"},{"name":"sendStatus","type":"Long"},{"name":"senderId","type":"String"},{"name":"senderInfo","type":"String"},{"name":"seq","type":"Long"},{"name":"serverMsgId","type":"String"},{"name":"serverTime","type":"Long"}],"indexes":[{"name":"clientMsgId","unique":false,"properties":[{"name":"clientMsgId","type":"Hash","caseSensitive":true}]},{"name":"content","unique":false,"properties":[{"name":"content","type":"Hash","caseSensitive":true}]},{"name":"contentType","unique":false,"properties":[{"name":"contentType","type":"Value","caseSensitive":false}]},{"name":"convId","unique":false,"properties":[{"name":"convId","type":"Hash","caseSensitive":true}]},{"name":"senderId","unique":false,"properties":[{"name":"senderId","type":"Hash","caseSensitive":true}]}],"links":[]}',
+      '{"name":"MsgModel","idName":"id","properties":[{"name":"atUsers","type":"String"},{"name":"clientMsgId","type":"String"},{"name":"clientTime","type":"Long"},{"name":"content","type":"String"},{"name":"contentType","type":"Long"},{"name":"convId","type":"String"},{"name":"deleted","type":"Bool"},{"name":"ext","type":"String"},{"name":"offlinePush","type":"String"},{"name":"options","type":"String"},{"name":"sendProgress","type":"Long"},{"name":"sendStatus","type":"Long"},{"name":"senderId","type":"String"},{"name":"senderInfo","type":"String"},{"name":"seq","type":"Long"},{"name":"serverMsgId","type":"String"},{"name":"serverTime","type":"Long"}],"indexes":[{"name":"clientMsgId","unique":false,"properties":[{"name":"clientMsgId","type":"Hash","caseSensitive":true}]},{"name":"content","unique":false,"properties":[{"name":"content","type":"Hash","caseSensitive":true}]},{"name":"contentType","unique":false,"properties":[{"name":"contentType","type":"Value","caseSensitive":false}]},{"name":"convId","unique":false,"properties":[{"name":"convId","type":"Hash","caseSensitive":true}]},{"name":"senderId","unique":false,"properties":[{"name":"senderId","type":"Hash","caseSensitive":true}]}],"links":[]}',
   idName: 'id',
   propertyIds: {
     'atUsers': 0,
@@ -36,7 +36,7 @@ const MsgModelSchema = CollectionSchema(
     'serverMsgId': 15,
     'serverTime': 16
   },
-  listProperties: {'atUsers'},
+  listProperties: {},
   indexIds: {
     'clientMsgId': 0,
     'content': 1,
@@ -92,6 +92,7 @@ List<IsarLinkBase> _msgModelGetLinks(MsgModel object) {
   return [];
 }
 
+const _msgModelAtUsersConverter = AtUsersConverter();
 const _msgModelMsgOfflinePushConverter = MsgOfflinePushConverter();
 const _msgModelMsgOptionsConverter = MsgOptionsConverter();
 
@@ -103,15 +104,9 @@ void _msgModelSerializeNative(
     List<int> offsets,
     AdapterAlloc alloc) {
   var dynamicSize = 0;
-  final value0 = object.atUsers;
-  dynamicSize += (value0.length) * 8;
-  final bytesList0 = <IsarUint8List>[];
-  for (var str in value0) {
-    final bytes = IsarBinaryWriter.utf8Encoder.convert(str);
-    bytesList0.add(bytes);
-    dynamicSize += bytes.length as int;
-  }
-  final _atUsers = bytesList0;
+  final value0 = _msgModelAtUsersConverter.toIsar(object.atUsers);
+  final _atUsers = IsarBinaryWriter.utf8Encoder.convert(value0);
+  dynamicSize += (_atUsers.length) as int;
   final value1 = object.clientMsgId;
   final _clientMsgId = IsarBinaryWriter.utf8Encoder.convert(value1);
   dynamicSize += (_clientMsgId.length) as int;
@@ -162,7 +157,7 @@ void _msgModelSerializeNative(
   rawObj.buffer_length = size;
   final buffer = IsarNative.bufAsBytes(rawObj.buffer, size);
   final writer = IsarBinaryWriter(buffer, staticSize);
-  writer.writeStringList(offsets[0], _atUsers);
+  writer.writeBytes(offsets[0], _atUsers);
   writer.writeBytes(offsets[1], _clientMsgId);
   writer.writeLong(offsets[2], _clientTime);
   writer.writeBytes(offsets[3], _content);
@@ -184,7 +179,7 @@ void _msgModelSerializeNative(
 MsgModel _msgModelDeserializeNative(IsarCollection<MsgModel> collection, int id,
     IsarBinaryReader reader, List<int> offsets) {
   final object = MsgModel(
-    atUsers: reader.readStringList(offsets[0]) ?? [],
+    atUsers: _msgModelAtUsersConverter.fromIsar(reader.readString(offsets[0])),
     clientMsgId: reader.readString(offsets[1]),
     clientTime: reader.readLong(offsets[2]),
     content: reader.readString(offsets[3]),
@@ -214,7 +209,8 @@ P _msgModelDeserializePropNative<P>(
     case -1:
       return id as P;
     case 0:
-      return (reader.readStringList(offset) ?? []) as P;
+      return (_msgModelAtUsersConverter.fromIsar(reader.readString(offset)))
+          as P;
     case 1:
       return (reader.readString(offset)) as P;
     case 2:
@@ -257,7 +253,8 @@ P _msgModelDeserializePropNative<P>(
 dynamic _msgModelSerializeWeb(
     IsarCollection<MsgModel> collection, MsgModel object) {
   final jsObj = IsarNative.newJsObject();
-  IsarNative.jsObjectSet(jsObj, 'atUsers', object.atUsers);
+  IsarNative.jsObjectSet(
+      jsObj, 'atUsers', _msgModelAtUsersConverter.toIsar(object.atUsers));
   IsarNative.jsObjectSet(jsObj, 'clientMsgId', object.clientMsgId);
   IsarNative.jsObjectSet(jsObj, 'clientTime', object.clientTime);
   IsarNative.jsObjectSet(jsObj, 'content', object.content);
@@ -283,11 +280,8 @@ dynamic _msgModelSerializeWeb(
 MsgModel _msgModelDeserializeWeb(
     IsarCollection<MsgModel> collection, dynamic jsObj) {
   final object = MsgModel(
-    atUsers: (IsarNative.jsObjectGet(jsObj, 'atUsers') as List?)
-            ?.map((e) => e ?? '')
-            .toList()
-            .cast<String>() ??
-        [],
+    atUsers: _msgModelAtUsersConverter
+        .fromIsar(IsarNative.jsObjectGet(jsObj, 'atUsers') ?? ''),
     clientMsgId: IsarNative.jsObjectGet(jsObj, 'clientMsgId') ?? '',
     clientTime:
         IsarNative.jsObjectGet(jsObj, 'clientTime') ?? double.negativeInfinity,
@@ -319,11 +313,8 @@ MsgModel _msgModelDeserializeWeb(
 P _msgModelDeserializePropWeb<P>(Object jsObj, String propertyName) {
   switch (propertyName) {
     case 'atUsers':
-      return ((IsarNative.jsObjectGet(jsObj, 'atUsers') as List?)
-              ?.map((e) => e ?? '')
-              .toList()
-              .cast<String>() ??
-          []) as P;
+      return (_msgModelAtUsersConverter
+          .fromIsar(IsarNative.jsObjectGet(jsObj, 'atUsers') ?? '')) as P;
     case 'clientMsgId':
       return (IsarNative.jsObjectGet(jsObj, 'clientMsgId') ?? '') as P;
     case 'clientTime':
@@ -664,20 +655,20 @@ extension MsgModelQueryWhere on QueryBuilder<MsgModel, MsgModel, QWhereClause> {
 
 extension MsgModelQueryFilter
     on QueryBuilder<MsgModel, MsgModel, QFilterCondition> {
-  QueryBuilder<MsgModel, MsgModel, QAfterFilterCondition> atUsersAnyEqualTo(
-    String value, {
+  QueryBuilder<MsgModel, MsgModel, QAfterFilterCondition> atUsersEqualTo(
+    List<String> value, {
     bool caseSensitive = true,
   }) {
     return addFilterConditionInternal(FilterCondition(
       type: ConditionType.eq,
       property: 'atUsers',
-      value: value,
+      value: _msgModelAtUsersConverter.toIsar(value),
       caseSensitive: caseSensitive,
     ));
   }
 
-  QueryBuilder<MsgModel, MsgModel, QAfterFilterCondition> atUsersAnyGreaterThan(
-    String value, {
+  QueryBuilder<MsgModel, MsgModel, QAfterFilterCondition> atUsersGreaterThan(
+    List<String> value, {
     bool caseSensitive = true,
     bool include = false,
   }) {
@@ -685,13 +676,13 @@ extension MsgModelQueryFilter
       type: ConditionType.gt,
       include: include,
       property: 'atUsers',
-      value: value,
+      value: _msgModelAtUsersConverter.toIsar(value),
       caseSensitive: caseSensitive,
     ));
   }
 
-  QueryBuilder<MsgModel, MsgModel, QAfterFilterCondition> atUsersAnyLessThan(
-    String value, {
+  QueryBuilder<MsgModel, MsgModel, QAfterFilterCondition> atUsersLessThan(
+    List<String> value, {
     bool caseSensitive = true,
     bool include = false,
   }) {
@@ -699,64 +690,64 @@ extension MsgModelQueryFilter
       type: ConditionType.lt,
       include: include,
       property: 'atUsers',
-      value: value,
+      value: _msgModelAtUsersConverter.toIsar(value),
       caseSensitive: caseSensitive,
     ));
   }
 
-  QueryBuilder<MsgModel, MsgModel, QAfterFilterCondition> atUsersAnyBetween(
-    String lower,
-    String upper, {
+  QueryBuilder<MsgModel, MsgModel, QAfterFilterCondition> atUsersBetween(
+    List<String> lower,
+    List<String> upper, {
     bool caseSensitive = true,
     bool includeLower = true,
     bool includeUpper = true,
   }) {
     return addFilterConditionInternal(FilterCondition.between(
       property: 'atUsers',
-      lower: lower,
+      lower: _msgModelAtUsersConverter.toIsar(lower),
       includeLower: includeLower,
-      upper: upper,
+      upper: _msgModelAtUsersConverter.toIsar(upper),
       includeUpper: includeUpper,
       caseSensitive: caseSensitive,
     ));
   }
 
-  QueryBuilder<MsgModel, MsgModel, QAfterFilterCondition> atUsersAnyStartsWith(
-    String value, {
+  QueryBuilder<MsgModel, MsgModel, QAfterFilterCondition> atUsersStartsWith(
+    List<String> value, {
     bool caseSensitive = true,
   }) {
     return addFilterConditionInternal(FilterCondition(
       type: ConditionType.startsWith,
       property: 'atUsers',
-      value: value,
+      value: _msgModelAtUsersConverter.toIsar(value),
       caseSensitive: caseSensitive,
     ));
   }
 
-  QueryBuilder<MsgModel, MsgModel, QAfterFilterCondition> atUsersAnyEndsWith(
-    String value, {
+  QueryBuilder<MsgModel, MsgModel, QAfterFilterCondition> atUsersEndsWith(
+    List<String> value, {
     bool caseSensitive = true,
   }) {
     return addFilterConditionInternal(FilterCondition(
       type: ConditionType.endsWith,
       property: 'atUsers',
-      value: value,
+      value: _msgModelAtUsersConverter.toIsar(value),
       caseSensitive: caseSensitive,
     ));
   }
 
-  QueryBuilder<MsgModel, MsgModel, QAfterFilterCondition> atUsersAnyContains(
-      String value,
+  QueryBuilder<MsgModel, MsgModel, QAfterFilterCondition> atUsersContains(
+      List<String> value,
       {bool caseSensitive = true}) {
     return addFilterConditionInternal(FilterCondition(
       type: ConditionType.contains,
       property: 'atUsers',
-      value: value,
+      value: _msgModelAtUsersConverter.toIsar(value),
       caseSensitive: caseSensitive,
     ));
   }
 
-  QueryBuilder<MsgModel, MsgModel, QAfterFilterCondition> atUsersAnyMatches(
+  QueryBuilder<MsgModel, MsgModel, QAfterFilterCondition> atUsersMatches(
       String pattern,
       {bool caseSensitive = true}) {
     return addFilterConditionInternal(FilterCondition(
@@ -2057,6 +2048,14 @@ extension MsgModelQueryLinks
 
 extension MsgModelQueryWhereSortBy
     on QueryBuilder<MsgModel, MsgModel, QSortBy> {
+  QueryBuilder<MsgModel, MsgModel, QAfterSortBy> sortByAtUsers() {
+    return addSortByInternal('atUsers', Sort.asc);
+  }
+
+  QueryBuilder<MsgModel, MsgModel, QAfterSortBy> sortByAtUsersDesc() {
+    return addSortByInternal('atUsers', Sort.desc);
+  }
+
   QueryBuilder<MsgModel, MsgModel, QAfterSortBy> sortByClientMsgId() {
     return addSortByInternal('clientMsgId', Sort.asc);
   }
@@ -2196,6 +2195,14 @@ extension MsgModelQueryWhereSortBy
 
 extension MsgModelQueryWhereSortThenBy
     on QueryBuilder<MsgModel, MsgModel, QSortThenBy> {
+  QueryBuilder<MsgModel, MsgModel, QAfterSortBy> thenByAtUsers() {
+    return addSortByInternal('atUsers', Sort.asc);
+  }
+
+  QueryBuilder<MsgModel, MsgModel, QAfterSortBy> thenByAtUsersDesc() {
+    return addSortByInternal('atUsers', Sort.desc);
+  }
+
   QueryBuilder<MsgModel, MsgModel, QAfterSortBy> thenByClientMsgId() {
     return addSortByInternal('clientMsgId', Sort.asc);
   }
@@ -2335,6 +2342,11 @@ extension MsgModelQueryWhereSortThenBy
 
 extension MsgModelQueryWhereDistinct
     on QueryBuilder<MsgModel, MsgModel, QDistinct> {
+  QueryBuilder<MsgModel, MsgModel, QDistinct> distinctByAtUsers(
+      {bool caseSensitive = true}) {
+    return addDistinctByInternal('atUsers', caseSensitive: caseSensitive);
+  }
+
   QueryBuilder<MsgModel, MsgModel, QDistinct> distinctByClientMsgId(
       {bool caseSensitive = true}) {
     return addDistinctByInternal('clientMsgId', caseSensitive: caseSensitive);

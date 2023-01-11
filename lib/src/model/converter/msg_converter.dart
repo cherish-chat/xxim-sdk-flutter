@@ -1,5 +1,20 @@
+import 'dart:convert';
 import 'package:isar/isar.dart';
 import 'package:xxim_sdk_flutter/src/model/msg_model.dart';
+
+class AtUsersConverter extends TypeConverter<List<String>, String> {
+  const AtUsersConverter();
+
+  @override
+  List<String> fromIsar(String object) {
+    return json.decode(object);
+  }
+
+  @override
+  String toIsar(List<String> object) {
+    return json.encode(object);
+  }
+}
 
 class MsgOptionsConverter extends TypeConverter<MsgOptionsModel, String> {
   const MsgOptionsConverter();
