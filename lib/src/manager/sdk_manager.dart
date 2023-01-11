@@ -74,6 +74,7 @@ class SDKManager {
           RecordModelSchema,
           ConvModelSchema,
           MsgModelSchema,
+          NoticeModelSchema,
           ReadModelSchema,
           ...isarSchemas,
         ],
