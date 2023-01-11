@@ -19,7 +19,6 @@ dependencies:
     git:
       url: https://github.com/cherish-chat/isar-2.5.0
       path: packages/isar
-  isar_flutter_libs: 2.5.0
 
 dev_dependencies:
   flutter_test:
