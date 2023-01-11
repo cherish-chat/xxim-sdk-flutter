@@ -7,12 +7,16 @@ class AtUsersConverter extends TypeConverter<List<String>, String> {
 
   @override
   List<String> fromIsar(String object) {
-    return json.decode(object) as List<String>;
+    Map<String, List<String>> map = json.decode(object);
+    List<String> list = map["list"]!;
+    return list;
   }
 
   @override
   String toIsar(List<String> object) {
-    return json.encode(object);
+    return json.encode({
+      "list": object,
+    });
   }
 }
 
