@@ -6,118 +6,115 @@ part of 'record_model.dart';
 // IsarCollectionGenerator
 // **************************************************************************
 
-// coverage:ignore-file
-// ignore_for_file: duplicate_ignore, non_constant_identifier_names, constant_identifier_names, invalid_use_of_protected_member, unnecessary_cast, prefer_const_constructors, lines_longer_than_80_chars, require_trailing_commas, inference_failure_on_function_invocation, unnecessary_parenthesis, unnecessary_raw_strings, unnecessary_null_checks, join_return_with_assignment, prefer_final_locals, avoid_js_rounded_ints, avoid_positional_boolean_parameters
+// ignore_for_file: duplicate_ignore, non_constant_identifier_names, constant_identifier_names, invalid_use_of_protected_member, unnecessary_cast, unused_local_variable
 
 extension GetRecordModelCollection on Isar {
-  IsarCollection<RecordModel> get recordModels => this.collection();
+  IsarCollection<RecordModel> get recordModels => getCollection();
 }
 
 const RecordModelSchema = CollectionSchema(
-  name: r'RecordModel',
-  id: 971936938898302464,
-  properties: {
-    r'convId': PropertySchema(
-      id: 0,
-      name: r'convId',
-      type: IsarType.string,
-    ),
-    r'maxSeq': PropertySchema(
-      id: 1,
-      name: r'maxSeq',
-      type: IsarType.long,
-    ),
-    r'minSeq': PropertySchema(
-      id: 2,
-      name: r'minSeq',
-      type: IsarType.long,
-    ),
-    r'seq': PropertySchema(
-      id: 3,
-      name: r'seq',
-      type: IsarType.long,
-    ),
-    r'updateTime': PropertySchema(
-      id: 4,
-      name: r'updateTime',
-      type: IsarType.long,
-    )
+  name: 'RecordModel',
+  schema:
+      '{"name":"RecordModel","idName":"id","properties":[{"name":"convId","type":"String"},{"name":"maxSeq","type":"Long"},{"name":"minSeq","type":"Long"},{"name":"seq","type":"Long"},{"name":"updateTime","type":"Long"}],"indexes":[{"name":"convId","unique":false,"properties":[{"name":"convId","type":"Hash","caseSensitive":true}]}],"links":[]}',
+  idName: 'id',
+  propertyIds: {
+    'convId': 0,
+    'maxSeq': 1,
+    'minSeq': 2,
+    'seq': 3,
+    'updateTime': 4
   },
-  estimateSize: _recordModelEstimateSize,
-  serialize: _recordModelSerialize,
-  deserialize: _recordModelDeserialize,
-  deserializeProp: _recordModelDeserializeProp,
-  idName: r'id',
-  indexes: {
-    r'convId': IndexSchema(
-      id: -7030550945641449152,
-      name: r'convId',
-      unique: false,
-      replace: false,
-      properties: [
-        IndexPropertySchema(
-          name: r'convId',
-          type: IndexType.hash,
-          caseSensitive: true,
-        )
-      ],
-    )
+  listProperties: {},
+  indexIds: {'convId': 0},
+  indexValueTypes: {
+    'convId': [
+      IndexValueType.stringHash,
+    ]
   },
-  links: {},
-  embeddedSchemas: {},
+  linkIds: {},
+  backlinkLinkNames: {},
   getId: _recordModelGetId,
+  setId: _recordModelSetId,
   getLinks: _recordModelGetLinks,
-  attach: _recordModelAttach,
-  version: '3.0.5',
+  attachLinks: _recordModelAttachLinks,
+  serializeNative: _recordModelSerializeNative,
+  deserializeNative: _recordModelDeserializeNative,
+  deserializePropNative: _recordModelDeserializePropNative,
+  serializeWeb: _recordModelSerializeWeb,
+  deserializeWeb: _recordModelDeserializeWeb,
+  deserializePropWeb: _recordModelDeserializePropWeb,
+  version: 3,
 );
 
-int _recordModelEstimateSize(
-  RecordModel object,
-  List<int> offsets,
-  Map<Type, List<int>> allOffsets,
-) {
-  var bytesCount = offsets.last;
-  bytesCount += 3 + object.convId.length * 3;
-  return bytesCount;
+int? _recordModelGetId(RecordModel object) {
+  if (object.id == Isar.autoIncrement) {
+    return null;
+  } else {
+    return object.id;
+  }
 }
 
-void _recordModelSerialize(
-  RecordModel object,
-  IsarWriter writer,
-  List<int> offsets,
-  Map<Type, List<int>> allOffsets,
-) {
-  writer.writeString(offsets[0], object.convId);
-  writer.writeLong(offsets[1], object.maxSeq);
-  writer.writeLong(offsets[2], object.minSeq);
-  writer.writeLong(offsets[3], object.seq);
-  writer.writeLong(offsets[4], object.updateTime);
+void _recordModelSetId(RecordModel object, int id) {
+  object.id = id;
 }
 
-RecordModel _recordModelDeserialize(
-  Id id,
-  IsarReader reader,
-  List<int> offsets,
-  Map<Type, List<int>> allOffsets,
-) {
+List<IsarLinkBase> _recordModelGetLinks(RecordModel object) {
+  return [];
+}
+
+void _recordModelSerializeNative(
+    IsarCollection<RecordModel> collection,
+    IsarRawObject rawObj,
+    RecordModel object,
+    int staticSize,
+    List<int> offsets,
+    AdapterAlloc alloc) {
+  var dynamicSize = 0;
+  final value0 = object.convId;
+  final _convId = IsarBinaryWriter.utf8Encoder.convert(value0);
+  dynamicSize += (_convId.length) as int;
+  final value1 = object.maxSeq;
+  final _maxSeq = value1;
+  final value2 = object.minSeq;
+  final _minSeq = value2;
+  final value3 = object.seq;
+  final _seq = value3;
+  final value4 = object.updateTime;
+  final _updateTime = value4;
+  final size = staticSize + dynamicSize;
+
+  rawObj.buffer = alloc(size);
+  rawObj.buffer_length = size;
+  final buffer = IsarNative.bufAsBytes(rawObj.buffer, size);
+  final writer = IsarBinaryWriter(buffer, staticSize);
+  writer.writeBytes(offsets[0], _convId);
+  writer.writeLong(offsets[1], _maxSeq);
+  writer.writeLong(offsets[2], _minSeq);
+  writer.writeLong(offsets[3], _seq);
+  writer.writeLong(offsets[4], _updateTime);
+}
+
+RecordModel _recordModelDeserializeNative(
+    IsarCollection<RecordModel> collection,
+    int id,
+    IsarBinaryReader reader,
+    List<int> offsets) {
   final object = RecordModel(
     convId: reader.readString(offsets[0]),
     maxSeq: reader.readLong(offsets[1]),
     minSeq: reader.readLong(offsets[2]),
-    seq: reader.readLongOrNull(offsets[3]) ?? 0,
+    seq: reader.readLong(offsets[3]),
     updateTime: reader.readLong(offsets[4]),
   );
   object.id = id;
   return object;
 }
 
-P _recordModelDeserializeProp<P>(
-  IsarReader reader,
-  int propertyId,
-  int offset,
-  Map<Type, List<int>> allOffsets,
-) {
-  switch (propertyId) {
+P _recordModelDeserializePropNative<P>(
+    int id, IsarBinaryReader reader, int propertyIndex, int offset) {
+  switch (propertyIndex) {
+    case -1:
+      return id as P;
     case 0:
       return (reader.readString(offset)) as P;
     case 1:
@@ -125,147 +122,166 @@ P _recordModelDeserializeProp<P>(
     case 2:
       return (reader.readLong(offset)) as P;
     case 3:
-      return (reader.readLongOrNull(offset) ?? 0) as P;
+      return (reader.readLong(offset)) as P;
     case 4:
       return (reader.readLong(offset)) as P;
     default:
-      throw IsarError('Unknown property with id $propertyId');
+      throw 'Illegal propertyIndex';
   }
 }
 
-Id _recordModelGetId(RecordModel object) {
-  return object.id;
+dynamic _recordModelSerializeWeb(
+    IsarCollection<RecordModel> collection, RecordModel object) {
+  final jsObj = IsarNative.newJsObject();
+  IsarNative.jsObjectSet(jsObj, 'convId', object.convId);
+  IsarNative.jsObjectSet(jsObj, 'id', object.id);
+  IsarNative.jsObjectSet(jsObj, 'maxSeq', object.maxSeq);
+  IsarNative.jsObjectSet(jsObj, 'minSeq', object.minSeq);
+  IsarNative.jsObjectSet(jsObj, 'seq', object.seq);
+  IsarNative.jsObjectSet(jsObj, 'updateTime', object.updateTime);
+  return jsObj;
 }
 
-List<IsarLinkBase<dynamic>> _recordModelGetLinks(RecordModel object) {
-  return [];
+RecordModel _recordModelDeserializeWeb(
+    IsarCollection<RecordModel> collection, dynamic jsObj) {
+  final object = RecordModel(
+    convId: IsarNative.jsObjectGet(jsObj, 'convId') ?? '',
+    maxSeq: IsarNative.jsObjectGet(jsObj, 'maxSeq') ?? double.negativeInfinity,
+    minSeq: IsarNative.jsObjectGet(jsObj, 'minSeq') ?? double.negativeInfinity,
+    seq: IsarNative.jsObjectGet(jsObj, 'seq') ?? double.negativeInfinity,
+    updateTime:
+        IsarNative.jsObjectGet(jsObj, 'updateTime') ?? double.negativeInfinity,
+  );
+  object.id = IsarNative.jsObjectGet(jsObj, 'id') ?? double.negativeInfinity;
+  return object;
 }
 
-void _recordModelAttach(
-    IsarCollection<dynamic> col, Id id, RecordModel object) {
-  object.id = id;
+P _recordModelDeserializePropWeb<P>(Object jsObj, String propertyName) {
+  switch (propertyName) {
+    case 'convId':
+      return (IsarNative.jsObjectGet(jsObj, 'convId') ?? '') as P;
+    case 'id':
+      return (IsarNative.jsObjectGet(jsObj, 'id') ?? double.negativeInfinity)
+          as P;
+    case 'maxSeq':
+      return (IsarNative.jsObjectGet(jsObj, 'maxSeq') ??
+          double.negativeInfinity) as P;
+    case 'minSeq':
+      return (IsarNative.jsObjectGet(jsObj, 'minSeq') ??
+          double.negativeInfinity) as P;
+    case 'seq':
+      return (IsarNative.jsObjectGet(jsObj, 'seq') ?? double.negativeInfinity)
+          as P;
+    case 'updateTime':
+      return (IsarNative.jsObjectGet(jsObj, 'updateTime') ??
+          double.negativeInfinity) as P;
+    default:
+      throw 'Illegal propertyName';
+  }
 }
+
+void _recordModelAttachLinks(IsarCollection col, int id, RecordModel object) {}
 
 extension RecordModelQueryWhereSort
     on QueryBuilder<RecordModel, RecordModel, QWhere> {
   QueryBuilder<RecordModel, RecordModel, QAfterWhere> anyId() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addWhereClause(const IdWhereClause.any());
-    });
+    return addWhereClauseInternal(const IdWhereClause.any());
+  }
+
+  QueryBuilder<RecordModel, RecordModel, QAfterWhere> anyConvId() {
+    return addWhereClauseInternal(
+        const IndexWhereClause.any(indexName: 'convId'));
   }
 }
 
 extension RecordModelQueryWhere
     on QueryBuilder<RecordModel, RecordModel, QWhereClause> {
-  QueryBuilder<RecordModel, RecordModel, QAfterWhereClause> idEqualTo(Id id) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addWhereClause(IdWhereClause.between(
-        lower: id,
-        upper: id,
-      ));
-    });
+  QueryBuilder<RecordModel, RecordModel, QAfterWhereClause> idEqualTo(int id) {
+    return addWhereClauseInternal(IdWhereClause.between(
+      lower: id,
+      includeLower: true,
+      upper: id,
+      includeUpper: true,
+    ));
   }
 
   QueryBuilder<RecordModel, RecordModel, QAfterWhereClause> idNotEqualTo(
-      Id id) {
-    return QueryBuilder.apply(this, (query) {
-      if (query.whereSort == Sort.asc) {
-        return query
-            .addWhereClause(
-              IdWhereClause.lessThan(upper: id, includeUpper: false),
-            )
-            .addWhereClause(
-              IdWhereClause.greaterThan(lower: id, includeLower: false),
-            );
-      } else {
-        return query
-            .addWhereClause(
-              IdWhereClause.greaterThan(lower: id, includeLower: false),
-            )
-            .addWhereClause(
-              IdWhereClause.lessThan(upper: id, includeUpper: false),
-            );
-      }
-    });
+      int id) {
+    if (whereSortInternal == Sort.asc) {
+      return addWhereClauseInternal(
+        IdWhereClause.lessThan(upper: id, includeUpper: false),
+      ).addWhereClauseInternal(
+        IdWhereClause.greaterThan(lower: id, includeLower: false),
+      );
+    } else {
+      return addWhereClauseInternal(
+        IdWhereClause.greaterThan(lower: id, includeLower: false),
+      ).addWhereClauseInternal(
+        IdWhereClause.lessThan(upper: id, includeUpper: false),
+      );
+    }
   }
 
-  QueryBuilder<RecordModel, RecordModel, QAfterWhereClause> idGreaterThan(Id id,
+  QueryBuilder<RecordModel, RecordModel, QAfterWhereClause> idGreaterThan(
+      int id,
       {bool include = false}) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addWhereClause(
-        IdWhereClause.greaterThan(lower: id, includeLower: include),
-      );
-    });
+    return addWhereClauseInternal(
+      IdWhereClause.greaterThan(lower: id, includeLower: include),
+    );
   }
 
-  QueryBuilder<RecordModel, RecordModel, QAfterWhereClause> idLessThan(Id id,
+  QueryBuilder<RecordModel, RecordModel, QAfterWhereClause> idLessThan(int id,
       {bool include = false}) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addWhereClause(
-        IdWhereClause.lessThan(upper: id, includeUpper: include),
-      );
-    });
+    return addWhereClauseInternal(
+      IdWhereClause.lessThan(upper: id, includeUpper: include),
+    );
   }
 
   QueryBuilder<RecordModel, RecordModel, QAfterWhereClause> idBetween(
-    Id lowerId,
-    Id upperId, {
+    int lowerId,
+    int upperId, {
     bool includeLower = true,
     bool includeUpper = true,
   }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addWhereClause(IdWhereClause.between(
-        lower: lowerId,
-        includeLower: includeLower,
-        upper: upperId,
-        includeUpper: includeUpper,
-      ));
-    });
+    return addWhereClauseInternal(IdWhereClause.between(
+      lower: lowerId,
+      includeLower: includeLower,
+      upper: upperId,
+      includeUpper: includeUpper,
+    ));
   }
 
   QueryBuilder<RecordModel, RecordModel, QAfterWhereClause> convIdEqualTo(
       String convId) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addWhereClause(IndexWhereClause.equalTo(
-        indexName: r'convId',
-        value: [convId],
-      ));
-    });
+    return addWhereClauseInternal(IndexWhereClause.equalTo(
+      indexName: 'convId',
+      value: [convId],
+    ));
   }
 
   QueryBuilder<RecordModel, RecordModel, QAfterWhereClause> convIdNotEqualTo(
       String convId) {
-    return QueryBuilder.apply(this, (query) {
-      if (query.whereSort == Sort.asc) {
-        return query
-            .addWhereClause(IndexWhereClause.between(
-              indexName: r'convId',
-              lower: [],
-              upper: [convId],
-              includeUpper: false,
-            ))
-            .addWhereClause(IndexWhereClause.between(
-              indexName: r'convId',
-              lower: [convId],
-              includeLower: false,
-              upper: [],
-            ));
-      } else {
-        return query
-            .addWhereClause(IndexWhereClause.between(
-              indexName: r'convId',
-              lower: [convId],
-              includeLower: false,
-              upper: [],
-            ))
-            .addWhereClause(IndexWhereClause.between(
-              indexName: r'convId',
-              lower: [],
-              upper: [convId],
-              includeUpper: false,
-            ));
-      }
-    });
+    if (whereSortInternal == Sort.asc) {
+      return addWhereClauseInternal(IndexWhereClause.lessThan(
+        indexName: 'convId',
+        upper: [convId],
+        includeUpper: false,
+      )).addWhereClauseInternal(IndexWhereClause.greaterThan(
+        indexName: 'convId',
+        lower: [convId],
+        includeLower: false,
+      ));
+    } else {
+      return addWhereClauseInternal(IndexWhereClause.greaterThan(
+        indexName: 'convId',
+        lower: [convId],
+        includeLower: false,
+      )).addWhereClauseInternal(IndexWhereClause.lessThan(
+        indexName: 'convId',
+        upper: [convId],
+        includeUpper: false,
+      ));
+    }
   }
 }
 
@@ -275,63 +291,58 @@ extension RecordModelQueryFilter
     String value, {
     bool caseSensitive = true,
   }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'convId',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.eq,
+      property: 'convId',
+      value: value,
+      caseSensitive: caseSensitive,
+    ));
   }
 
   QueryBuilder<RecordModel, RecordModel, QAfterFilterCondition>
       convIdGreaterThan(
     String value, {
-    bool include = false,
     bool caseSensitive = true,
+    bool include = false,
   }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        include: include,
-        property: r'convId',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.gt,
+      include: include,
+      property: 'convId',
+      value: value,
+      caseSensitive: caseSensitive,
+    ));
   }
 
   QueryBuilder<RecordModel, RecordModel, QAfterFilterCondition> convIdLessThan(
     String value, {
-    bool include = false,
     bool caseSensitive = true,
+    bool include = false,
   }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.lessThan(
-        include: include,
-        property: r'convId',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.lt,
+      include: include,
+      property: 'convId',
+      value: value,
+      caseSensitive: caseSensitive,
+    ));
   }
 
   QueryBuilder<RecordModel, RecordModel, QAfterFilterCondition> convIdBetween(
     String lower,
     String upper, {
+    bool caseSensitive = true,
     bool includeLower = true,
     bool includeUpper = true,
-    bool caseSensitive = true,
   }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.between(
-        property: r'convId',
-        lower: lower,
-        includeLower: includeLower,
-        upper: upper,
-        includeUpper: includeUpper,
-        caseSensitive: caseSensitive,
-      ));
-    });
+    return addFilterConditionInternal(FilterCondition.between(
+      property: 'convId',
+      lower: lower,
+      includeLower: includeLower,
+      upper: upper,
+      includeUpper: includeUpper,
+      caseSensitive: caseSensitive,
+    ));
   }
 
   QueryBuilder<RecordModel, RecordModel, QAfterFilterCondition>
@@ -339,133 +350,103 @@ extension RecordModelQueryFilter
     String value, {
     bool caseSensitive = true,
   }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.startsWith(
-        property: r'convId',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.startsWith,
+      property: 'convId',
+      value: value,
+      caseSensitive: caseSensitive,
+    ));
   }
 
   QueryBuilder<RecordModel, RecordModel, QAfterFilterCondition> convIdEndsWith(
     String value, {
     bool caseSensitive = true,
   }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.endsWith(
-        property: r'convId',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.endsWith,
+      property: 'convId',
+      value: value,
+      caseSensitive: caseSensitive,
+    ));
   }
 
   QueryBuilder<RecordModel, RecordModel, QAfterFilterCondition> convIdContains(
       String value,
       {bool caseSensitive = true}) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.contains(
-        property: r'convId',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.contains,
+      property: 'convId',
+      value: value,
+      caseSensitive: caseSensitive,
+    ));
   }
 
   QueryBuilder<RecordModel, RecordModel, QAfterFilterCondition> convIdMatches(
       String pattern,
       {bool caseSensitive = true}) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.matches(
-        property: r'convId',
-        wildcard: pattern,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<RecordModel, RecordModel, QAfterFilterCondition>
-      convIdIsEmpty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'convId',
-        value: '',
-      ));
-    });
-  }
-
-  QueryBuilder<RecordModel, RecordModel, QAfterFilterCondition>
-      convIdIsNotEmpty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        property: r'convId',
-        value: '',
-      ));
-    });
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.matches,
+      property: 'convId',
+      value: pattern,
+      caseSensitive: caseSensitive,
+    ));
   }
 
   QueryBuilder<RecordModel, RecordModel, QAfterFilterCondition> idEqualTo(
-      Id value) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'id',
-        value: value,
-      ));
-    });
+      int value) {
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.eq,
+      property: 'id',
+      value: value,
+    ));
   }
 
   QueryBuilder<RecordModel, RecordModel, QAfterFilterCondition> idGreaterThan(
-    Id value, {
+    int value, {
     bool include = false,
   }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        include: include,
-        property: r'id',
-        value: value,
-      ));
-    });
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.gt,
+      include: include,
+      property: 'id',
+      value: value,
+    ));
   }
 
   QueryBuilder<RecordModel, RecordModel, QAfterFilterCondition> idLessThan(
-    Id value, {
+    int value, {
     bool include = false,
   }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.lessThan(
-        include: include,
-        property: r'id',
-        value: value,
-      ));
-    });
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.lt,
+      include: include,
+      property: 'id',
+      value: value,
+    ));
   }
 
   QueryBuilder<RecordModel, RecordModel, QAfterFilterCondition> idBetween(
-    Id lower,
-    Id upper, {
+    int lower,
+    int upper, {
     bool includeLower = true,
     bool includeUpper = true,
   }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.between(
-        property: r'id',
-        lower: lower,
-        includeLower: includeLower,
-        upper: upper,
-        includeUpper: includeUpper,
-      ));
-    });
+    return addFilterConditionInternal(FilterCondition.between(
+      property: 'id',
+      lower: lower,
+      includeLower: includeLower,
+      upper: upper,
+      includeUpper: includeUpper,
+    ));
   }
 
   QueryBuilder<RecordModel, RecordModel, QAfterFilterCondition> maxSeqEqualTo(
       int value) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'maxSeq',
-        value: value,
-      ));
-    });
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.eq,
+      property: 'maxSeq',
+      value: value,
+    ));
   }
 
   QueryBuilder<RecordModel, RecordModel, QAfterFilterCondition>
@@ -473,26 +454,24 @@ extension RecordModelQueryFilter
     int value, {
     bool include = false,
   }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        include: include,
-        property: r'maxSeq',
-        value: value,
-      ));
-    });
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.gt,
+      include: include,
+      property: 'maxSeq',
+      value: value,
+    ));
   }
 
   QueryBuilder<RecordModel, RecordModel, QAfterFilterCondition> maxSeqLessThan(
     int value, {
     bool include = false,
   }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.lessThan(
-        include: include,
-        property: r'maxSeq',
-        value: value,
-      ));
-    });
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.lt,
+      include: include,
+      property: 'maxSeq',
+      value: value,
+    ));
   }
 
   QueryBuilder<RecordModel, RecordModel, QAfterFilterCondition> maxSeqBetween(
@@ -501,25 +480,22 @@ extension RecordModelQueryFilter
     bool includeLower = true,
     bool includeUpper = true,
   }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.between(
-        property: r'maxSeq',
-        lower: lower,
-        includeLower: includeLower,
-        upper: upper,
-        includeUpper: includeUpper,
-      ));
-    });
+    return addFilterConditionInternal(FilterCondition.between(
+      property: 'maxSeq',
+      lower: lower,
+      includeLower: includeLower,
+      upper: upper,
+      includeUpper: includeUpper,
+    ));
   }
 
   QueryBuilder<RecordModel, RecordModel, QAfterFilterCondition> minSeqEqualTo(
       int value) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'minSeq',
-        value: value,
-      ));
-    });
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.eq,
+      property: 'minSeq',
+      value: value,
+    ));
   }
 
   QueryBuilder<RecordModel, RecordModel, QAfterFilterCondition>
@@ -527,26 +503,24 @@ extension RecordModelQueryFilter
     int value, {
     bool include = false,
   }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        include: include,
-        property: r'minSeq',
-        value: value,
-      ));
-    });
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.gt,
+      include: include,
+      property: 'minSeq',
+      value: value,
+    ));
   }
 
   QueryBuilder<RecordModel, RecordModel, QAfterFilterCondition> minSeqLessThan(
     int value, {
     bool include = false,
   }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.lessThan(
-        include: include,
-        property: r'minSeq',
-        value: value,
-      ));
-    });
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.lt,
+      include: include,
+      property: 'minSeq',
+      value: value,
+    ));
   }
 
   QueryBuilder<RecordModel, RecordModel, QAfterFilterCondition> minSeqBetween(
@@ -555,51 +529,46 @@ extension RecordModelQueryFilter
     bool includeLower = true,
     bool includeUpper = true,
   }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.between(
-        property: r'minSeq',
-        lower: lower,
-        includeLower: includeLower,
-        upper: upper,
-        includeUpper: includeUpper,
-      ));
-    });
+    return addFilterConditionInternal(FilterCondition.between(
+      property: 'minSeq',
+      lower: lower,
+      includeLower: includeLower,
+      upper: upper,
+      includeUpper: includeUpper,
+    ));
   }
 
   QueryBuilder<RecordModel, RecordModel, QAfterFilterCondition> seqEqualTo(
       int value) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'seq',
-        value: value,
-      ));
-    });
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.eq,
+      property: 'seq',
+      value: value,
+    ));
   }
 
   QueryBuilder<RecordModel, RecordModel, QAfterFilterCondition> seqGreaterThan(
     int value, {
     bool include = false,
   }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        include: include,
-        property: r'seq',
-        value: value,
-      ));
-    });
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.gt,
+      include: include,
+      property: 'seq',
+      value: value,
+    ));
   }
 
   QueryBuilder<RecordModel, RecordModel, QAfterFilterCondition> seqLessThan(
     int value, {
     bool include = false,
   }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.lessThan(
-        include: include,
-        property: r'seq',
-        value: value,
-      ));
-    });
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.lt,
+      include: include,
+      property: 'seq',
+      value: value,
+    ));
   }
 
   QueryBuilder<RecordModel, RecordModel, QAfterFilterCondition> seqBetween(
@@ -608,25 +577,22 @@ extension RecordModelQueryFilter
     bool includeLower = true,
     bool includeUpper = true,
   }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.between(
-        property: r'seq',
-        lower: lower,
-        includeLower: includeLower,
-        upper: upper,
-        includeUpper: includeUpper,
-      ));
-    });
+    return addFilterConditionInternal(FilterCondition.between(
+      property: 'seq',
+      lower: lower,
+      includeLower: includeLower,
+      upper: upper,
+      includeUpper: includeUpper,
+    ));
   }
 
   QueryBuilder<RecordModel, RecordModel, QAfterFilterCondition>
       updateTimeEqualTo(int value) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'updateTime',
-        value: value,
-      ));
-    });
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.eq,
+      property: 'updateTime',
+      value: value,
+    ));
   }
 
   QueryBuilder<RecordModel, RecordModel, QAfterFilterCondition>
@@ -634,13 +600,12 @@ extension RecordModelQueryFilter
     int value, {
     bool include = false,
   }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        include: include,
-        property: r'updateTime',
-        value: value,
-      ));
-    });
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.gt,
+      include: include,
+      property: 'updateTime',
+      value: value,
+    ));
   }
 
   QueryBuilder<RecordModel, RecordModel, QAfterFilterCondition>
@@ -648,13 +613,12 @@ extension RecordModelQueryFilter
     int value, {
     bool include = false,
   }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.lessThan(
-        include: include,
-        property: r'updateTime',
-        value: value,
-      ));
-    });
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.lt,
+      include: include,
+      property: 'updateTime',
+      value: value,
+    ));
   }
 
   QueryBuilder<RecordModel, RecordModel, QAfterFilterCondition>
@@ -664,159 +628,118 @@ extension RecordModelQueryFilter
     bool includeLower = true,
     bool includeUpper = true,
   }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.between(
-        property: r'updateTime',
-        lower: lower,
-        includeLower: includeLower,
-        upper: upper,
-        includeUpper: includeUpper,
-      ));
-    });
+    return addFilterConditionInternal(FilterCondition.between(
+      property: 'updateTime',
+      lower: lower,
+      includeLower: includeLower,
+      upper: upper,
+      includeUpper: includeUpper,
+    ));
   }
 }
-
-extension RecordModelQueryObject
-    on QueryBuilder<RecordModel, RecordModel, QFilterCondition> {}
 
 extension RecordModelQueryLinks
     on QueryBuilder<RecordModel, RecordModel, QFilterCondition> {}
 
-extension RecordModelQuerySortBy
+extension RecordModelQueryWhereSortBy
     on QueryBuilder<RecordModel, RecordModel, QSortBy> {
   QueryBuilder<RecordModel, RecordModel, QAfterSortBy> sortByConvId() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'convId', Sort.asc);
-    });
+    return addSortByInternal('convId', Sort.asc);
   }
 
   QueryBuilder<RecordModel, RecordModel, QAfterSortBy> sortByConvIdDesc() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'convId', Sort.desc);
-    });
+    return addSortByInternal('convId', Sort.desc);
+  }
+
+  QueryBuilder<RecordModel, RecordModel, QAfterSortBy> sortById() {
+    return addSortByInternal('id', Sort.asc);
+  }
+
+  QueryBuilder<RecordModel, RecordModel, QAfterSortBy> sortByIdDesc() {
+    return addSortByInternal('id', Sort.desc);
   }
 
   QueryBuilder<RecordModel, RecordModel, QAfterSortBy> sortByMaxSeq() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'maxSeq', Sort.asc);
-    });
+    return addSortByInternal('maxSeq', Sort.asc);
   }
 
   QueryBuilder<RecordModel, RecordModel, QAfterSortBy> sortByMaxSeqDesc() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'maxSeq', Sort.desc);
-    });
+    return addSortByInternal('maxSeq', Sort.desc);
   }
 
   QueryBuilder<RecordModel, RecordModel, QAfterSortBy> sortByMinSeq() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'minSeq', Sort.asc);
-    });
+    return addSortByInternal('minSeq', Sort.asc);
   }
 
   QueryBuilder<RecordModel, RecordModel, QAfterSortBy> sortByMinSeqDesc() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'minSeq', Sort.desc);
-    });
+    return addSortByInternal('minSeq', Sort.desc);
   }
 
   QueryBuilder<RecordModel, RecordModel, QAfterSortBy> sortBySeq() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'seq', Sort.asc);
-    });
+    return addSortByInternal('seq', Sort.asc);
   }
 
   QueryBuilder<RecordModel, RecordModel, QAfterSortBy> sortBySeqDesc() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'seq', Sort.desc);
-    });
+    return addSortByInternal('seq', Sort.desc);
   }
 
   QueryBuilder<RecordModel, RecordModel, QAfterSortBy> sortByUpdateTime() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'updateTime', Sort.asc);
-    });
+    return addSortByInternal('updateTime', Sort.asc);
   }
 
   QueryBuilder<RecordModel, RecordModel, QAfterSortBy> sortByUpdateTimeDesc() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'updateTime', Sort.desc);
-    });
+    return addSortByInternal('updateTime', Sort.desc);
   }
 }
 
-extension RecordModelQuerySortThenBy
+extension RecordModelQueryWhereSortThenBy
     on QueryBuilder<RecordModel, RecordModel, QSortThenBy> {
   QueryBuilder<RecordModel, RecordModel, QAfterSortBy> thenByConvId() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'convId', Sort.asc);
-    });
+    return addSortByInternal('convId', Sort.asc);
   }
 
   QueryBuilder<RecordModel, RecordModel, QAfterSortBy> thenByConvIdDesc() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'convId', Sort.desc);
-    });
+    return addSortByInternal('convId', Sort.desc);
   }
 
   QueryBuilder<RecordModel, RecordModel, QAfterSortBy> thenById() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'id', Sort.asc);
-    });
+    return addSortByInternal('id', Sort.asc);
   }
 
   QueryBuilder<RecordModel, RecordModel, QAfterSortBy> thenByIdDesc() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'id', Sort.desc);
-    });
+    return addSortByInternal('id', Sort.desc);
   }
 
   QueryBuilder<RecordModel, RecordModel, QAfterSortBy> thenByMaxSeq() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'maxSeq', Sort.asc);
-    });
+    return addSortByInternal('maxSeq', Sort.asc);
   }
 
   QueryBuilder<RecordModel, RecordModel, QAfterSortBy> thenByMaxSeqDesc() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'maxSeq', Sort.desc);
-    });
+    return addSortByInternal('maxSeq', Sort.desc);
   }
 
   QueryBuilder<RecordModel, RecordModel, QAfterSortBy> thenByMinSeq() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'minSeq', Sort.asc);
-    });
+    return addSortByInternal('minSeq', Sort.asc);
   }
 
   QueryBuilder<RecordModel, RecordModel, QAfterSortBy> thenByMinSeqDesc() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'minSeq', Sort.desc);
-    });
+    return addSortByInternal('minSeq', Sort.desc);
   }
 
   QueryBuilder<RecordModel, RecordModel, QAfterSortBy> thenBySeq() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'seq', Sort.asc);
-    });
+    return addSortByInternal('seq', Sort.asc);
   }
 
   QueryBuilder<RecordModel, RecordModel, QAfterSortBy> thenBySeqDesc() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'seq', Sort.desc);
-    });
+    return addSortByInternal('seq', Sort.desc);
   }
 
   QueryBuilder<RecordModel, RecordModel, QAfterSortBy> thenByUpdateTime() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'updateTime', Sort.asc);
-    });
+    return addSortByInternal('updateTime', Sort.asc);
   }
 
   QueryBuilder<RecordModel, RecordModel, QAfterSortBy> thenByUpdateTimeDesc() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'updateTime', Sort.desc);
-    });
+    return addSortByInternal('updateTime', Sort.desc);
   }
 }
 
@@ -824,71 +747,53 @@ extension RecordModelQueryWhereDistinct
     on QueryBuilder<RecordModel, RecordModel, QDistinct> {
   QueryBuilder<RecordModel, RecordModel, QDistinct> distinctByConvId(
       {bool caseSensitive = true}) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addDistinctBy(r'convId', caseSensitive: caseSensitive);
-    });
+    return addDistinctByInternal('convId', caseSensitive: caseSensitive);
+  }
+
+  QueryBuilder<RecordModel, RecordModel, QDistinct> distinctById() {
+    return addDistinctByInternal('id');
   }
 
   QueryBuilder<RecordModel, RecordModel, QDistinct> distinctByMaxSeq() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addDistinctBy(r'maxSeq');
-    });
+    return addDistinctByInternal('maxSeq');
   }
 
   QueryBuilder<RecordModel, RecordModel, QDistinct> distinctByMinSeq() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addDistinctBy(r'minSeq');
-    });
+    return addDistinctByInternal('minSeq');
   }
 
   QueryBuilder<RecordModel, RecordModel, QDistinct> distinctBySeq() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addDistinctBy(r'seq');
-    });
+    return addDistinctByInternal('seq');
   }
 
   QueryBuilder<RecordModel, RecordModel, QDistinct> distinctByUpdateTime() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addDistinctBy(r'updateTime');
-    });
+    return addDistinctByInternal('updateTime');
   }
 }
 
 extension RecordModelQueryProperty
     on QueryBuilder<RecordModel, RecordModel, QQueryProperty> {
-  QueryBuilder<RecordModel, int, QQueryOperations> idProperty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addPropertyName(r'id');
-    });
+  QueryBuilder<RecordModel, String, QQueryOperations> convIdProperty() {
+    return addPropertyNameInternal('convId');
   }
 
-  QueryBuilder<RecordModel, String, QQueryOperations> convIdProperty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addPropertyName(r'convId');
-    });
+  QueryBuilder<RecordModel, int, QQueryOperations> idProperty() {
+    return addPropertyNameInternal('id');
   }
 
   QueryBuilder<RecordModel, int, QQueryOperations> maxSeqProperty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addPropertyName(r'maxSeq');
-    });
+    return addPropertyNameInternal('maxSeq');
   }
 
   QueryBuilder<RecordModel, int, QQueryOperations> minSeqProperty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addPropertyName(r'minSeq');
-    });
+    return addPropertyNameInternal('minSeq');
   }
 
   QueryBuilder<RecordModel, int, QQueryOperations> seqProperty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addPropertyName(r'seq');
-    });
+    return addPropertyNameInternal('seq');
   }
 
   QueryBuilder<RecordModel, int, QQueryOperations> updateTimeProperty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addPropertyName(r'updateTime');
-    });
+    return addPropertyNameInternal('updateTime');
   }
 }

@@ -26,7 +26,6 @@ class SDKManager {
   final int pullMsgCount;
   final List<CollectionSchema> isarSchemas;
   final String isarDirectory;
-  final int isarMaxSizeMiB;
   final bool isarInspector;
   final SubscribeCallback subscribeCallback;
   final IsarListener? isarListener;
@@ -41,7 +40,6 @@ class SDKManager {
     required this.autoPullTime,
     required this.pullMsgCount,
     required this.isarSchemas,
-    required this.isarMaxSizeMiB,
     required this.isarDirectory,
     required this.isarInspector,
     required this.subscribeCallback,
@@ -70,7 +68,7 @@ class SDKManager {
       this.isar = isar;
     } else {
       this.isar = await Isar.open(
-        [
+        schemas: [
           RecordModelSchema,
           ConvModelSchema,
           MsgModelSchema,
@@ -80,7 +78,6 @@ class SDKManager {
         ],
         directory: isarDirectory,
         name: isarName,
-        maxSizeMiB: isarMaxSizeMiB,
         inspector: isarInspector,
       );
     }
@@ -155,11 +152,11 @@ class SDKManager {
       return;
     }
     List<BatchGetMsgListByConvIdReq_Item> items = [];
-    await isar.writeTxn(() async {
+    await isar.writeTxn((isar) async {
       List<String> convIdList = resp.convSeqMap.keys.toList();
       List<RecordModel> recordModelList = await recordModels()
           .filter()
-          .anyOf(
+          .repeat(
             convIdList,
             (q, element) => q.convIdEqualTo(element),
           )
@@ -254,7 +251,7 @@ class SDKManager {
     if (resp == null) return null;
     Map<String, AESParams> convAESMap = await _convAESParams(resp.msgDataList);
     List<MsgModel> msgModelList = [];
-    await isar.writeTxn(() async {
+    await isar.writeTxn((isar) async {
       for (MsgData msgData in resp.msgDataList) {
         msgModelList.add(await _handleMsg(msgData, convAESMap[msgData.convId]));
       }
@@ -278,7 +275,7 @@ class SDKManager {
     MsgData msgData = resp.msgData;
     Map<String, AESParams> convAESMap = await _convAESParams([msgData]);
     MsgModel? msgModel;
-    await isar.writeTxn(() async {
+    await isar.writeTxn((isar) async {
       msgModel = await _handleMsg(msgData, convAESMap[msgData.convId]);
     });
     return msgModel;
@@ -291,7 +288,7 @@ class SDKManager {
     bool isFirstPull = await msgModels().count() == 0;
     Map<String, AESParams> convAESMap = await _convAESParams(msgDataList);
     List<MsgModel> msgModelList = [];
-    await isar.writeTxn(() async {
+    await isar.writeTxn((isar) async {
       for (MsgData msgData in msgDataList) {
         msgModelList.add(await _handleMsg(msgData, convAESMap[msgData.convId]));
       }
@@ -310,7 +307,7 @@ class SDKManager {
     bool isFirstPull = await noticeModels().count() == 0;
     List<NoticeModel> noticeModelList = [];
     List<String> noticeIds = [];
-    await isar.writeTxn(() async {
+    await isar.writeTxn((isar) async {
       for (NoticeData noticeData in noticeDataList) {
         noticeModelList.add(await _handleNotice(noticeData));
         noticeIds.add(noticeData.noticeId);
@@ -658,7 +655,7 @@ class SDKManager {
     required MsgModel msgModel,
     bool includeMsgConv = false,
   }) async {
-    await isar.writeTxn(() async {
+    await isar.writeTxn((isar) async {
       if (msgModel.options.storageForClient == true) {
         await msgModels().put(msgModel);
       }

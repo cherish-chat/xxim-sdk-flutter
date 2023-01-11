@@ -15,15 +15,28 @@ dependencies:
     git: https://github.com/cherish-chat/xxim-core-flutter
   uuid: ^3.0.7
   encrypt: ^5.0.1
-  isar: ^3.0.5
-  isar_flutter_libs: ^3.0.5
+  isar:
+    git:
+      url: https://github.com/cherish-chat/isar-2.5.0
+      path: packages/isar
+  isar_flutter_libs: 2.5.0
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^2.0.0
   build_runner: ^2.3.2
-  isar_generator: ^3.0.5
+  isar_generator:
+    git:
+      url: https://github.com/cherish-chat/isar-2.5.0
+      path: packages/isar_generator
+
+dependency_overrides:
+  isar:
+    git:
+      url: https://github.com/cherish-chat/isar-2.5.0
+      path: packages/isar
+  isar_flutter_libs: 2.5.0
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

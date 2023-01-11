@@ -11,6 +11,7 @@ import 'package:xxim_sdk_flutter/src/manager/conv_manager.dart';
 import 'package:xxim_sdk_flutter/src/manager/msg_manager.dart';
 import 'package:xxim_sdk_flutter/src/manager/notice_manager.dart';
 import 'package:xxim_sdk_flutter/src/manager/sdk_manager.dart';
+import 'package:xxim_sdk_flutter/src/tool/sdk_tool.dart';
 
 class XXIMSDK {
   XXIMCore? _xximCore;
@@ -26,7 +27,6 @@ class XXIMSDK {
     Duration autoPullTime = const Duration(seconds: 20),
     int pullMsgCount = 200,
     List<CollectionSchema> isarSchemas = const [],
-    int isarMaxSizeMiB = Isar.defaultMaxSizeMiB,
     required String isarDirectory,
     bool isarInspector = false,
     required ConnectListener connectListener,
@@ -57,7 +57,6 @@ class XXIMSDK {
       autoPullTime: autoPullTime,
       pullMsgCount: pullMsgCount,
       isarSchemas: isarSchemas,
-      isarMaxSizeMiB: isarMaxSizeMiB,
       isarDirectory: isarDirectory,
       isarInspector: isarInspector,
       subscribeCallback: subscribeCallback,

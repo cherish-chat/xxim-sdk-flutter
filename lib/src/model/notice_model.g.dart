@@ -6,176 +6,143 @@ part of 'notice_model.dart';
 // IsarCollectionGenerator
 // **************************************************************************
 
-// coverage:ignore-file
-// ignore_for_file: duplicate_ignore, non_constant_identifier_names, constant_identifier_names, invalid_use_of_protected_member, unnecessary_cast, prefer_const_constructors, lines_longer_than_80_chars, require_trailing_commas, inference_failure_on_function_invocation, unnecessary_parenthesis, unnecessary_raw_strings, unnecessary_null_checks, join_return_with_assignment, prefer_final_locals, avoid_js_rounded_ints, avoid_positional_boolean_parameters
+// ignore_for_file: duplicate_ignore, non_constant_identifier_names, constant_identifier_names, invalid_use_of_protected_member, unnecessary_cast, unused_local_variable
 
 extension GetNoticeModelCollection on Isar {
-  IsarCollection<NoticeModel> get noticeModels => this.collection();
+  IsarCollection<NoticeModel> get noticeModels => getCollection();
 }
 
 const NoticeModelSchema = CollectionSchema(
-  name: r'NoticeModel',
-  id: 4188865387800949871,
-  properties: {
-    r'content': PropertySchema(
-      id: 0,
-      name: r'content',
-      type: IsarType.string,
-    ),
-    r'contentType': PropertySchema(
-      id: 1,
-      name: r'contentType',
-      type: IsarType.long,
-    ),
-    r'convId': PropertySchema(
-      id: 2,
-      name: r'convId',
-      type: IsarType.string,
-    ),
-    r'createTime': PropertySchema(
-      id: 3,
-      name: r'createTime',
-      type: IsarType.long,
-    ),
-    r'deleted': PropertySchema(
-      id: 4,
-      name: r'deleted',
-      type: IsarType.bool,
-    ),
-    r'ext': PropertySchema(
-      id: 5,
-      name: r'ext',
-      type: IsarType.string,
-    ),
-    r'noticeId': PropertySchema(
-      id: 6,
-      name: r'noticeId',
-      type: IsarType.string,
-    ),
-    r'options': PropertySchema(
-      id: 7,
-      name: r'options',
-      type: IsarType.object,
-      target: r'NoticeOptionsModel',
-    ),
-    r'title': PropertySchema(
-      id: 8,
-      name: r'title',
-      type: IsarType.string,
-    ),
-    r'unreadAbsolute': PropertySchema(
-      id: 9,
-      name: r'unreadAbsolute',
-      type: IsarType.bool,
-    ),
-    r'unreadCount': PropertySchema(
-      id: 10,
-      name: r'unreadCount',
-      type: IsarType.long,
-    )
+  name: 'NoticeModel',
+  schema:
+      '{"name":"NoticeModel","idName":"id","properties":[{"name":"content","type":"String"},{"name":"contentType","type":"Long"},{"name":"convId","type":"String"},{"name":"createTime","type":"Long"},{"name":"deleted","type":"Bool"},{"name":"ext","type":"String"},{"name":"noticeId","type":"String"},{"name":"options","type":"String"},{"name":"title","type":"String"},{"name":"unreadAbsolute","type":"Bool"},{"name":"unreadCount","type":"Long"}],"indexes":[{"name":"convId","unique":false,"properties":[{"name":"convId","type":"Hash","caseSensitive":true}]},{"name":"noticeId","unique":false,"properties":[{"name":"noticeId","type":"Hash","caseSensitive":true}]}],"links":[]}',
+  idName: 'id',
+  propertyIds: {
+    'content': 0,
+    'contentType': 1,
+    'convId': 2,
+    'createTime': 3,
+    'deleted': 4,
+    'ext': 5,
+    'noticeId': 6,
+    'options': 7,
+    'title': 8,
+    'unreadAbsolute': 9,
+    'unreadCount': 10
   },
-  estimateSize: _noticeModelEstimateSize,
-  serialize: _noticeModelSerialize,
-  deserialize: _noticeModelDeserialize,
-  deserializeProp: _noticeModelDeserializeProp,
-  idName: r'id',
-  indexes: {
-    r'convId': IndexSchema(
-      id: -7030550945641449152,
-      name: r'convId',
-      unique: false,
-      replace: false,
-      properties: [
-        IndexPropertySchema(
-          name: r'convId',
-          type: IndexType.hash,
-          caseSensitive: true,
-        )
-      ],
-    ),
-    r'noticeId': IndexSchema(
-      id: -4304276775649609611,
-      name: r'noticeId',
-      unique: false,
-      replace: false,
-      properties: [
-        IndexPropertySchema(
-          name: r'noticeId',
-          type: IndexType.hash,
-          caseSensitive: true,
-        )
-      ],
-    )
+  listProperties: {},
+  indexIds: {'convId': 0, 'noticeId': 1},
+  indexValueTypes: {
+    'convId': [
+      IndexValueType.stringHash,
+    ],
+    'noticeId': [
+      IndexValueType.stringHash,
+    ]
   },
-  links: {},
-  embeddedSchemas: {r'NoticeOptionsModel': NoticeOptionsModelSchema},
+  linkIds: {},
+  backlinkLinkNames: {},
   getId: _noticeModelGetId,
+  setId: _noticeModelSetId,
   getLinks: _noticeModelGetLinks,
-  attach: _noticeModelAttach,
-  version: '3.0.5',
+  attachLinks: _noticeModelAttachLinks,
+  serializeNative: _noticeModelSerializeNative,
+  deserializeNative: _noticeModelDeserializeNative,
+  deserializePropNative: _noticeModelDeserializePropNative,
+  serializeWeb: _noticeModelSerializeWeb,
+  deserializeWeb: _noticeModelDeserializeWeb,
+  deserializePropWeb: _noticeModelDeserializePropWeb,
+  version: 3,
 );
 
-int _noticeModelEstimateSize(
-  NoticeModel object,
-  List<int> offsets,
-  Map<Type, List<int>> allOffsets,
-) {
-  var bytesCount = offsets.last;
-  bytesCount += 3 + object.content.length * 3;
-  bytesCount += 3 + object.convId.length * 3;
-  bytesCount += 3 + object.ext.length * 3;
-  bytesCount += 3 + object.noticeId.length * 3;
-  bytesCount += 3 +
-      NoticeOptionsModelSchema.estimateSize(
-          object.options, allOffsets[NoticeOptionsModel]!, allOffsets);
-  bytesCount += 3 + object.title.length * 3;
-  return bytesCount;
+int? _noticeModelGetId(NoticeModel object) {
+  if (object.id == Isar.autoIncrement) {
+    return null;
+  } else {
+    return object.id;
+  }
 }
 
-void _noticeModelSerialize(
-  NoticeModel object,
-  IsarWriter writer,
-  List<int> offsets,
-  Map<Type, List<int>> allOffsets,
-) {
-  writer.writeString(offsets[0], object.content);
-  writer.writeLong(offsets[1], object.contentType);
-  writer.writeString(offsets[2], object.convId);
-  writer.writeLong(offsets[3], object.createTime);
-  writer.writeBool(offsets[4], object.deleted);
-  writer.writeString(offsets[5], object.ext);
-  writer.writeString(offsets[6], object.noticeId);
-  writer.writeObject<NoticeOptionsModel>(
-    offsets[7],
-    allOffsets,
-    NoticeOptionsModelSchema.serialize,
-    object.options,
-  );
-  writer.writeString(offsets[8], object.title);
-  writer.writeBool(offsets[9], object.unreadAbsolute);
-  writer.writeLong(offsets[10], object.unreadCount);
+void _noticeModelSetId(NoticeModel object, int id) {
+  object.id = id;
 }
 
-NoticeModel _noticeModelDeserialize(
-  Id id,
-  IsarReader reader,
-  List<int> offsets,
-  Map<Type, List<int>> allOffsets,
-) {
+List<IsarLinkBase> _noticeModelGetLinks(NoticeModel object) {
+  return [];
+}
+
+const _noticeModelNoticeOptionsConverter = NoticeOptionsConverter();
+
+void _noticeModelSerializeNative(
+    IsarCollection<NoticeModel> collection,
+    IsarRawObject rawObj,
+    NoticeModel object,
+    int staticSize,
+    List<int> offsets,
+    AdapterAlloc alloc) {
+  var dynamicSize = 0;
+  final value0 = object.content;
+  final _content = IsarBinaryWriter.utf8Encoder.convert(value0);
+  dynamicSize += (_content.length) as int;
+  final value1 = object.contentType;
+  final _contentType = value1;
+  final value2 = object.convId;
+  final _convId = IsarBinaryWriter.utf8Encoder.convert(value2);
+  dynamicSize += (_convId.length) as int;
+  final value3 = object.createTime;
+  final _createTime = value3;
+  final value4 = object.deleted;
+  final _deleted = value4;
+  final value5 = object.ext;
+  final _ext = IsarBinaryWriter.utf8Encoder.convert(value5);
+  dynamicSize += (_ext.length) as int;
+  final value6 = object.noticeId;
+  final _noticeId = IsarBinaryWriter.utf8Encoder.convert(value6);
+  dynamicSize += (_noticeId.length) as int;
+  final value7 = _noticeModelNoticeOptionsConverter.toIsar(object.options);
+  final _options = IsarBinaryWriter.utf8Encoder.convert(value7);
+  dynamicSize += (_options.length) as int;
+  final value8 = object.title;
+  final _title = IsarBinaryWriter.utf8Encoder.convert(value8);
+  dynamicSize += (_title.length) as int;
+  final value9 = object.unreadAbsolute;
+  final _unreadAbsolute = value9;
+  final value10 = object.unreadCount;
+  final _unreadCount = value10;
+  final size = staticSize + dynamicSize;
+
+  rawObj.buffer = alloc(size);
+  rawObj.buffer_length = size;
+  final buffer = IsarNative.bufAsBytes(rawObj.buffer, size);
+  final writer = IsarBinaryWriter(buffer, staticSize);
+  writer.writeBytes(offsets[0], _content);
+  writer.writeLong(offsets[1], _contentType);
+  writer.writeBytes(offsets[2], _convId);
+  writer.writeLong(offsets[3], _createTime);
+  writer.writeBool(offsets[4], _deleted);
+  writer.writeBytes(offsets[5], _ext);
+  writer.writeBytes(offsets[6], _noticeId);
+  writer.writeBytes(offsets[7], _options);
+  writer.writeBytes(offsets[8], _title);
+  writer.writeBool(offsets[9], _unreadAbsolute);
+  writer.writeLong(offsets[10], _unreadCount);
+}
+
+NoticeModel _noticeModelDeserializeNative(
+    IsarCollection<NoticeModel> collection,
+    int id,
+    IsarBinaryReader reader,
+    List<int> offsets) {
   final object = NoticeModel(
     content: reader.readString(offsets[0]),
     contentType: reader.readLong(offsets[1]),
     convId: reader.readString(offsets[2]),
     createTime: reader.readLong(offsets[3]),
-    deleted: reader.readBoolOrNull(offsets[4]) ?? false,
+    deleted: reader.readBool(offsets[4]),
     ext: reader.readString(offsets[5]),
     noticeId: reader.readString(offsets[6]),
-    options: reader.readObjectOrNull<NoticeOptionsModel>(
-          offsets[7],
-          NoticeOptionsModelSchema.deserialize,
-          allOffsets,
-        ) ??
-        NoticeOptionsModel(),
+    options: _noticeModelNoticeOptionsConverter
+        .fromIsar(reader.readString(offsets[7])),
     title: reader.readString(offsets[8]),
     unreadAbsolute: reader.readBool(offsets[9]),
     unreadCount: reader.readLong(offsets[10]),
@@ -184,13 +151,11 @@ NoticeModel _noticeModelDeserialize(
   return object;
 }
 
-P _noticeModelDeserializeProp<P>(
-  IsarReader reader,
-  int propertyId,
-  int offset,
-  Map<Type, List<int>> allOffsets,
-) {
-  switch (propertyId) {
+P _noticeModelDeserializePropNative<P>(
+    int id, IsarBinaryReader reader, int propertyIndex, int offset) {
+  switch (propertyIndex) {
+    case -1:
+      return id as P;
     case 0:
       return (reader.readString(offset)) as P;
     case 1:
@@ -200,18 +165,14 @@ P _noticeModelDeserializeProp<P>(
     case 3:
       return (reader.readLong(offset)) as P;
     case 4:
-      return (reader.readBoolOrNull(offset) ?? false) as P;
+      return (reader.readBool(offset)) as P;
     case 5:
       return (reader.readString(offset)) as P;
     case 6:
       return (reader.readString(offset)) as P;
     case 7:
-      return (reader.readObjectOrNull<NoticeOptionsModel>(
-            offset,
-            NoticeOptionsModelSchema.deserialize,
-            allOffsets,
-          ) ??
-          NoticeOptionsModel()) as P;
+      return (_noticeModelNoticeOptionsConverter
+          .fromIsar(reader.readString(offset))) as P;
     case 8:
       return (reader.readString(offset)) as P;
     case 9:
@@ -219,188 +180,228 @@ P _noticeModelDeserializeProp<P>(
     case 10:
       return (reader.readLong(offset)) as P;
     default:
-      throw IsarError('Unknown property with id $propertyId');
+      throw 'Illegal propertyIndex';
   }
 }
 
-Id _noticeModelGetId(NoticeModel object) {
-  return object.id;
+dynamic _noticeModelSerializeWeb(
+    IsarCollection<NoticeModel> collection, NoticeModel object) {
+  final jsObj = IsarNative.newJsObject();
+  IsarNative.jsObjectSet(jsObj, 'content', object.content);
+  IsarNative.jsObjectSet(jsObj, 'contentType', object.contentType);
+  IsarNative.jsObjectSet(jsObj, 'convId', object.convId);
+  IsarNative.jsObjectSet(jsObj, 'createTime', object.createTime);
+  IsarNative.jsObjectSet(jsObj, 'deleted', object.deleted);
+  IsarNative.jsObjectSet(jsObj, 'ext', object.ext);
+  IsarNative.jsObjectSet(jsObj, 'id', object.id);
+  IsarNative.jsObjectSet(jsObj, 'noticeId', object.noticeId);
+  IsarNative.jsObjectSet(jsObj, 'options',
+      _noticeModelNoticeOptionsConverter.toIsar(object.options));
+  IsarNative.jsObjectSet(jsObj, 'title', object.title);
+  IsarNative.jsObjectSet(jsObj, 'unreadAbsolute', object.unreadAbsolute);
+  IsarNative.jsObjectSet(jsObj, 'unreadCount', object.unreadCount);
+  return jsObj;
 }
 
-List<IsarLinkBase<dynamic>> _noticeModelGetLinks(NoticeModel object) {
-  return [];
+NoticeModel _noticeModelDeserializeWeb(
+    IsarCollection<NoticeModel> collection, dynamic jsObj) {
+  final object = NoticeModel(
+    content: IsarNative.jsObjectGet(jsObj, 'content') ?? '',
+    contentType:
+        IsarNative.jsObjectGet(jsObj, 'contentType') ?? double.negativeInfinity,
+    convId: IsarNative.jsObjectGet(jsObj, 'convId') ?? '',
+    createTime:
+        IsarNative.jsObjectGet(jsObj, 'createTime') ?? double.negativeInfinity,
+    deleted: IsarNative.jsObjectGet(jsObj, 'deleted') ?? false,
+    ext: IsarNative.jsObjectGet(jsObj, 'ext') ?? '',
+    noticeId: IsarNative.jsObjectGet(jsObj, 'noticeId') ?? '',
+    options: _noticeModelNoticeOptionsConverter
+        .fromIsar(IsarNative.jsObjectGet(jsObj, 'options') ?? ''),
+    title: IsarNative.jsObjectGet(jsObj, 'title') ?? '',
+    unreadAbsolute: IsarNative.jsObjectGet(jsObj, 'unreadAbsolute') ?? false,
+    unreadCount:
+        IsarNative.jsObjectGet(jsObj, 'unreadCount') ?? double.negativeInfinity,
+  );
+  object.id = IsarNative.jsObjectGet(jsObj, 'id') ?? double.negativeInfinity;
+  return object;
 }
 
-void _noticeModelAttach(
-    IsarCollection<dynamic> col, Id id, NoticeModel object) {
-  object.id = id;
+P _noticeModelDeserializePropWeb<P>(Object jsObj, String propertyName) {
+  switch (propertyName) {
+    case 'content':
+      return (IsarNative.jsObjectGet(jsObj, 'content') ?? '') as P;
+    case 'contentType':
+      return (IsarNative.jsObjectGet(jsObj, 'contentType') ??
+          double.negativeInfinity) as P;
+    case 'convId':
+      return (IsarNative.jsObjectGet(jsObj, 'convId') ?? '') as P;
+    case 'createTime':
+      return (IsarNative.jsObjectGet(jsObj, 'createTime') ??
+          double.negativeInfinity) as P;
+    case 'deleted':
+      return (IsarNative.jsObjectGet(jsObj, 'deleted') ?? false) as P;
+    case 'ext':
+      return (IsarNative.jsObjectGet(jsObj, 'ext') ?? '') as P;
+    case 'id':
+      return (IsarNative.jsObjectGet(jsObj, 'id') ?? double.negativeInfinity)
+          as P;
+    case 'noticeId':
+      return (IsarNative.jsObjectGet(jsObj, 'noticeId') ?? '') as P;
+    case 'options':
+      return (_noticeModelNoticeOptionsConverter
+          .fromIsar(IsarNative.jsObjectGet(jsObj, 'options') ?? '')) as P;
+    case 'title':
+      return (IsarNative.jsObjectGet(jsObj, 'title') ?? '') as P;
+    case 'unreadAbsolute':
+      return (IsarNative.jsObjectGet(jsObj, 'unreadAbsolute') ?? false) as P;
+    case 'unreadCount':
+      return (IsarNative.jsObjectGet(jsObj, 'unreadCount') ??
+          double.negativeInfinity) as P;
+    default:
+      throw 'Illegal propertyName';
+  }
 }
+
+void _noticeModelAttachLinks(IsarCollection col, int id, NoticeModel object) {}
 
 extension NoticeModelQueryWhereSort
     on QueryBuilder<NoticeModel, NoticeModel, QWhere> {
   QueryBuilder<NoticeModel, NoticeModel, QAfterWhere> anyId() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addWhereClause(const IdWhereClause.any());
-    });
+    return addWhereClauseInternal(const IdWhereClause.any());
+  }
+
+  QueryBuilder<NoticeModel, NoticeModel, QAfterWhere> anyConvId() {
+    return addWhereClauseInternal(
+        const IndexWhereClause.any(indexName: 'convId'));
+  }
+
+  QueryBuilder<NoticeModel, NoticeModel, QAfterWhere> anyNoticeId() {
+    return addWhereClauseInternal(
+        const IndexWhereClause.any(indexName: 'noticeId'));
   }
 }
 
 extension NoticeModelQueryWhere
     on QueryBuilder<NoticeModel, NoticeModel, QWhereClause> {
-  QueryBuilder<NoticeModel, NoticeModel, QAfterWhereClause> idEqualTo(Id id) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addWhereClause(IdWhereClause.between(
-        lower: id,
-        upper: id,
-      ));
-    });
+  QueryBuilder<NoticeModel, NoticeModel, QAfterWhereClause> idEqualTo(int id) {
+    return addWhereClauseInternal(IdWhereClause.between(
+      lower: id,
+      includeLower: true,
+      upper: id,
+      includeUpper: true,
+    ));
   }
 
   QueryBuilder<NoticeModel, NoticeModel, QAfterWhereClause> idNotEqualTo(
-      Id id) {
-    return QueryBuilder.apply(this, (query) {
-      if (query.whereSort == Sort.asc) {
-        return query
-            .addWhereClause(
-              IdWhereClause.lessThan(upper: id, includeUpper: false),
-            )
-            .addWhereClause(
-              IdWhereClause.greaterThan(lower: id, includeLower: false),
-            );
-      } else {
-        return query
-            .addWhereClause(
-              IdWhereClause.greaterThan(lower: id, includeLower: false),
-            )
-            .addWhereClause(
-              IdWhereClause.lessThan(upper: id, includeUpper: false),
-            );
-      }
-    });
+      int id) {
+    if (whereSortInternal == Sort.asc) {
+      return addWhereClauseInternal(
+        IdWhereClause.lessThan(upper: id, includeUpper: false),
+      ).addWhereClauseInternal(
+        IdWhereClause.greaterThan(lower: id, includeLower: false),
+      );
+    } else {
+      return addWhereClauseInternal(
+        IdWhereClause.greaterThan(lower: id, includeLower: false),
+      ).addWhereClauseInternal(
+        IdWhereClause.lessThan(upper: id, includeUpper: false),
+      );
+    }
   }
 
-  QueryBuilder<NoticeModel, NoticeModel, QAfterWhereClause> idGreaterThan(Id id,
+  QueryBuilder<NoticeModel, NoticeModel, QAfterWhereClause> idGreaterThan(
+      int id,
       {bool include = false}) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addWhereClause(
-        IdWhereClause.greaterThan(lower: id, includeLower: include),
-      );
-    });
+    return addWhereClauseInternal(
+      IdWhereClause.greaterThan(lower: id, includeLower: include),
+    );
   }
 
-  QueryBuilder<NoticeModel, NoticeModel, QAfterWhereClause> idLessThan(Id id,
+  QueryBuilder<NoticeModel, NoticeModel, QAfterWhereClause> idLessThan(int id,
       {bool include = false}) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addWhereClause(
-        IdWhereClause.lessThan(upper: id, includeUpper: include),
-      );
-    });
+    return addWhereClauseInternal(
+      IdWhereClause.lessThan(upper: id, includeUpper: include),
+    );
   }
 
   QueryBuilder<NoticeModel, NoticeModel, QAfterWhereClause> idBetween(
-    Id lowerId,
-    Id upperId, {
+    int lowerId,
+    int upperId, {
     bool includeLower = true,
     bool includeUpper = true,
   }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addWhereClause(IdWhereClause.between(
-        lower: lowerId,
-        includeLower: includeLower,
-        upper: upperId,
-        includeUpper: includeUpper,
-      ));
-    });
+    return addWhereClauseInternal(IdWhereClause.between(
+      lower: lowerId,
+      includeLower: includeLower,
+      upper: upperId,
+      includeUpper: includeUpper,
+    ));
   }
 
   QueryBuilder<NoticeModel, NoticeModel, QAfterWhereClause> convIdEqualTo(
       String convId) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addWhereClause(IndexWhereClause.equalTo(
-        indexName: r'convId',
-        value: [convId],
-      ));
-    });
+    return addWhereClauseInternal(IndexWhereClause.equalTo(
+      indexName: 'convId',
+      value: [convId],
+    ));
   }
 
   QueryBuilder<NoticeModel, NoticeModel, QAfterWhereClause> convIdNotEqualTo(
       String convId) {
-    return QueryBuilder.apply(this, (query) {
-      if (query.whereSort == Sort.asc) {
-        return query
-            .addWhereClause(IndexWhereClause.between(
-              indexName: r'convId',
-              lower: [],
-              upper: [convId],
-              includeUpper: false,
-            ))
-            .addWhereClause(IndexWhereClause.between(
-              indexName: r'convId',
-              lower: [convId],
-              includeLower: false,
-              upper: [],
-            ));
-      } else {
-        return query
-            .addWhereClause(IndexWhereClause.between(
-              indexName: r'convId',
-              lower: [convId],
-              includeLower: false,
-              upper: [],
-            ))
-            .addWhereClause(IndexWhereClause.between(
-              indexName: r'convId',
-              lower: [],
-              upper: [convId],
-              includeUpper: false,
-            ));
-      }
-    });
+    if (whereSortInternal == Sort.asc) {
+      return addWhereClauseInternal(IndexWhereClause.lessThan(
+        indexName: 'convId',
+        upper: [convId],
+        includeUpper: false,
+      )).addWhereClauseInternal(IndexWhereClause.greaterThan(
+        indexName: 'convId',
+        lower: [convId],
+        includeLower: false,
+      ));
+    } else {
+      return addWhereClauseInternal(IndexWhereClause.greaterThan(
+        indexName: 'convId',
+        lower: [convId],
+        includeLower: false,
+      )).addWhereClauseInternal(IndexWhereClause.lessThan(
+        indexName: 'convId',
+        upper: [convId],
+        includeUpper: false,
+      ));
+    }
   }
 
   QueryBuilder<NoticeModel, NoticeModel, QAfterWhereClause> noticeIdEqualTo(
       String noticeId) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addWhereClause(IndexWhereClause.equalTo(
-        indexName: r'noticeId',
-        value: [noticeId],
-      ));
-    });
+    return addWhereClauseInternal(IndexWhereClause.equalTo(
+      indexName: 'noticeId',
+      value: [noticeId],
+    ));
   }
 
   QueryBuilder<NoticeModel, NoticeModel, QAfterWhereClause> noticeIdNotEqualTo(
       String noticeId) {
-    return QueryBuilder.apply(this, (query) {
-      if (query.whereSort == Sort.asc) {
-        return query
-            .addWhereClause(IndexWhereClause.between(
-              indexName: r'noticeId',
-              lower: [],
-              upper: [noticeId],
-              includeUpper: false,
-            ))
-            .addWhereClause(IndexWhereClause.between(
-              indexName: r'noticeId',
-              lower: [noticeId],
-              includeLower: false,
-              upper: [],
-            ));
-      } else {
-        return query
-            .addWhereClause(IndexWhereClause.between(
-              indexName: r'noticeId',
-              lower: [noticeId],
-              includeLower: false,
-              upper: [],
-            ))
-            .addWhereClause(IndexWhereClause.between(
-              indexName: r'noticeId',
-              lower: [],
-              upper: [noticeId],
-              includeUpper: false,
-            ));
-      }
-    });
+    if (whereSortInternal == Sort.asc) {
+      return addWhereClauseInternal(IndexWhereClause.lessThan(
+        indexName: 'noticeId',
+        upper: [noticeId],
+        includeUpper: false,
+      )).addWhereClauseInternal(IndexWhereClause.greaterThan(
+        indexName: 'noticeId',
+        lower: [noticeId],
+        includeLower: false,
+      ));
+    } else {
+      return addWhereClauseInternal(IndexWhereClause.greaterThan(
+        indexName: 'noticeId',
+        lower: [noticeId],
+        includeLower: false,
+      )).addWhereClauseInternal(IndexWhereClause.lessThan(
+        indexName: 'noticeId',
+        upper: [noticeId],
+        includeUpper: false,
+      ));
+    }
   }
 }
 
@@ -410,63 +411,58 @@ extension NoticeModelQueryFilter
     String value, {
     bool caseSensitive = true,
   }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'content',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.eq,
+      property: 'content',
+      value: value,
+      caseSensitive: caseSensitive,
+    ));
   }
 
   QueryBuilder<NoticeModel, NoticeModel, QAfterFilterCondition>
       contentGreaterThan(
     String value, {
-    bool include = false,
     bool caseSensitive = true,
+    bool include = false,
   }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        include: include,
-        property: r'content',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.gt,
+      include: include,
+      property: 'content',
+      value: value,
+      caseSensitive: caseSensitive,
+    ));
   }
 
   QueryBuilder<NoticeModel, NoticeModel, QAfterFilterCondition> contentLessThan(
     String value, {
-    bool include = false,
     bool caseSensitive = true,
+    bool include = false,
   }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.lessThan(
-        include: include,
-        property: r'content',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.lt,
+      include: include,
+      property: 'content',
+      value: value,
+      caseSensitive: caseSensitive,
+    ));
   }
 
   QueryBuilder<NoticeModel, NoticeModel, QAfterFilterCondition> contentBetween(
     String lower,
     String upper, {
+    bool caseSensitive = true,
     bool includeLower = true,
     bool includeUpper = true,
-    bool caseSensitive = true,
   }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.between(
-        property: r'content',
-        lower: lower,
-        includeLower: includeLower,
-        upper: upper,
-        includeUpper: includeUpper,
-        caseSensitive: caseSensitive,
-      ));
-    });
+    return addFilterConditionInternal(FilterCondition.between(
+      property: 'content',
+      lower: lower,
+      includeLower: includeLower,
+      upper: upper,
+      includeUpper: includeUpper,
+      caseSensitive: caseSensitive,
+    ));
   }
 
   QueryBuilder<NoticeModel, NoticeModel, QAfterFilterCondition>
@@ -474,80 +470,55 @@ extension NoticeModelQueryFilter
     String value, {
     bool caseSensitive = true,
   }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.startsWith(
-        property: r'content',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.startsWith,
+      property: 'content',
+      value: value,
+      caseSensitive: caseSensitive,
+    ));
   }
 
   QueryBuilder<NoticeModel, NoticeModel, QAfterFilterCondition> contentEndsWith(
     String value, {
     bool caseSensitive = true,
   }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.endsWith(
-        property: r'content',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.endsWith,
+      property: 'content',
+      value: value,
+      caseSensitive: caseSensitive,
+    ));
   }
 
   QueryBuilder<NoticeModel, NoticeModel, QAfterFilterCondition> contentContains(
       String value,
       {bool caseSensitive = true}) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.contains(
-        property: r'content',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.contains,
+      property: 'content',
+      value: value,
+      caseSensitive: caseSensitive,
+    ));
   }
 
   QueryBuilder<NoticeModel, NoticeModel, QAfterFilterCondition> contentMatches(
       String pattern,
       {bool caseSensitive = true}) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.matches(
-        property: r'content',
-        wildcard: pattern,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<NoticeModel, NoticeModel, QAfterFilterCondition>
-      contentIsEmpty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'content',
-        value: '',
-      ));
-    });
-  }
-
-  QueryBuilder<NoticeModel, NoticeModel, QAfterFilterCondition>
-      contentIsNotEmpty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        property: r'content',
-        value: '',
-      ));
-    });
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.matches,
+      property: 'content',
+      value: pattern,
+      caseSensitive: caseSensitive,
+    ));
   }
 
   QueryBuilder<NoticeModel, NoticeModel, QAfterFilterCondition>
       contentTypeEqualTo(int value) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'contentType',
-        value: value,
-      ));
-    });
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.eq,
+      property: 'contentType',
+      value: value,
+    ));
   }
 
   QueryBuilder<NoticeModel, NoticeModel, QAfterFilterCondition>
@@ -555,13 +526,12 @@ extension NoticeModelQueryFilter
     int value, {
     bool include = false,
   }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        include: include,
-        property: r'contentType',
-        value: value,
-      ));
-    });
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.gt,
+      include: include,
+      property: 'contentType',
+      value: value,
+    ));
   }
 
   QueryBuilder<NoticeModel, NoticeModel, QAfterFilterCondition>
@@ -569,13 +539,12 @@ extension NoticeModelQueryFilter
     int value, {
     bool include = false,
   }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.lessThan(
-        include: include,
-        property: r'contentType',
-        value: value,
-      ));
-    });
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.lt,
+      include: include,
+      property: 'contentType',
+      value: value,
+    ));
   }
 
   QueryBuilder<NoticeModel, NoticeModel, QAfterFilterCondition>
@@ -585,78 +554,71 @@ extension NoticeModelQueryFilter
     bool includeLower = true,
     bool includeUpper = true,
   }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.between(
-        property: r'contentType',
-        lower: lower,
-        includeLower: includeLower,
-        upper: upper,
-        includeUpper: includeUpper,
-      ));
-    });
+    return addFilterConditionInternal(FilterCondition.between(
+      property: 'contentType',
+      lower: lower,
+      includeLower: includeLower,
+      upper: upper,
+      includeUpper: includeUpper,
+    ));
   }
 
   QueryBuilder<NoticeModel, NoticeModel, QAfterFilterCondition> convIdEqualTo(
     String value, {
     bool caseSensitive = true,
   }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'convId',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.eq,
+      property: 'convId',
+      value: value,
+      caseSensitive: caseSensitive,
+    ));
   }
 
   QueryBuilder<NoticeModel, NoticeModel, QAfterFilterCondition>
       convIdGreaterThan(
     String value, {
-    bool include = false,
     bool caseSensitive = true,
+    bool include = false,
   }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        include: include,
-        property: r'convId',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.gt,
+      include: include,
+      property: 'convId',
+      value: value,
+      caseSensitive: caseSensitive,
+    ));
   }
 
   QueryBuilder<NoticeModel, NoticeModel, QAfterFilterCondition> convIdLessThan(
     String value, {
-    bool include = false,
     bool caseSensitive = true,
+    bool include = false,
   }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.lessThan(
-        include: include,
-        property: r'convId',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.lt,
+      include: include,
+      property: 'convId',
+      value: value,
+      caseSensitive: caseSensitive,
+    ));
   }
 
   QueryBuilder<NoticeModel, NoticeModel, QAfterFilterCondition> convIdBetween(
     String lower,
     String upper, {
+    bool caseSensitive = true,
     bool includeLower = true,
     bool includeUpper = true,
-    bool caseSensitive = true,
   }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.between(
-        property: r'convId',
-        lower: lower,
-        includeLower: includeLower,
-        upper: upper,
-        includeUpper: includeUpper,
-        caseSensitive: caseSensitive,
-      ));
-    });
+    return addFilterConditionInternal(FilterCondition.between(
+      property: 'convId',
+      lower: lower,
+      includeLower: includeLower,
+      upper: upper,
+      includeUpper: includeUpper,
+      caseSensitive: caseSensitive,
+    ));
   }
 
   QueryBuilder<NoticeModel, NoticeModel, QAfterFilterCondition>
@@ -664,80 +626,55 @@ extension NoticeModelQueryFilter
     String value, {
     bool caseSensitive = true,
   }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.startsWith(
-        property: r'convId',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.startsWith,
+      property: 'convId',
+      value: value,
+      caseSensitive: caseSensitive,
+    ));
   }
 
   QueryBuilder<NoticeModel, NoticeModel, QAfterFilterCondition> convIdEndsWith(
     String value, {
     bool caseSensitive = true,
   }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.endsWith(
-        property: r'convId',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.endsWith,
+      property: 'convId',
+      value: value,
+      caseSensitive: caseSensitive,
+    ));
   }
 
   QueryBuilder<NoticeModel, NoticeModel, QAfterFilterCondition> convIdContains(
       String value,
       {bool caseSensitive = true}) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.contains(
-        property: r'convId',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.contains,
+      property: 'convId',
+      value: value,
+      caseSensitive: caseSensitive,
+    ));
   }
 
   QueryBuilder<NoticeModel, NoticeModel, QAfterFilterCondition> convIdMatches(
       String pattern,
       {bool caseSensitive = true}) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.matches(
-        property: r'convId',
-        wildcard: pattern,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<NoticeModel, NoticeModel, QAfterFilterCondition>
-      convIdIsEmpty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'convId',
-        value: '',
-      ));
-    });
-  }
-
-  QueryBuilder<NoticeModel, NoticeModel, QAfterFilterCondition>
-      convIdIsNotEmpty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        property: r'convId',
-        value: '',
-      ));
-    });
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.matches,
+      property: 'convId',
+      value: pattern,
+      caseSensitive: caseSensitive,
+    ));
   }
 
   QueryBuilder<NoticeModel, NoticeModel, QAfterFilterCondition>
       createTimeEqualTo(int value) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'createTime',
-        value: value,
-      ));
-    });
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.eq,
+      property: 'createTime',
+      value: value,
+    ));
   }
 
   QueryBuilder<NoticeModel, NoticeModel, QAfterFilterCondition>
@@ -745,13 +682,12 @@ extension NoticeModelQueryFilter
     int value, {
     bool include = false,
   }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        include: include,
-        property: r'createTime',
-        value: value,
-      ));
-    });
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.gt,
+      include: include,
+      property: 'createTime',
+      value: value,
+    ));
   }
 
   QueryBuilder<NoticeModel, NoticeModel, QAfterFilterCondition>
@@ -759,13 +695,12 @@ extension NoticeModelQueryFilter
     int value, {
     bool include = false,
   }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.lessThan(
-        include: include,
-        property: r'createTime',
-        value: value,
-      ));
-    });
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.lt,
+      include: include,
+      property: 'createTime',
+      value: value,
+    ));
   }
 
   QueryBuilder<NoticeModel, NoticeModel, QAfterFilterCondition>
@@ -775,273 +710,232 @@ extension NoticeModelQueryFilter
     bool includeLower = true,
     bool includeUpper = true,
   }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.between(
-        property: r'createTime',
-        lower: lower,
-        includeLower: includeLower,
-        upper: upper,
-        includeUpper: includeUpper,
-      ));
-    });
+    return addFilterConditionInternal(FilterCondition.between(
+      property: 'createTime',
+      lower: lower,
+      includeLower: includeLower,
+      upper: upper,
+      includeUpper: includeUpper,
+    ));
   }
 
   QueryBuilder<NoticeModel, NoticeModel, QAfterFilterCondition> deletedEqualTo(
       bool value) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'deleted',
-        value: value,
-      ));
-    });
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.eq,
+      property: 'deleted',
+      value: value,
+    ));
   }
 
   QueryBuilder<NoticeModel, NoticeModel, QAfterFilterCondition> extEqualTo(
     String value, {
     bool caseSensitive = true,
   }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'ext',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.eq,
+      property: 'ext',
+      value: value,
+      caseSensitive: caseSensitive,
+    ));
   }
 
   QueryBuilder<NoticeModel, NoticeModel, QAfterFilterCondition> extGreaterThan(
     String value, {
-    bool include = false,
     bool caseSensitive = true,
+    bool include = false,
   }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        include: include,
-        property: r'ext',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.gt,
+      include: include,
+      property: 'ext',
+      value: value,
+      caseSensitive: caseSensitive,
+    ));
   }
 
   QueryBuilder<NoticeModel, NoticeModel, QAfterFilterCondition> extLessThan(
     String value, {
-    bool include = false,
     bool caseSensitive = true,
+    bool include = false,
   }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.lessThan(
-        include: include,
-        property: r'ext',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.lt,
+      include: include,
+      property: 'ext',
+      value: value,
+      caseSensitive: caseSensitive,
+    ));
   }
 
   QueryBuilder<NoticeModel, NoticeModel, QAfterFilterCondition> extBetween(
     String lower,
     String upper, {
+    bool caseSensitive = true,
     bool includeLower = true,
     bool includeUpper = true,
-    bool caseSensitive = true,
   }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.between(
-        property: r'ext',
-        lower: lower,
-        includeLower: includeLower,
-        upper: upper,
-        includeUpper: includeUpper,
-        caseSensitive: caseSensitive,
-      ));
-    });
+    return addFilterConditionInternal(FilterCondition.between(
+      property: 'ext',
+      lower: lower,
+      includeLower: includeLower,
+      upper: upper,
+      includeUpper: includeUpper,
+      caseSensitive: caseSensitive,
+    ));
   }
 
   QueryBuilder<NoticeModel, NoticeModel, QAfterFilterCondition> extStartsWith(
     String value, {
     bool caseSensitive = true,
   }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.startsWith(
-        property: r'ext',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.startsWith,
+      property: 'ext',
+      value: value,
+      caseSensitive: caseSensitive,
+    ));
   }
 
   QueryBuilder<NoticeModel, NoticeModel, QAfterFilterCondition> extEndsWith(
     String value, {
     bool caseSensitive = true,
   }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.endsWith(
-        property: r'ext',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.endsWith,
+      property: 'ext',
+      value: value,
+      caseSensitive: caseSensitive,
+    ));
   }
 
   QueryBuilder<NoticeModel, NoticeModel, QAfterFilterCondition> extContains(
       String value,
       {bool caseSensitive = true}) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.contains(
-        property: r'ext',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.contains,
+      property: 'ext',
+      value: value,
+      caseSensitive: caseSensitive,
+    ));
   }
 
   QueryBuilder<NoticeModel, NoticeModel, QAfterFilterCondition> extMatches(
       String pattern,
       {bool caseSensitive = true}) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.matches(
-        property: r'ext',
-        wildcard: pattern,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<NoticeModel, NoticeModel, QAfterFilterCondition> extIsEmpty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'ext',
-        value: '',
-      ));
-    });
-  }
-
-  QueryBuilder<NoticeModel, NoticeModel, QAfterFilterCondition>
-      extIsNotEmpty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        property: r'ext',
-        value: '',
-      ));
-    });
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.matches,
+      property: 'ext',
+      value: pattern,
+      caseSensitive: caseSensitive,
+    ));
   }
 
   QueryBuilder<NoticeModel, NoticeModel, QAfterFilterCondition> idEqualTo(
-      Id value) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'id',
-        value: value,
-      ));
-    });
+      int value) {
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.eq,
+      property: 'id',
+      value: value,
+    ));
   }
 
   QueryBuilder<NoticeModel, NoticeModel, QAfterFilterCondition> idGreaterThan(
-    Id value, {
+    int value, {
     bool include = false,
   }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        include: include,
-        property: r'id',
-        value: value,
-      ));
-    });
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.gt,
+      include: include,
+      property: 'id',
+      value: value,
+    ));
   }
 
   QueryBuilder<NoticeModel, NoticeModel, QAfterFilterCondition> idLessThan(
-    Id value, {
+    int value, {
     bool include = false,
   }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.lessThan(
-        include: include,
-        property: r'id',
-        value: value,
-      ));
-    });
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.lt,
+      include: include,
+      property: 'id',
+      value: value,
+    ));
   }
 
   QueryBuilder<NoticeModel, NoticeModel, QAfterFilterCondition> idBetween(
-    Id lower,
-    Id upper, {
+    int lower,
+    int upper, {
     bool includeLower = true,
     bool includeUpper = true,
   }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.between(
-        property: r'id',
-        lower: lower,
-        includeLower: includeLower,
-        upper: upper,
-        includeUpper: includeUpper,
-      ));
-    });
+    return addFilterConditionInternal(FilterCondition.between(
+      property: 'id',
+      lower: lower,
+      includeLower: includeLower,
+      upper: upper,
+      includeUpper: includeUpper,
+    ));
   }
 
   QueryBuilder<NoticeModel, NoticeModel, QAfterFilterCondition> noticeIdEqualTo(
     String value, {
     bool caseSensitive = true,
   }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'noticeId',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.eq,
+      property: 'noticeId',
+      value: value,
+      caseSensitive: caseSensitive,
+    ));
   }
 
   QueryBuilder<NoticeModel, NoticeModel, QAfterFilterCondition>
       noticeIdGreaterThan(
     String value, {
-    bool include = false,
     bool caseSensitive = true,
+    bool include = false,
   }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        include: include,
-        property: r'noticeId',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.gt,
+      include: include,
+      property: 'noticeId',
+      value: value,
+      caseSensitive: caseSensitive,
+    ));
   }
 
   QueryBuilder<NoticeModel, NoticeModel, QAfterFilterCondition>
       noticeIdLessThan(
     String value, {
-    bool include = false,
     bool caseSensitive = true,
+    bool include = false,
   }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.lessThan(
-        include: include,
-        property: r'noticeId',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.lt,
+      include: include,
+      property: 'noticeId',
+      value: value,
+      caseSensitive: caseSensitive,
+    ));
   }
 
   QueryBuilder<NoticeModel, NoticeModel, QAfterFilterCondition> noticeIdBetween(
     String lower,
     String upper, {
+    bool caseSensitive = true,
     bool includeLower = true,
     bool includeUpper = true,
-    bool caseSensitive = true,
   }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.between(
-        property: r'noticeId',
-        lower: lower,
-        includeLower: includeLower,
-        upper: upper,
-        includeUpper: includeUpper,
-        caseSensitive: caseSensitive,
-      ));
-    });
+    return addFilterConditionInternal(FilterCondition.between(
+      property: 'noticeId',
+      lower: lower,
+      includeLower: includeLower,
+      upper: upper,
+      includeUpper: includeUpper,
+      caseSensitive: caseSensitive,
+    ));
   }
 
   QueryBuilder<NoticeModel, NoticeModel, QAfterFilterCondition>
@@ -1049,13 +943,12 @@ extension NoticeModelQueryFilter
     String value, {
     bool caseSensitive = true,
   }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.startsWith(
-        property: r'noticeId',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.startsWith,
+      property: 'noticeId',
+      value: value,
+      caseSensitive: caseSensitive,
+    ));
   }
 
   QueryBuilder<NoticeModel, NoticeModel, QAfterFilterCondition>
@@ -1063,208 +956,260 @@ extension NoticeModelQueryFilter
     String value, {
     bool caseSensitive = true,
   }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.endsWith(
-        property: r'noticeId',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.endsWith,
+      property: 'noticeId',
+      value: value,
+      caseSensitive: caseSensitive,
+    ));
   }
 
   QueryBuilder<NoticeModel, NoticeModel, QAfterFilterCondition>
       noticeIdContains(String value, {bool caseSensitive = true}) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.contains(
-        property: r'noticeId',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.contains,
+      property: 'noticeId',
+      value: value,
+      caseSensitive: caseSensitive,
+    ));
   }
 
   QueryBuilder<NoticeModel, NoticeModel, QAfterFilterCondition> noticeIdMatches(
       String pattern,
       {bool caseSensitive = true}) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.matches(
-        property: r'noticeId',
-        wildcard: pattern,
-        caseSensitive: caseSensitive,
-      ));
-    });
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.matches,
+      property: 'noticeId',
+      value: pattern,
+      caseSensitive: caseSensitive,
+    ));
+  }
+
+  QueryBuilder<NoticeModel, NoticeModel, QAfterFilterCondition> optionsEqualTo(
+    NoticeOptionsModel value, {
+    bool caseSensitive = true,
+  }) {
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.eq,
+      property: 'options',
+      value: _noticeModelNoticeOptionsConverter.toIsar(value),
+      caseSensitive: caseSensitive,
+    ));
   }
 
   QueryBuilder<NoticeModel, NoticeModel, QAfterFilterCondition>
-      noticeIdIsEmpty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'noticeId',
-        value: '',
-      ));
-    });
+      optionsGreaterThan(
+    NoticeOptionsModel value, {
+    bool caseSensitive = true,
+    bool include = false,
+  }) {
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.gt,
+      include: include,
+      property: 'options',
+      value: _noticeModelNoticeOptionsConverter.toIsar(value),
+      caseSensitive: caseSensitive,
+    ));
+  }
+
+  QueryBuilder<NoticeModel, NoticeModel, QAfterFilterCondition> optionsLessThan(
+    NoticeOptionsModel value, {
+    bool caseSensitive = true,
+    bool include = false,
+  }) {
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.lt,
+      include: include,
+      property: 'options',
+      value: _noticeModelNoticeOptionsConverter.toIsar(value),
+      caseSensitive: caseSensitive,
+    ));
+  }
+
+  QueryBuilder<NoticeModel, NoticeModel, QAfterFilterCondition> optionsBetween(
+    NoticeOptionsModel lower,
+    NoticeOptionsModel upper, {
+    bool caseSensitive = true,
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return addFilterConditionInternal(FilterCondition.between(
+      property: 'options',
+      lower: _noticeModelNoticeOptionsConverter.toIsar(lower),
+      includeLower: includeLower,
+      upper: _noticeModelNoticeOptionsConverter.toIsar(upper),
+      includeUpper: includeUpper,
+      caseSensitive: caseSensitive,
+    ));
   }
 
   QueryBuilder<NoticeModel, NoticeModel, QAfterFilterCondition>
-      noticeIdIsNotEmpty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        property: r'noticeId',
-        value: '',
-      ));
-    });
+      optionsStartsWith(
+    NoticeOptionsModel value, {
+    bool caseSensitive = true,
+  }) {
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.startsWith,
+      property: 'options',
+      value: _noticeModelNoticeOptionsConverter.toIsar(value),
+      caseSensitive: caseSensitive,
+    ));
+  }
+
+  QueryBuilder<NoticeModel, NoticeModel, QAfterFilterCondition> optionsEndsWith(
+    NoticeOptionsModel value, {
+    bool caseSensitive = true,
+  }) {
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.endsWith,
+      property: 'options',
+      value: _noticeModelNoticeOptionsConverter.toIsar(value),
+      caseSensitive: caseSensitive,
+    ));
+  }
+
+  QueryBuilder<NoticeModel, NoticeModel, QAfterFilterCondition> optionsContains(
+      NoticeOptionsModel value,
+      {bool caseSensitive = true}) {
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.contains,
+      property: 'options',
+      value: _noticeModelNoticeOptionsConverter.toIsar(value),
+      caseSensitive: caseSensitive,
+    ));
+  }
+
+  QueryBuilder<NoticeModel, NoticeModel, QAfterFilterCondition> optionsMatches(
+      String pattern,
+      {bool caseSensitive = true}) {
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.matches,
+      property: 'options',
+      value: pattern,
+      caseSensitive: caseSensitive,
+    ));
   }
 
   QueryBuilder<NoticeModel, NoticeModel, QAfterFilterCondition> titleEqualTo(
     String value, {
     bool caseSensitive = true,
   }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'title',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.eq,
+      property: 'title',
+      value: value,
+      caseSensitive: caseSensitive,
+    ));
   }
 
   QueryBuilder<NoticeModel, NoticeModel, QAfterFilterCondition>
       titleGreaterThan(
     String value, {
-    bool include = false,
     bool caseSensitive = true,
+    bool include = false,
   }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        include: include,
-        property: r'title',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.gt,
+      include: include,
+      property: 'title',
+      value: value,
+      caseSensitive: caseSensitive,
+    ));
   }
 
   QueryBuilder<NoticeModel, NoticeModel, QAfterFilterCondition> titleLessThan(
     String value, {
-    bool include = false,
     bool caseSensitive = true,
+    bool include = false,
   }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.lessThan(
-        include: include,
-        property: r'title',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.lt,
+      include: include,
+      property: 'title',
+      value: value,
+      caseSensitive: caseSensitive,
+    ));
   }
 
   QueryBuilder<NoticeModel, NoticeModel, QAfterFilterCondition> titleBetween(
     String lower,
     String upper, {
+    bool caseSensitive = true,
     bool includeLower = true,
     bool includeUpper = true,
-    bool caseSensitive = true,
   }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.between(
-        property: r'title',
-        lower: lower,
-        includeLower: includeLower,
-        upper: upper,
-        includeUpper: includeUpper,
-        caseSensitive: caseSensitive,
-      ));
-    });
+    return addFilterConditionInternal(FilterCondition.between(
+      property: 'title',
+      lower: lower,
+      includeLower: includeLower,
+      upper: upper,
+      includeUpper: includeUpper,
+      caseSensitive: caseSensitive,
+    ));
   }
 
   QueryBuilder<NoticeModel, NoticeModel, QAfterFilterCondition> titleStartsWith(
     String value, {
     bool caseSensitive = true,
   }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.startsWith(
-        property: r'title',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.startsWith,
+      property: 'title',
+      value: value,
+      caseSensitive: caseSensitive,
+    ));
   }
 
   QueryBuilder<NoticeModel, NoticeModel, QAfterFilterCondition> titleEndsWith(
     String value, {
     bool caseSensitive = true,
   }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.endsWith(
-        property: r'title',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.endsWith,
+      property: 'title',
+      value: value,
+      caseSensitive: caseSensitive,
+    ));
   }
 
   QueryBuilder<NoticeModel, NoticeModel, QAfterFilterCondition> titleContains(
       String value,
       {bool caseSensitive = true}) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.contains(
-        property: r'title',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.contains,
+      property: 'title',
+      value: value,
+      caseSensitive: caseSensitive,
+    ));
   }
 
   QueryBuilder<NoticeModel, NoticeModel, QAfterFilterCondition> titleMatches(
       String pattern,
       {bool caseSensitive = true}) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.matches(
-        property: r'title',
-        wildcard: pattern,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<NoticeModel, NoticeModel, QAfterFilterCondition> titleIsEmpty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'title',
-        value: '',
-      ));
-    });
-  }
-
-  QueryBuilder<NoticeModel, NoticeModel, QAfterFilterCondition>
-      titleIsNotEmpty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        property: r'title',
-        value: '',
-      ));
-    });
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.matches,
+      property: 'title',
+      value: pattern,
+      caseSensitive: caseSensitive,
+    ));
   }
 
   QueryBuilder<NoticeModel, NoticeModel, QAfterFilterCondition>
       unreadAbsoluteEqualTo(bool value) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'unreadAbsolute',
-        value: value,
-      ));
-    });
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.eq,
+      property: 'unreadAbsolute',
+      value: value,
+    ));
   }
 
   QueryBuilder<NoticeModel, NoticeModel, QAfterFilterCondition>
       unreadCountEqualTo(int value) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'unreadCount',
-        value: value,
-      ));
-    });
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.eq,
+      property: 'unreadCount',
+      value: value,
+    ));
   }
 
   QueryBuilder<NoticeModel, NoticeModel, QAfterFilterCondition>
@@ -1272,13 +1217,12 @@ extension NoticeModelQueryFilter
     int value, {
     bool include = false,
   }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        include: include,
-        property: r'unreadCount',
-        value: value,
-      ));
-    });
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.gt,
+      include: include,
+      property: 'unreadCount',
+      value: value,
+    ));
   }
 
   QueryBuilder<NoticeModel, NoticeModel, QAfterFilterCondition>
@@ -1286,13 +1230,12 @@ extension NoticeModelQueryFilter
     int value, {
     bool include = false,
   }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.lessThan(
-        include: include,
-        property: r'unreadCount',
-        value: value,
-      ));
-    });
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.lt,
+      include: include,
+      property: 'unreadCount',
+      value: value,
+    ));
   }
 
   QueryBuilder<NoticeModel, NoticeModel, QAfterFilterCondition>
@@ -1302,288 +1245,216 @@ extension NoticeModelQueryFilter
     bool includeLower = true,
     bool includeUpper = true,
   }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.between(
-        property: r'unreadCount',
-        lower: lower,
-        includeLower: includeLower,
-        upper: upper,
-        includeUpper: includeUpper,
-      ));
-    });
-  }
-}
-
-extension NoticeModelQueryObject
-    on QueryBuilder<NoticeModel, NoticeModel, QFilterCondition> {
-  QueryBuilder<NoticeModel, NoticeModel, QAfterFilterCondition> options(
-      FilterQuery<NoticeOptionsModel> q) {
-    return QueryBuilder.apply(this, (query) {
-      return query.object(q, r'options');
-    });
+    return addFilterConditionInternal(FilterCondition.between(
+      property: 'unreadCount',
+      lower: lower,
+      includeLower: includeLower,
+      upper: upper,
+      includeUpper: includeUpper,
+    ));
   }
 }
 
 extension NoticeModelQueryLinks
     on QueryBuilder<NoticeModel, NoticeModel, QFilterCondition> {}
 
-extension NoticeModelQuerySortBy
+extension NoticeModelQueryWhereSortBy
     on QueryBuilder<NoticeModel, NoticeModel, QSortBy> {
   QueryBuilder<NoticeModel, NoticeModel, QAfterSortBy> sortByContent() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'content', Sort.asc);
-    });
+    return addSortByInternal('content', Sort.asc);
   }
 
   QueryBuilder<NoticeModel, NoticeModel, QAfterSortBy> sortByContentDesc() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'content', Sort.desc);
-    });
+    return addSortByInternal('content', Sort.desc);
   }
 
   QueryBuilder<NoticeModel, NoticeModel, QAfterSortBy> sortByContentType() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'contentType', Sort.asc);
-    });
+    return addSortByInternal('contentType', Sort.asc);
   }
 
   QueryBuilder<NoticeModel, NoticeModel, QAfterSortBy> sortByContentTypeDesc() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'contentType', Sort.desc);
-    });
+    return addSortByInternal('contentType', Sort.desc);
   }
 
   QueryBuilder<NoticeModel, NoticeModel, QAfterSortBy> sortByConvId() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'convId', Sort.asc);
-    });
+    return addSortByInternal('convId', Sort.asc);
   }
 
   QueryBuilder<NoticeModel, NoticeModel, QAfterSortBy> sortByConvIdDesc() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'convId', Sort.desc);
-    });
+    return addSortByInternal('convId', Sort.desc);
   }
 
   QueryBuilder<NoticeModel, NoticeModel, QAfterSortBy> sortByCreateTime() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'createTime', Sort.asc);
-    });
+    return addSortByInternal('createTime', Sort.asc);
   }
 
   QueryBuilder<NoticeModel, NoticeModel, QAfterSortBy> sortByCreateTimeDesc() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'createTime', Sort.desc);
-    });
+    return addSortByInternal('createTime', Sort.desc);
   }
 
   QueryBuilder<NoticeModel, NoticeModel, QAfterSortBy> sortByDeleted() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'deleted', Sort.asc);
-    });
+    return addSortByInternal('deleted', Sort.asc);
   }
 
   QueryBuilder<NoticeModel, NoticeModel, QAfterSortBy> sortByDeletedDesc() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'deleted', Sort.desc);
-    });
+    return addSortByInternal('deleted', Sort.desc);
   }
 
   QueryBuilder<NoticeModel, NoticeModel, QAfterSortBy> sortByExt() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'ext', Sort.asc);
-    });
+    return addSortByInternal('ext', Sort.asc);
   }
 
   QueryBuilder<NoticeModel, NoticeModel, QAfterSortBy> sortByExtDesc() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'ext', Sort.desc);
-    });
+    return addSortByInternal('ext', Sort.desc);
+  }
+
+  QueryBuilder<NoticeModel, NoticeModel, QAfterSortBy> sortById() {
+    return addSortByInternal('id', Sort.asc);
+  }
+
+  QueryBuilder<NoticeModel, NoticeModel, QAfterSortBy> sortByIdDesc() {
+    return addSortByInternal('id', Sort.desc);
   }
 
   QueryBuilder<NoticeModel, NoticeModel, QAfterSortBy> sortByNoticeId() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'noticeId', Sort.asc);
-    });
+    return addSortByInternal('noticeId', Sort.asc);
   }
 
   QueryBuilder<NoticeModel, NoticeModel, QAfterSortBy> sortByNoticeIdDesc() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'noticeId', Sort.desc);
-    });
+    return addSortByInternal('noticeId', Sort.desc);
+  }
+
+  QueryBuilder<NoticeModel, NoticeModel, QAfterSortBy> sortByOptions() {
+    return addSortByInternal('options', Sort.asc);
+  }
+
+  QueryBuilder<NoticeModel, NoticeModel, QAfterSortBy> sortByOptionsDesc() {
+    return addSortByInternal('options', Sort.desc);
   }
 
   QueryBuilder<NoticeModel, NoticeModel, QAfterSortBy> sortByTitle() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'title', Sort.asc);
-    });
+    return addSortByInternal('title', Sort.asc);
   }
 
   QueryBuilder<NoticeModel, NoticeModel, QAfterSortBy> sortByTitleDesc() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'title', Sort.desc);
-    });
+    return addSortByInternal('title', Sort.desc);
   }
 
   QueryBuilder<NoticeModel, NoticeModel, QAfterSortBy> sortByUnreadAbsolute() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'unreadAbsolute', Sort.asc);
-    });
+    return addSortByInternal('unreadAbsolute', Sort.asc);
   }
 
   QueryBuilder<NoticeModel, NoticeModel, QAfterSortBy>
       sortByUnreadAbsoluteDesc() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'unreadAbsolute', Sort.desc);
-    });
+    return addSortByInternal('unreadAbsolute', Sort.desc);
   }
 
   QueryBuilder<NoticeModel, NoticeModel, QAfterSortBy> sortByUnreadCount() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'unreadCount', Sort.asc);
-    });
+    return addSortByInternal('unreadCount', Sort.asc);
   }
 
   QueryBuilder<NoticeModel, NoticeModel, QAfterSortBy> sortByUnreadCountDesc() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'unreadCount', Sort.desc);
-    });
+    return addSortByInternal('unreadCount', Sort.desc);
   }
 }
 
-extension NoticeModelQuerySortThenBy
+extension NoticeModelQueryWhereSortThenBy
     on QueryBuilder<NoticeModel, NoticeModel, QSortThenBy> {
   QueryBuilder<NoticeModel, NoticeModel, QAfterSortBy> thenByContent() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'content', Sort.asc);
-    });
+    return addSortByInternal('content', Sort.asc);
   }
 
   QueryBuilder<NoticeModel, NoticeModel, QAfterSortBy> thenByContentDesc() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'content', Sort.desc);
-    });
+    return addSortByInternal('content', Sort.desc);
   }
 
   QueryBuilder<NoticeModel, NoticeModel, QAfterSortBy> thenByContentType() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'contentType', Sort.asc);
-    });
+    return addSortByInternal('contentType', Sort.asc);
   }
 
   QueryBuilder<NoticeModel, NoticeModel, QAfterSortBy> thenByContentTypeDesc() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'contentType', Sort.desc);
-    });
+    return addSortByInternal('contentType', Sort.desc);
   }
 
   QueryBuilder<NoticeModel, NoticeModel, QAfterSortBy> thenByConvId() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'convId', Sort.asc);
-    });
+    return addSortByInternal('convId', Sort.asc);
   }
 
   QueryBuilder<NoticeModel, NoticeModel, QAfterSortBy> thenByConvIdDesc() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'convId', Sort.desc);
-    });
+    return addSortByInternal('convId', Sort.desc);
   }
 
   QueryBuilder<NoticeModel, NoticeModel, QAfterSortBy> thenByCreateTime() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'createTime', Sort.asc);
-    });
+    return addSortByInternal('createTime', Sort.asc);
   }
 
   QueryBuilder<NoticeModel, NoticeModel, QAfterSortBy> thenByCreateTimeDesc() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'createTime', Sort.desc);
-    });
+    return addSortByInternal('createTime', Sort.desc);
   }
 
   QueryBuilder<NoticeModel, NoticeModel, QAfterSortBy> thenByDeleted() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'deleted', Sort.asc);
-    });
+    return addSortByInternal('deleted', Sort.asc);
   }
 
   QueryBuilder<NoticeModel, NoticeModel, QAfterSortBy> thenByDeletedDesc() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'deleted', Sort.desc);
-    });
+    return addSortByInternal('deleted', Sort.desc);
   }
 
   QueryBuilder<NoticeModel, NoticeModel, QAfterSortBy> thenByExt() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'ext', Sort.asc);
-    });
+    return addSortByInternal('ext', Sort.asc);
   }
 
   QueryBuilder<NoticeModel, NoticeModel, QAfterSortBy> thenByExtDesc() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'ext', Sort.desc);
-    });
+    return addSortByInternal('ext', Sort.desc);
   }
 
   QueryBuilder<NoticeModel, NoticeModel, QAfterSortBy> thenById() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'id', Sort.asc);
-    });
+    return addSortByInternal('id', Sort.asc);
   }
 
   QueryBuilder<NoticeModel, NoticeModel, QAfterSortBy> thenByIdDesc() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'id', Sort.desc);
-    });
+    return addSortByInternal('id', Sort.desc);
   }
 
   QueryBuilder<NoticeModel, NoticeModel, QAfterSortBy> thenByNoticeId() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'noticeId', Sort.asc);
-    });
+    return addSortByInternal('noticeId', Sort.asc);
   }
 
   QueryBuilder<NoticeModel, NoticeModel, QAfterSortBy> thenByNoticeIdDesc() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'noticeId', Sort.desc);
-    });
+    return addSortByInternal('noticeId', Sort.desc);
+  }
+
+  QueryBuilder<NoticeModel, NoticeModel, QAfterSortBy> thenByOptions() {
+    return addSortByInternal('options', Sort.asc);
+  }
+
+  QueryBuilder<NoticeModel, NoticeModel, QAfterSortBy> thenByOptionsDesc() {
+    return addSortByInternal('options', Sort.desc);
   }
 
   QueryBuilder<NoticeModel, NoticeModel, QAfterSortBy> thenByTitle() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'title', Sort.asc);
-    });
+    return addSortByInternal('title', Sort.asc);
   }
 
   QueryBuilder<NoticeModel, NoticeModel, QAfterSortBy> thenByTitleDesc() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'title', Sort.desc);
-    });
+    return addSortByInternal('title', Sort.desc);
   }
 
   QueryBuilder<NoticeModel, NoticeModel, QAfterSortBy> thenByUnreadAbsolute() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'unreadAbsolute', Sort.asc);
-    });
+    return addSortByInternal('unreadAbsolute', Sort.asc);
   }
 
   QueryBuilder<NoticeModel, NoticeModel, QAfterSortBy>
       thenByUnreadAbsoluteDesc() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'unreadAbsolute', Sort.desc);
-    });
+    return addSortByInternal('unreadAbsolute', Sort.desc);
   }
 
   QueryBuilder<NoticeModel, NoticeModel, QAfterSortBy> thenByUnreadCount() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'unreadCount', Sort.asc);
-    });
+    return addSortByInternal('unreadCount', Sort.asc);
   }
 
   QueryBuilder<NoticeModel, NoticeModel, QAfterSortBy> thenByUnreadCountDesc() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'unreadCount', Sort.desc);
-    });
+    return addSortByInternal('unreadCount', Sort.desc);
   }
 }
 
@@ -1591,317 +1462,107 @@ extension NoticeModelQueryWhereDistinct
     on QueryBuilder<NoticeModel, NoticeModel, QDistinct> {
   QueryBuilder<NoticeModel, NoticeModel, QDistinct> distinctByContent(
       {bool caseSensitive = true}) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addDistinctBy(r'content', caseSensitive: caseSensitive);
-    });
+    return addDistinctByInternal('content', caseSensitive: caseSensitive);
   }
 
   QueryBuilder<NoticeModel, NoticeModel, QDistinct> distinctByContentType() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addDistinctBy(r'contentType');
-    });
+    return addDistinctByInternal('contentType');
   }
 
   QueryBuilder<NoticeModel, NoticeModel, QDistinct> distinctByConvId(
       {bool caseSensitive = true}) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addDistinctBy(r'convId', caseSensitive: caseSensitive);
-    });
+    return addDistinctByInternal('convId', caseSensitive: caseSensitive);
   }
 
   QueryBuilder<NoticeModel, NoticeModel, QDistinct> distinctByCreateTime() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addDistinctBy(r'createTime');
-    });
+    return addDistinctByInternal('createTime');
   }
 
   QueryBuilder<NoticeModel, NoticeModel, QDistinct> distinctByDeleted() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addDistinctBy(r'deleted');
-    });
+    return addDistinctByInternal('deleted');
   }
 
   QueryBuilder<NoticeModel, NoticeModel, QDistinct> distinctByExt(
       {bool caseSensitive = true}) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addDistinctBy(r'ext', caseSensitive: caseSensitive);
-    });
+    return addDistinctByInternal('ext', caseSensitive: caseSensitive);
+  }
+
+  QueryBuilder<NoticeModel, NoticeModel, QDistinct> distinctById() {
+    return addDistinctByInternal('id');
   }
 
   QueryBuilder<NoticeModel, NoticeModel, QDistinct> distinctByNoticeId(
       {bool caseSensitive = true}) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addDistinctBy(r'noticeId', caseSensitive: caseSensitive);
-    });
+    return addDistinctByInternal('noticeId', caseSensitive: caseSensitive);
+  }
+
+  QueryBuilder<NoticeModel, NoticeModel, QDistinct> distinctByOptions(
+      {bool caseSensitive = true}) {
+    return addDistinctByInternal('options', caseSensitive: caseSensitive);
   }
 
   QueryBuilder<NoticeModel, NoticeModel, QDistinct> distinctByTitle(
       {bool caseSensitive = true}) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addDistinctBy(r'title', caseSensitive: caseSensitive);
-    });
+    return addDistinctByInternal('title', caseSensitive: caseSensitive);
   }
 
   QueryBuilder<NoticeModel, NoticeModel, QDistinct> distinctByUnreadAbsolute() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addDistinctBy(r'unreadAbsolute');
-    });
+    return addDistinctByInternal('unreadAbsolute');
   }
 
   QueryBuilder<NoticeModel, NoticeModel, QDistinct> distinctByUnreadCount() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addDistinctBy(r'unreadCount');
-    });
+    return addDistinctByInternal('unreadCount');
   }
 }
 
 extension NoticeModelQueryProperty
     on QueryBuilder<NoticeModel, NoticeModel, QQueryProperty> {
-  QueryBuilder<NoticeModel, int, QQueryOperations> idProperty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addPropertyName(r'id');
-    });
-  }
-
   QueryBuilder<NoticeModel, String, QQueryOperations> contentProperty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addPropertyName(r'content');
-    });
+    return addPropertyNameInternal('content');
   }
 
   QueryBuilder<NoticeModel, int, QQueryOperations> contentTypeProperty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addPropertyName(r'contentType');
-    });
+    return addPropertyNameInternal('contentType');
   }
 
   QueryBuilder<NoticeModel, String, QQueryOperations> convIdProperty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addPropertyName(r'convId');
-    });
+    return addPropertyNameInternal('convId');
   }
 
   QueryBuilder<NoticeModel, int, QQueryOperations> createTimeProperty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addPropertyName(r'createTime');
-    });
+    return addPropertyNameInternal('createTime');
   }
 
   QueryBuilder<NoticeModel, bool, QQueryOperations> deletedProperty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addPropertyName(r'deleted');
-    });
+    return addPropertyNameInternal('deleted');
   }
 
   QueryBuilder<NoticeModel, String, QQueryOperations> extProperty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addPropertyName(r'ext');
-    });
+    return addPropertyNameInternal('ext');
+  }
+
+  QueryBuilder<NoticeModel, int, QQueryOperations> idProperty() {
+    return addPropertyNameInternal('id');
   }
 
   QueryBuilder<NoticeModel, String, QQueryOperations> noticeIdProperty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addPropertyName(r'noticeId');
-    });
+    return addPropertyNameInternal('noticeId');
   }
 
   QueryBuilder<NoticeModel, NoticeOptionsModel, QQueryOperations>
       optionsProperty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addPropertyName(r'options');
-    });
+    return addPropertyNameInternal('options');
   }
 
   QueryBuilder<NoticeModel, String, QQueryOperations> titleProperty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addPropertyName(r'title');
-    });
+    return addPropertyNameInternal('title');
   }
 
   QueryBuilder<NoticeModel, bool, QQueryOperations> unreadAbsoluteProperty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addPropertyName(r'unreadAbsolute');
-    });
+    return addPropertyNameInternal('unreadAbsolute');
   }
 
   QueryBuilder<NoticeModel, int, QQueryOperations> unreadCountProperty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addPropertyName(r'unreadCount');
-    });
+    return addPropertyNameInternal('unreadCount');
   }
 }
-
-// **************************************************************************
-// IsarEmbeddedGenerator
-// **************************************************************************
-
-// coverage:ignore-file
-// ignore_for_file: duplicate_ignore, non_constant_identifier_names, constant_identifier_names, invalid_use_of_protected_member, unnecessary_cast, prefer_const_constructors, lines_longer_than_80_chars, require_trailing_commas, inference_failure_on_function_invocation, unnecessary_parenthesis, unnecessary_raw_strings, unnecessary_null_checks, join_return_with_assignment, prefer_final_locals, avoid_js_rounded_ints, avoid_positional_boolean_parameters
-
-const NoticeOptionsModelSchema = Schema(
-  name: r'NoticeOptionsModel',
-  id: -5692169215493622784,
-  properties: {
-    r'onlinePushOnce': PropertySchema(
-      id: 0,
-      name: r'onlinePushOnce',
-      type: IsarType.bool,
-    ),
-    r'storageForClient': PropertySchema(
-      id: 1,
-      name: r'storageForClient',
-      type: IsarType.bool,
-    ),
-    r'updateConvMsg': PropertySchema(
-      id: 2,
-      name: r'updateConvMsg',
-      type: IsarType.bool,
-    )
-  },
-  estimateSize: _noticeOptionsModelEstimateSize,
-  serialize: _noticeOptionsModelSerialize,
-  deserialize: _noticeOptionsModelDeserialize,
-  deserializeProp: _noticeOptionsModelDeserializeProp,
-);
-
-int _noticeOptionsModelEstimateSize(
-  NoticeOptionsModel object,
-  List<int> offsets,
-  Map<Type, List<int>> allOffsets,
-) {
-  var bytesCount = offsets.last;
-  return bytesCount;
-}
-
-void _noticeOptionsModelSerialize(
-  NoticeOptionsModel object,
-  IsarWriter writer,
-  List<int> offsets,
-  Map<Type, List<int>> allOffsets,
-) {
-  writer.writeBool(offsets[0], object.onlinePushOnce);
-  writer.writeBool(offsets[1], object.storageForClient);
-  writer.writeBool(offsets[2], object.updateConvMsg);
-}
-
-NoticeOptionsModel _noticeOptionsModelDeserialize(
-  Id id,
-  IsarReader reader,
-  List<int> offsets,
-  Map<Type, List<int>> allOffsets,
-) {
-  final object = NoticeOptionsModel(
-    onlinePushOnce: reader.readBoolOrNull(offsets[0]),
-    storageForClient: reader.readBoolOrNull(offsets[1]),
-    updateConvMsg: reader.readBoolOrNull(offsets[2]),
-  );
-  return object;
-}
-
-P _noticeOptionsModelDeserializeProp<P>(
-  IsarReader reader,
-  int propertyId,
-  int offset,
-  Map<Type, List<int>> allOffsets,
-) {
-  switch (propertyId) {
-    case 0:
-      return (reader.readBoolOrNull(offset)) as P;
-    case 1:
-      return (reader.readBoolOrNull(offset)) as P;
-    case 2:
-      return (reader.readBoolOrNull(offset)) as P;
-    default:
-      throw IsarError('Unknown property with id $propertyId');
-  }
-}
-
-extension NoticeOptionsModelQueryFilter
-    on QueryBuilder<NoticeOptionsModel, NoticeOptionsModel, QFilterCondition> {
-  QueryBuilder<NoticeOptionsModel, NoticeOptionsModel, QAfterFilterCondition>
-      onlinePushOnceIsNull() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(const FilterCondition.isNull(
-        property: r'onlinePushOnce',
-      ));
-    });
-  }
-
-  QueryBuilder<NoticeOptionsModel, NoticeOptionsModel, QAfterFilterCondition>
-      onlinePushOnceIsNotNull() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(const FilterCondition.isNotNull(
-        property: r'onlinePushOnce',
-      ));
-    });
-  }
-
-  QueryBuilder<NoticeOptionsModel, NoticeOptionsModel, QAfterFilterCondition>
-      onlinePushOnceEqualTo(bool? value) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'onlinePushOnce',
-        value: value,
-      ));
-    });
-  }
-
-  QueryBuilder<NoticeOptionsModel, NoticeOptionsModel, QAfterFilterCondition>
-      storageForClientIsNull() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(const FilterCondition.isNull(
-        property: r'storageForClient',
-      ));
-    });
-  }
-
-  QueryBuilder<NoticeOptionsModel, NoticeOptionsModel, QAfterFilterCondition>
-      storageForClientIsNotNull() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(const FilterCondition.isNotNull(
-        property: r'storageForClient',
-      ));
-    });
-  }
-
-  QueryBuilder<NoticeOptionsModel, NoticeOptionsModel, QAfterFilterCondition>
-      storageForClientEqualTo(bool? value) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'storageForClient',
-        value: value,
-      ));
-    });
-  }
-
-  QueryBuilder<NoticeOptionsModel, NoticeOptionsModel, QAfterFilterCondition>
-      updateConvMsgIsNull() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(const FilterCondition.isNull(
-        property: r'updateConvMsg',
-      ));
-    });
-  }
-
-  QueryBuilder<NoticeOptionsModel, NoticeOptionsModel, QAfterFilterCondition>
-      updateConvMsgIsNotNull() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(const FilterCondition.isNotNull(
-        property: r'updateConvMsg',
-      ));
-    });
-  }
-
-  QueryBuilder<NoticeOptionsModel, NoticeOptionsModel, QAfterFilterCondition>
-      updateConvMsgEqualTo(bool? value) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'updateConvMsg',
-        value: value,
-      ));
-    });
-  }
-}
-
-extension NoticeOptionsModelQueryObject
-    on QueryBuilder<NoticeOptionsModel, NoticeOptionsModel, QFilterCondition> {}

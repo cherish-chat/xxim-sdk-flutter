@@ -4,7 +4,7 @@ part 'read_model.g.dart';
 
 @Collection()
 class ReadModel {
-  Id id = Isar.autoIncrement;
+  int id = Isar.autoIncrement;
 
   @Index()
   String senderId;

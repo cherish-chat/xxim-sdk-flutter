@@ -1,14 +1,16 @@
+import 'dart:convert';
 import 'package:isar/isar.dart';
 import 'package:xxim_core_flutter/xxim_core_flutter.dart';
 import 'package:xxim_sdk_flutter/src/common/aes_params.dart';
 import 'package:xxim_sdk_flutter/src/common/send_status.dart';
+import 'package:xxim_sdk_flutter/src/model/converter/msg_converter.dart';
 import 'package:xxim_sdk_flutter/src/tool/sdk_tool.dart';
 
 part 'msg_model.g.dart';
 
 @Collection()
 class MsgModel {
-  Id id = Isar.autoIncrement;
+  int id = Isar.autoIncrement;
 
   @Index()
   String clientMsgId;
@@ -26,7 +28,9 @@ class MsgModel {
   @Index()
   String content;
   int seq;
+  @MsgOptionsConverter()
   MsgOptionsModel options;
+  @MsgOfflinePushConverter()
   MsgOfflinePushModel offlinePush;
   String ext;
   int sendStatus;
@@ -80,22 +84,21 @@ class MsgModel {
   }
 }
 
-@Embedded()
 class MsgOptionsModel {
-  bool? storageForServer;
-  bool? storageForClient;
-  bool? needDecrypt;
-  bool? offlinePush;
-  bool? updateConvMsg;
-  bool? updateUnreadCount;
+  bool storageForServer;
+  bool storageForClient;
+  bool needDecrypt;
+  bool offlinePush;
+  bool updateConvMsg;
+  bool updateUnreadCount;
 
   MsgOptionsModel({
-    this.storageForServer,
-    this.storageForClient,
-    this.needDecrypt,
-    this.offlinePush,
-    this.updateConvMsg,
-    this.updateUnreadCount,
+    this.storageForServer = false,
+    this.storageForClient = false,
+    this.needDecrypt = false,
+    this.offlinePush = false,
+    this.updateConvMsg = false,
+    this.updateUnreadCount = false,
   });
 
   static MsgOptionsModel fromProto(MsgData_Options options) {
@@ -108,18 +111,40 @@ class MsgOptionsModel {
       updateUnreadCount: options.updateUnreadCount,
     );
   }
+
+  static MsgOptionsModel fromJson(String source) {
+    Map<String, dynamic> map = json.decode(source);
+    return MsgOptionsModel(
+      storageForServer: map["storageForServer"],
+      storageForClient: map["storageForClient"],
+      needDecrypt: map["needDecrypt"],
+      offlinePush: map["offlinePush"],
+      updateConvMsg: map["updateConvMsg"],
+      updateUnreadCount: map["updateUnreadCount"],
+    );
+  }
+
+  String toJson() {
+    return json.encode({
+      "storageForServer": storageForServer,
+      "storageForClient": storageForClient,
+      "needDecrypt": needDecrypt,
+      "offlinePush": offlinePush,
+      "updateConvMsg": updateConvMsg,
+      "updateUnreadCount": updateUnreadCount,
+    });
+  }
 }
 
-@Embedded()
 class MsgOfflinePushModel {
-  String? title;
-  String? content;
-  String? payload;
+  String title;
+  String content;
+  String payload;
 
   MsgOfflinePushModel({
-    this.title,
-    this.content,
-    this.payload,
+    this.title = "",
+    this.content = "",
+    this.payload = "",
   });
 
   static MsgOfflinePushModel fromProto(MsgData_OfflinePush offlinePush) {
@@ -128,5 +153,22 @@ class MsgOfflinePushModel {
       content: offlinePush.content,
       payload: offlinePush.payload,
     );
+  }
+
+  static MsgOfflinePushModel fromJson(String source) {
+    Map<String, dynamic> map = json.decode(source);
+    return MsgOfflinePushModel(
+      title: map["title"],
+      content: map["content"],
+      payload: map["payload"],
+    );
+  }
+
+  String toJson() {
+    return json.encode({
+      "title": title,
+      "content": content,
+      "payload": payload,
+    });
   }
 }

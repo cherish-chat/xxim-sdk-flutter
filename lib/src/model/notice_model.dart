@@ -1,12 +1,14 @@
+import 'dart:convert';
 import 'package:isar/isar.dart';
 import 'package:xxim_core_flutter/xxim_core_flutter.dart';
+import 'package:xxim_sdk_flutter/src/model/converter/notice_converter.dart';
 import 'package:xxim_sdk_flutter/src/tool/sdk_tool.dart';
 
 part 'notice_model.g.dart';
 
 @Collection()
 class NoticeModel {
-  Id id = Isar.autoIncrement;
+  int id = Isar.autoIncrement;
 
   @Index()
   String convId;
@@ -18,6 +20,7 @@ class NoticeModel {
   String title;
   int contentType;
   String content;
+  @NoticeOptionsConverter()
   NoticeOptionsModel options;
   String ext;
   bool deleted;
@@ -52,16 +55,15 @@ class NoticeModel {
   }
 }
 
-@Embedded()
 class NoticeOptionsModel {
-  bool? storageForClient;
-  bool? updateConvMsg;
-  bool? onlinePushOnce;
+  bool storageForClient;
+  bool updateConvMsg;
+  bool onlinePushOnce;
 
   NoticeOptionsModel({
-    this.storageForClient,
-    this.updateConvMsg,
-    this.onlinePushOnce,
+    this.storageForClient = false,
+    this.updateConvMsg = false,
+    this.onlinePushOnce = false,
   });
 
   static NoticeOptionsModel fromProto(NoticeData_Options options) {
@@ -70,5 +72,22 @@ class NoticeOptionsModel {
       updateConvMsg: options.updateConvMsg,
       onlinePushOnce: options.onlinePushOnce,
     );
+  }
+
+  static NoticeOptionsModel fromJson(String source) {
+    Map<String, dynamic> map = json.decode(source);
+    return NoticeOptionsModel(
+      storageForClient: map["storageForClient"],
+      updateConvMsg: map["updateConvMsg"],
+      onlinePushOnce: map["onlinePushOnce"],
+    );
+  }
+
+  String toJson() {
+    return json.encode({
+      "storageForClient": storageForClient,
+      "updateConvMsg": updateConvMsg,
+      "onlinePushOnce": onlinePushOnce,
+    });
   }
 }

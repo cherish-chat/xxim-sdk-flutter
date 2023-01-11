@@ -57,12 +57,14 @@ class ConvManager {
 
   Future<List<ConvModel>> _getConvList() {
     return _sdkManager.convModels().buildQuery<ConvModel>(
-      filter: const FilterGroup.and([
-        FilterCondition.equalTo(
+      filter: FilterGroup.and([
+        FilterCondition(
+          type: ConditionType.eq,
           property: "hidden",
           value: false,
         ),
-        FilterCondition.equalTo(
+        FilterCondition(
+          type: ConditionType.eq,
           property: "deleted",
           value: false,
         ),
@@ -117,7 +119,7 @@ class ConvManager {
     if (convModel == null) return;
     if (convModel.unreadCount == 0) return;
     convModel.unreadCount = 0;
-    await _sdkManager.isar.writeTxn(() async {
+    await _sdkManager.isar.writeTxn((isar) async {
       await _sdkManager.convModels().put(convModel);
     });
     _sdkManager.calculateUnreadCount();
@@ -158,7 +160,7 @@ class ConvManager {
     convModel.clientMsgId = msgModel.clientMsgId;
     convModel.time = msgModel.serverTime;
     convModel.msgModel = msgModel;
-    await _sdkManager.isar.writeTxn(() async {
+    await _sdkManager.isar.writeTxn((isar) async {
       await _sdkManager.convModels().put(convModel);
     });
     _sdkManager.calculateUnreadCount();
@@ -177,7 +179,7 @@ class ConvManager {
     convModel.clientMsgId = null;
     convModel.time = 0;
     convModel.msgModel = null;
-    await _sdkManager.isar.writeTxn(() async {
+    await _sdkManager.isar.writeTxn((isar) async {
       await _sdkManager.convModels().put(convModel);
     });
     _sdkManager.calculateUnreadCount();
@@ -205,7 +207,7 @@ class ConvManager {
     convModel.noticeId = noticeModel.noticeId;
     convModel.time = noticeModel.createTime;
     convModel.noticeModel = noticeModel;
-    await _sdkManager.isar.writeTxn(() async {
+    await _sdkManager.isar.writeTxn((isar) async {
       await _sdkManager.convModels().put(convModel);
     });
     _sdkManager.calculateUnreadCount();
@@ -224,7 +226,7 @@ class ConvManager {
     convModel.noticeId = null;
     convModel.time = 0;
     convModel.noticeModel = null;
-    await _sdkManager.isar.writeTxn(() async {
+    await _sdkManager.isar.writeTxn((isar) async {
       await _sdkManager.convModels().put(convModel);
     });
     _sdkManager.calculateUnreadCount();
@@ -242,7 +244,7 @@ class ConvManager {
         .findFirst();
     if (convModel == null) return;
     convModel.draftModel = draftModel;
-    await _sdkManager.isar.writeTxn(() async {
+    await _sdkManager.isar.writeTxn((isar) async {
       await _sdkManager.convModels().put(convModel);
     });
   }
@@ -260,7 +262,7 @@ class ConvManager {
     if (convModel == null) return;
     convModel.unreadCount = 0;
     convModel.hidden = hidden;
-    await _sdkManager.isar.writeTxn(() async {
+    await _sdkManager.isar.writeTxn((isar) async {
       await _sdkManager.convModels().put(convModel);
     });
     _sdkManager.calculateUnreadCount();
@@ -288,7 +290,7 @@ class ConvManager {
     convModel.draftModel = null;
     convModel.hidden = false;
     convModel.deleted = true;
-    await _sdkManager.isar.writeTxn(() async {
+    await _sdkManager.isar.writeTxn((isar) async {
       await _sdkManager.convModels().put(convModel);
     });
     _sdkManager.calculateUnreadCount();

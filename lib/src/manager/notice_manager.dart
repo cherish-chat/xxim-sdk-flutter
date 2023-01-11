@@ -17,11 +17,13 @@ class NoticeManager {
         .noticeModels()
         .buildQuery<NoticeModel>(
           filter: FilterGroup.and([
-            FilterCondition.equalTo(
+            FilterCondition(
+              type: ConditionType.eq,
               property: "convId",
               value: convId,
             ),
-            const FilterCondition.equalTo(
+            FilterCondition(
+              type: ConditionType.eq,
               property: "deleted",
               value: false,
             ),
@@ -56,7 +58,7 @@ class NoticeManager {
     return _sdkManager
         .noticeModels()
         .filter()
-        .anyOf(
+        .repeat(
           noticeIdList,
           (q, element) => q.noticeIdEqualTo(element),
         )
@@ -76,7 +78,7 @@ class NoticeManager {
     noticeModel.contentType = 0;
     noticeModel.content = "";
     noticeModel.deleted = true;
-    await _sdkManager.isar.writeTxn(() async {
+    await _sdkManager.isar.writeTxn((isar) async {
       await _sdkManager.noticeModels().put(noticeModel);
     });
   }
@@ -93,7 +95,7 @@ class NoticeManager {
         )
         .findAll();
     if (list.isEmpty) return;
-    await _sdkManager.isar.writeTxn(() async {
+    await _sdkManager.isar.writeTxn((isar) async {
       for (NoticeModel noticeModel in list) {
         noticeModel.contentType = 0;
         noticeModel.content = "";

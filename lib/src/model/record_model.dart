@@ -5,7 +5,7 @@ part 'record_model.g.dart';
 
 @Collection()
 class RecordModel {
-  Id id = Isar.autoIncrement;
+  int id = Isar.autoIncrement;
 
   @Index()
   String convId;

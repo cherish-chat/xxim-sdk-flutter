@@ -100,12 +100,14 @@ class MsgManager {
   }) {
     return _sdkManager.msgModels().buildQuery<MsgModel>(
       filter: FilterGroup.and([
-        FilterCondition.equalTo(
+        FilterCondition(
+          type: ConditionType.eq,
           property: "convId",
           value: convId,
         ),
         if (contentType != null)
-          FilterCondition.equalTo(
+          FilterCondition(
+            type: ConditionType.eq,
             property: "contentType",
             value: contentType,
           ),
@@ -117,7 +119,8 @@ class MsgManager {
           includeUpper: includeUpper,
         ),
         if (deleted != null)
-          FilterCondition.equalTo(
+          FilterCondition(
+            type: ConditionType.eq,
             property: "deleted",
             value: deleted,
           ),
@@ -161,7 +164,7 @@ class MsgManager {
     return _sdkManager
         .msgModels()
         .filter()
-        .anyOf(
+        .repeat(
           clientMsgIdList,
           (q, element) => q.clientMsgIdEqualTo(element),
         )
@@ -259,7 +262,7 @@ class MsgManager {
     }
     msgModel.contentType = ContentType.revoke;
     msgModel.content = content.toJson();
-    msgModel.offlinePush.content = content.content;
+    msgModel.offlinePush.content = content.content ?? "";
     msgModel.ext = ext;
     return sendMsgList(
       msgModelList: [
@@ -695,7 +698,7 @@ class MsgManager {
     msgModel.contentType = ContentType.unknown;
     msgModel.content = "";
     msgModel.deleted = true;
-    await _sdkManager.isar.writeTxn(() async {
+    await _sdkManager.isar.writeTxn((isar) async {
       await _sdkManager.msgModels().put(msgModel);
     });
   }
@@ -712,7 +715,7 @@ class MsgManager {
         )
         .findAll();
     if (list.isEmpty) return;
-    await _sdkManager.isar.writeTxn(() async {
+    await _sdkManager.isar.writeTxn((isar) async {
       for (MsgModel msgModel in list) {
         msgModel.contentType = ContentType.unknown;
         msgModel.content = "";
