@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'package:isar/isar.dart';
 import 'package:xxim_sdk_flutter/src/model/msg_model.dart';
 
@@ -7,16 +6,12 @@ class AtUsersConverter extends TypeConverter<List<String>, String> {
 
   @override
   List<String> fromIsar(String object) {
-    Map<String, List<String>> map = json.decode(object);
-    List<String> list = map["list"]!;
-    return list;
+    return object.split(",");
   }
 
   @override
   String toIsar(List<String> object) {
-    return json.encode({
-      "list": object,
-    });
+    return object.join(",");
   }
 }
 
