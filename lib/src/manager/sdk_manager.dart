@@ -307,7 +307,6 @@ class SDKManager {
   void onPushNoticeDataList(
     List<NoticeData> noticeDataList,
   ) async {
-    bool isFirstPull = await noticeModels().count() == 0;
     List<NoticeModel> noticeModelList = [];
     List<String> noticeIds = [];
     await isar.writeTxn(() async {
@@ -316,7 +315,7 @@ class SDKManager {
         noticeIds.add(noticeData.noticeId);
       }
     });
-    if (!isFirstPull && noticeModelList.isNotEmpty) {
+    if (noticeModelList.isNotEmpty) {
       bool? status = await noticeListener?.receive(noticeModelList);
       if (status == true) {
         await xximCore.ackNoticeData(
