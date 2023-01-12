@@ -38,7 +38,6 @@ class MsgManager {
       }
     }
     if (maxSeq == null) return [];
-    if (maxSeq == 1) maxSeq = 0;
     RecordModel? recordModel = await _sdkManager
         .recordModels()
         .filter()
