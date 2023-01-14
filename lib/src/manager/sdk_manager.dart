@@ -308,20 +308,19 @@ class SDKManager {
     List<NoticeData> noticeDataList,
   ) async {
     List<NoticeModel> noticeModelList = [];
-    List<String> noticeIds = [];
     await isar.writeTxn(() async {
       for (NoticeData noticeData in noticeDataList) {
         noticeModelList.add(await _handleNotice(noticeData));
-        noticeIds.add(noticeData.noticeId);
       }
     });
-    if (noticeModelList.isNotEmpty) {
-      bool? status = await noticeListener?.receive(noticeModelList);
+    for (NoticeModel noticeModel in noticeModelList) {
+      bool? status = await noticeListener?.receive(noticeModel);
       if (status == true) {
         await xximCore.ackNoticeData(
           reqId: SDKTool.getUUId(),
           req: AckNoticeDataReq(
-            noticeIds: noticeIds,
+            convId: noticeModel.convId,
+            noticeId: noticeModel.noticeId,
           ),
         );
       }

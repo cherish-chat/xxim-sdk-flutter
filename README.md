@@ -62,7 +62,7 @@
          onReceive: (msgModelList) {},
        ),
        noticeListener: NoticeListener(
-         onReceive: (noticeModelList) async {
+         onReceive: (noticeModel) async {
            return true;
          },
        ),
