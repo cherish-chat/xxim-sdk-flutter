@@ -110,7 +110,7 @@ class XXIMSDK {
     required String networkUsed,
     List<String>? convIdList,
   }) {
-    _xximCore?.login(
+    _xximCore?.connect(
       wsUrl: wsUrl,
       token: token,
       userId: userId,
@@ -123,13 +123,13 @@ class XXIMSDK {
 
   /// 断连
   void disconnect() {
-    _xximCore?.logout();
+    _xximCore?.disconnect();
     closePullSubscribe();
   }
 
   /// 是否连接
   bool isConnect() {
-    return _xximCore?.isLogin() ?? false;
+    return _xximCore?.isConnect() ?? false;
   }
 
   /// 打开拉取订阅
