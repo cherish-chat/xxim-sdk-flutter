@@ -4,6 +4,7 @@ class ContentType {
   static const int typing = 1; // 正在输入
   static const int read = 2; // 已读
   static const int revoke = 3; // 撤回
+  static const int tip = 4; // 提示
 
   static const int text = 11; // 文本
   static const int image = 12; // 图片
