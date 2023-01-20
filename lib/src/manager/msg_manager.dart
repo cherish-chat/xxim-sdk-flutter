@@ -270,6 +270,38 @@ class MsgManager {
     );
   }
 
+  /// 发送提示消息
+  Future<bool> sendTip({
+    required String convId,
+    required TipContent content,
+    String ext = "",
+  }) async {
+    return sendMsgList(
+      msgModelList: [
+        await _sdkManager.createMsg(
+          convId: convId,
+          atUsers: [],
+          contentType: ContentType.tip,
+          content: content.toJson(),
+          options: MsgOptionsModel(
+            storageForServer: true,
+            storageForClient: true,
+            needDecrypt: false,
+            offlinePush: false,
+            updateConvMsg: false,
+            updateUnreadCount: false,
+          ),
+          offlinePush: MsgOfflinePushModel(
+            title: "",
+            content: "",
+            payload: "",
+          ),
+          ext: ext,
+        ),
+      ],
+    );
+  }
+
   /// 创建文本消息
   Future<MsgModel> createText({
     String senderInfo = "",

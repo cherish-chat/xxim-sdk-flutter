@@ -70,6 +70,26 @@ class RevokeContent {
   }
 }
 
+/// 提示消息
+class TipContent {
+  String tip;
+
+  TipContent({
+    required this.tip,
+  });
+
+  static TipContent fromJson(String content) {
+    Map<String, dynamic> map = json.decode(content);
+    return TipContent(tip: map["tip"]);
+  }
+
+  String toJson() {
+    return json.encode({
+      "tip": tip,
+    });
+  }
+}
+
 /// 图片消息
 class ImageContent {
   String imageName;
