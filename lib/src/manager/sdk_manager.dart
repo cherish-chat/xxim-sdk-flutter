@@ -53,6 +53,7 @@ class SDKManager {
 
   late String userId;
   late Isar isar;
+
   Timer? _timer;
   bool _pullStatus = false;
 
