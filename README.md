@@ -20,15 +20,17 @@
 
      XXIMSDK sdk = XXIMSDK();
      sdk.init(
-       params: const Params(
+       requestTimeout: const Duration(seconds: 10),
+       cxnParams: const CxnParams(
          deviceModel: "",
          deviceId: "",
          osVersion: "",
          platform: "",
          appVersion: "",
          language: "",
+         networkUsed: "",
+         ext: utf8.encode(""),
        ),
-       requestTimeout: const Duration(seconds: 10),
        autoPullTime: const Duration(seconds: 20),
        pullMsgCount: 200,
        isarSchemas: [],
@@ -71,30 +73,9 @@
        ),
      );
 
-## 登录
-
-     sdk.login(
-       wsUrl: "",
-       token: "",
-       userId: "",
-       networkUsed: "",
-       isarName: "",
-       convIdList: [],
-     );
-
-## 登出
-
-     sdk.logout();
-
 ## 连接
 
-     sdk.connect(
-       wsUrl: "",
-       token: "",
-       userId: "",
-       networkUsed: "",
-       convIdList: [],
-     );
+     sdk.connect("");
 
 ## 断连
 
@@ -103,6 +84,20 @@
 ## 是否连接
 
      sdk.isConnect();
+
+## 设置连接参数
+
+     sdk.setCxnParams(cxnParams);
+
+## 设置用户参数
+
+     sdk.setUserParams(
+       userId: "",
+       token: "",
+       ext: utf8.encode(""),
+       isarName: "",
+       convIdList: [],
+     );
 
 ## 打开拉取订阅
 
@@ -117,7 +112,7 @@
 ## 自定义请求
 
      List<int>? resp = await sdk.customRequest(
-       reqId: "",
+       method: "",
        bytes: [],
      );
 

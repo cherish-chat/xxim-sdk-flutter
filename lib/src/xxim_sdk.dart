@@ -1,6 +1,7 @@
 import 'package:isar/isar.dart';
 import 'package:xxim_core_flutter/xxim_core_flutter.dart';
 import 'package:xxim_sdk_flutter/src/callback/subscribe_callback.dart';
+import 'package:xxim_sdk_flutter/src/common/cxn_params.dart';
 import 'package:xxim_sdk_flutter/src/listener/conv_listener.dart';
 import 'package:xxim_sdk_flutter/src/listener/isar_listener.dart';
 import 'package:xxim_sdk_flutter/src/listener/msg_listener.dart';
@@ -22,8 +23,8 @@ class XXIMSDK {
 
   /// 初始化
   void init({
-    required Params params,
     Duration requestTimeout = const Duration(seconds: 10),
+    required CxnParams cxnParams,
     Duration autoPullTime = const Duration(seconds: 20),
     int pullMsgCount = 200,
     List<CollectionSchema> isarSchemas = const [],
@@ -41,9 +42,18 @@ class XXIMSDK {
   }) {
     _xximCore = XXIMCore()
       ..init(
-        params: params,
         requestTimeout: requestTimeout,
-        connectListener: connectListener,
+        connectListener: ConnectListener(
+          onConnecting: connectListener.onConnecting,
+          onSuccess: () {
+            connectListener.onSuccess();
+            Future.doWhile(() async {
+              await Future.delayed(const Duration(milliseconds: 5));
+              return !(await setCxnParams(cxnParams));
+            });
+          },
+          onClose: connectListener.onClose,
+        ),
         receivePushListener: ReceivePushListener(
           onPushMsgDataList: (msgDataList) {
             _sdkManager?.onPushMsgDataList(msgDataList.msgDataList);
@@ -74,51 +84,9 @@ class XXIMSDK {
     convManager = ConvManager(_sdkManager!, msgManager, noticeManager);
   }
 
-  /// 登录
-  Future login({
-    required String wsUrl,
-    required String token,
-    required String userId,
-    required String networkUsed,
-    String? isarName,
-    List<String>? convIdList,
-  }) async {
-    await _sdkManager?.openDatabase(
-      userId: userId,
-      isarName: isarName,
-    );
-    connect(
-      wsUrl: wsUrl,
-      token: token,
-      userId: userId,
-      networkUsed: networkUsed,
-      convIdList: convIdList,
-    );
-  }
-
-  /// 登出
-  Future logout() async {
-    await _sdkManager?.closeDatabase();
-    disconnect();
-  }
-
   /// 连接
-  void connect({
-    required String wsUrl,
-    required String token,
-    required String userId,
-    required String networkUsed,
-    List<String>? convIdList,
-  }) {
-    _xximCore?.connect(
-      wsUrl: wsUrl,
-      token: token,
-      userId: userId,
-      networkUsed: networkUsed,
-    );
-    openPullSubscribe(
-      convIdList: convIdList,
-    );
+  void connect(String wsUrl) {
+    _xximCore?.connect(wsUrl);
   }
 
   /// 断连
@@ -130,6 +98,51 @@ class XXIMSDK {
   /// 是否连接
   bool isConnect() {
     return _xximCore?.isConnect() ?? false;
+  }
+
+  /// 设置连接参数
+  Future<bool> setCxnParams(CxnParams cxnParams) async {
+    SetCxnParamsResp? resp = await _xximCore?.setCxnParams(
+      reqId: SDKTool.getUUId(),
+      req: SetCxnParamsReq(
+        platform: cxnParams.platform,
+        deviceId: cxnParams.deviceId,
+        deviceModel: cxnParams.deviceModel,
+        osVersion: cxnParams.osVersion,
+        appVersion: cxnParams.appVersion,
+        language: cxnParams.language,
+        networkUsed: cxnParams.networkUsed,
+        ext: cxnParams.ext,
+      ),
+    );
+    return resp != null;
+  }
+
+  /// 设置用户参数
+  Future<bool> setUserParams({
+    required String userId,
+    required String token,
+    List<int>? ext,
+    String? isarName,
+    List<String>? convIdList,
+  }) async {
+    SetUserParamsResp? resp = await _xximCore?.setUserParams(
+      reqId: SDKTool.getUUId(),
+      req: SetUserParamsReq(
+        userId: userId,
+        token: token,
+        ext: ext,
+      ),
+    );
+    if (resp == null) return false;
+    await _sdkManager?.openDatabase(
+      userId: userId,
+      isarName: isarName,
+    );
+    openPullSubscribe(
+      convIdList: convIdList,
+    );
+    return true;
   }
 
   /// 打开拉取订阅
@@ -148,12 +161,14 @@ class XXIMSDK {
 
   /// 自定义请求
   Future<List<int>?>? customRequest({
+    required String method,
     required List<int> bytes,
     SuccessCallback<List<int>>? onSuccess,
     ErrorCallback? onError,
   }) {
     return _xximCore?.customRequest(
       reqId: SDKTool.getUUId(),
+      method: method,
       bytes: bytes,
       onSuccess: onSuccess,
       onError: onError,
