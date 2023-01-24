@@ -117,6 +117,7 @@ class SDKManager {
 
   /// 启动定时器
   void _startTimer() {
+    _cancelTimer();
     _timer = Timer(autoPullTime, () {
       openPullSubscribe();
     });
