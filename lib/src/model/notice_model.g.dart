@@ -15,7 +15,7 @@ extension GetNoticeModelCollection on Isar {
 const NoticeModelSchema = CollectionSchema(
   name: 'NoticeModel',
   schema:
-      '{"name":"NoticeModel","idName":"id","properties":[{"name":"content","type":"String"},{"name":"contentType","type":"Long"},{"name":"convId","type":"String"},{"name":"createTime","type":"Long"},{"name":"deleted","type":"Bool"},{"name":"ext","type":"String"},{"name":"noticeId","type":"String"},{"name":"options","type":"String"},{"name":"title","type":"String"},{"name":"unreadAbsolute","type":"Bool"},{"name":"unreadCount","type":"Long"}],"indexes":[{"name":"convId","unique":false,"properties":[{"name":"convId","type":"Hash","caseSensitive":true}]},{"name":"noticeId","unique":false,"properties":[{"name":"noticeId","type":"Hash","caseSensitive":true}]}],"links":[]}',
+      '{"name":"NoticeModel","idName":"id","properties":[{"name":"content","type":"String"},{"name":"contentType","type":"Long"},{"name":"convId","type":"String"},{"name":"createTime","type":"Long"},{"name":"deleted","type":"Bool"},{"name":"ext","type":"String"},{"name":"noticeId","type":"String"},{"name":"options","type":"String"},{"name":"title","type":"String"}],"indexes":[{"name":"convId","unique":false,"properties":[{"name":"convId","type":"Hash","caseSensitive":true}]},{"name":"noticeId","unique":false,"properties":[{"name":"noticeId","type":"Hash","caseSensitive":true}]}],"links":[]}',
   idName: 'id',
   propertyIds: {
     'content': 0,
@@ -26,9 +26,7 @@ const NoticeModelSchema = CollectionSchema(
     'ext': 5,
     'noticeId': 6,
     'options': 7,
-    'title': 8,
-    'unreadAbsolute': 9,
-    'unreadCount': 10
+    'title': 8
   },
   listProperties: {},
   indexIds: {'convId': 0, 'noticeId': 1},
@@ -105,10 +103,6 @@ void _noticeModelSerializeNative(
   final value8 = object.title;
   final _title = IsarBinaryWriter.utf8Encoder.convert(value8);
   dynamicSize += (_title.length) as int;
-  final value9 = object.unreadAbsolute;
-  final _unreadAbsolute = value9;
-  final value10 = object.unreadCount;
-  final _unreadCount = value10;
   final size = staticSize + dynamicSize;
 
   rawObj.buffer = alloc(size);
@@ -124,8 +118,6 @@ void _noticeModelSerializeNative(
   writer.writeBytes(offsets[6], _noticeId);
   writer.writeBytes(offsets[7], _options);
   writer.writeBytes(offsets[8], _title);
-  writer.writeBool(offsets[9], _unreadAbsolute);
-  writer.writeLong(offsets[10], _unreadCount);
 }
 
 NoticeModel _noticeModelDeserializeNative(
@@ -144,8 +136,6 @@ NoticeModel _noticeModelDeserializeNative(
     options: _noticeModelNoticeOptionsConverter
         .fromIsar(reader.readString(offsets[7])),
     title: reader.readString(offsets[8]),
-    unreadAbsolute: reader.readBool(offsets[9]),
-    unreadCount: reader.readLong(offsets[10]),
   );
   object.id = id;
   return object;
@@ -175,10 +165,6 @@ P _noticeModelDeserializePropNative<P>(
           .fromIsar(reader.readString(offset))) as P;
     case 8:
       return (reader.readString(offset)) as P;
-    case 9:
-      return (reader.readBool(offset)) as P;
-    case 10:
-      return (reader.readLong(offset)) as P;
     default:
       throw 'Illegal propertyIndex';
   }
@@ -198,8 +184,6 @@ dynamic _noticeModelSerializeWeb(
   IsarNative.jsObjectSet(jsObj, 'options',
       _noticeModelNoticeOptionsConverter.toIsar(object.options));
   IsarNative.jsObjectSet(jsObj, 'title', object.title);
-  IsarNative.jsObjectSet(jsObj, 'unreadAbsolute', object.unreadAbsolute);
-  IsarNative.jsObjectSet(jsObj, 'unreadCount', object.unreadCount);
   return jsObj;
 }
 
@@ -218,9 +202,6 @@ NoticeModel _noticeModelDeserializeWeb(
     options: _noticeModelNoticeOptionsConverter
         .fromIsar(IsarNative.jsObjectGet(jsObj, 'options') ?? ''),
     title: IsarNative.jsObjectGet(jsObj, 'title') ?? '',
-    unreadAbsolute: IsarNative.jsObjectGet(jsObj, 'unreadAbsolute') ?? false,
-    unreadCount:
-        IsarNative.jsObjectGet(jsObj, 'unreadCount') ?? double.negativeInfinity,
   );
   object.id = IsarNative.jsObjectGet(jsObj, 'id') ?? double.negativeInfinity;
   return object;
@@ -252,11 +233,6 @@ P _noticeModelDeserializePropWeb<P>(Object jsObj, String propertyName) {
           .fromIsar(IsarNative.jsObjectGet(jsObj, 'options') ?? '')) as P;
     case 'title':
       return (IsarNative.jsObjectGet(jsObj, 'title') ?? '') as P;
-    case 'unreadAbsolute':
-      return (IsarNative.jsObjectGet(jsObj, 'unreadAbsolute') ?? false) as P;
-    case 'unreadCount':
-      return (IsarNative.jsObjectGet(jsObj, 'unreadCount') ??
-          double.negativeInfinity) as P;
     default:
       throw 'Illegal propertyName';
   }
@@ -1193,66 +1169,6 @@ extension NoticeModelQueryFilter
       caseSensitive: caseSensitive,
     ));
   }
-
-  QueryBuilder<NoticeModel, NoticeModel, QAfterFilterCondition>
-      unreadAbsoluteEqualTo(bool value) {
-    return addFilterConditionInternal(FilterCondition(
-      type: ConditionType.eq,
-      property: 'unreadAbsolute',
-      value: value,
-    ));
-  }
-
-  QueryBuilder<NoticeModel, NoticeModel, QAfterFilterCondition>
-      unreadCountEqualTo(int value) {
-    return addFilterConditionInternal(FilterCondition(
-      type: ConditionType.eq,
-      property: 'unreadCount',
-      value: value,
-    ));
-  }
-
-  QueryBuilder<NoticeModel, NoticeModel, QAfterFilterCondition>
-      unreadCountGreaterThan(
-    int value, {
-    bool include = false,
-  }) {
-    return addFilterConditionInternal(FilterCondition(
-      type: ConditionType.gt,
-      include: include,
-      property: 'unreadCount',
-      value: value,
-    ));
-  }
-
-  QueryBuilder<NoticeModel, NoticeModel, QAfterFilterCondition>
-      unreadCountLessThan(
-    int value, {
-    bool include = false,
-  }) {
-    return addFilterConditionInternal(FilterCondition(
-      type: ConditionType.lt,
-      include: include,
-      property: 'unreadCount',
-      value: value,
-    ));
-  }
-
-  QueryBuilder<NoticeModel, NoticeModel, QAfterFilterCondition>
-      unreadCountBetween(
-    int lower,
-    int upper, {
-    bool includeLower = true,
-    bool includeUpper = true,
-  }) {
-    return addFilterConditionInternal(FilterCondition.between(
-      property: 'unreadCount',
-      lower: lower,
-      includeLower: includeLower,
-      upper: upper,
-      includeUpper: includeUpper,
-    ));
-  }
 }
 
 extension NoticeModelQueryLinks
@@ -1339,23 +1255,6 @@ extension NoticeModelQueryWhereSortBy
   QueryBuilder<NoticeModel, NoticeModel, QAfterSortBy> sortByTitleDesc() {
     return addSortByInternal('title', Sort.desc);
   }
-
-  QueryBuilder<NoticeModel, NoticeModel, QAfterSortBy> sortByUnreadAbsolute() {
-    return addSortByInternal('unreadAbsolute', Sort.asc);
-  }
-
-  QueryBuilder<NoticeModel, NoticeModel, QAfterSortBy>
-      sortByUnreadAbsoluteDesc() {
-    return addSortByInternal('unreadAbsolute', Sort.desc);
-  }
-
-  QueryBuilder<NoticeModel, NoticeModel, QAfterSortBy> sortByUnreadCount() {
-    return addSortByInternal('unreadCount', Sort.asc);
-  }
-
-  QueryBuilder<NoticeModel, NoticeModel, QAfterSortBy> sortByUnreadCountDesc() {
-    return addSortByInternal('unreadCount', Sort.desc);
-  }
 }
 
 extension NoticeModelQueryWhereSortThenBy
@@ -1439,23 +1338,6 @@ extension NoticeModelQueryWhereSortThenBy
   QueryBuilder<NoticeModel, NoticeModel, QAfterSortBy> thenByTitleDesc() {
     return addSortByInternal('title', Sort.desc);
   }
-
-  QueryBuilder<NoticeModel, NoticeModel, QAfterSortBy> thenByUnreadAbsolute() {
-    return addSortByInternal('unreadAbsolute', Sort.asc);
-  }
-
-  QueryBuilder<NoticeModel, NoticeModel, QAfterSortBy>
-      thenByUnreadAbsoluteDesc() {
-    return addSortByInternal('unreadAbsolute', Sort.desc);
-  }
-
-  QueryBuilder<NoticeModel, NoticeModel, QAfterSortBy> thenByUnreadCount() {
-    return addSortByInternal('unreadCount', Sort.asc);
-  }
-
-  QueryBuilder<NoticeModel, NoticeModel, QAfterSortBy> thenByUnreadCountDesc() {
-    return addSortByInternal('unreadCount', Sort.desc);
-  }
 }
 
 extension NoticeModelQueryWhereDistinct
@@ -1505,14 +1387,6 @@ extension NoticeModelQueryWhereDistinct
       {bool caseSensitive = true}) {
     return addDistinctByInternal('title', caseSensitive: caseSensitive);
   }
-
-  QueryBuilder<NoticeModel, NoticeModel, QDistinct> distinctByUnreadAbsolute() {
-    return addDistinctByInternal('unreadAbsolute');
-  }
-
-  QueryBuilder<NoticeModel, NoticeModel, QDistinct> distinctByUnreadCount() {
-    return addDistinctByInternal('unreadCount');
-  }
 }
 
 extension NoticeModelQueryProperty
@@ -1556,13 +1430,5 @@ extension NoticeModelQueryProperty
 
   QueryBuilder<NoticeModel, String, QQueryOperations> titleProperty() {
     return addPropertyNameInternal('title');
-  }
-
-  QueryBuilder<NoticeModel, bool, QQueryOperations> unreadAbsoluteProperty() {
-    return addPropertyNameInternal('unreadAbsolute');
-  }
-
-  QueryBuilder<NoticeModel, int, QQueryOperations> unreadCountProperty() {
-    return addPropertyNameInternal('unreadCount');
   }
 }

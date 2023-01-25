@@ -283,7 +283,7 @@ class SDKManager {
     return msgModel;
   }
 
-  /// 推送消息
+  /// 推送消息列表
   void onPushMsgDataList(
     List<MsgData> msgDataList,
   ) async {
@@ -303,26 +303,22 @@ class SDKManager {
   }
 
   /// 推送通知
-  void onPushNoticeDataList(
-    List<NoticeData> noticeDataList,
+  void onPushNoticeData(
+    NoticeData noticeData,
   ) async {
-    List<NoticeModel> noticeModelList = [];
+    late NoticeModel noticeModel;
     await isar.writeTxn((isar) async {
-      for (NoticeData noticeData in noticeDataList) {
-        noticeModelList.add(await _handleNotice(noticeData));
-      }
+      noticeModel = await _handleNotice(noticeData);
     });
-    for (NoticeModel noticeModel in noticeModelList) {
-      bool? status = await noticeListener?.receive(noticeModel);
-      if (status == true) {
-        await xximCore.ackNoticeData(
-          reqId: SDKTool.getUUId(),
-          req: AckNoticeDataReq(
-            convId: noticeModel.convId,
-            noticeId: noticeModel.noticeId,
-          ),
-        );
-      }
+    bool? status = await noticeListener?.receive(noticeModel);
+    if (status == true) {
+      await xximCore.ackNoticeData(
+        reqId: SDKTool.getUUId(),
+        req: AckNoticeDataReq(
+          convId: noticeModel.convId,
+          noticeId: noticeModel.noticeId,
+        ),
+      );
     }
     convListener?.update();
     calculateUnreadCount();
@@ -529,6 +525,7 @@ class SDKManager {
         convModel.deleted = false;
       }
     }
+    convModel.unreadCount = ++convModel.unreadCount;
     await convModels().put(convModel);
   }
 

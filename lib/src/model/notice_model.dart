@@ -12,8 +12,6 @@ class NoticeModel {
 
   @Index()
   String convId;
-  int unreadCount;
-  bool unreadAbsolute;
   @Index()
   String noticeId;
   int createTime;
@@ -27,8 +25,6 @@ class NoticeModel {
 
   NoticeModel({
     required this.convId,
-    required this.unreadCount,
-    required this.unreadAbsolute,
     required this.noticeId,
     required this.createTime,
     required this.title,
@@ -42,8 +38,6 @@ class NoticeModel {
   static NoticeModel fromProto(NoticeData noticeData) {
     return NoticeModel(
       convId: noticeData.convId,
-      unreadCount: noticeData.unreadCount,
-      unreadAbsolute: noticeData.unreadAbsolute,
       noticeId: noticeData.noticeId,
       createTime: int.parse(noticeData.createTime),
       title: noticeData.title,
@@ -58,19 +52,16 @@ class NoticeModel {
 class NoticeOptionsModel {
   bool storageForClient;
   bool updateConvMsg;
-  bool onlinePushOnce;
 
   NoticeOptionsModel({
     this.storageForClient = false,
     this.updateConvMsg = false,
-    this.onlinePushOnce = false,
   });
 
   static NoticeOptionsModel fromProto(NoticeData_Options options) {
     return NoticeOptionsModel(
       storageForClient: options.storageForClient,
       updateConvMsg: options.updateConvMsg,
-      onlinePushOnce: options.onlinePushOnce,
     );
   }
 
@@ -79,7 +70,6 @@ class NoticeOptionsModel {
     return NoticeOptionsModel(
       storageForClient: map["storageForClient"],
       updateConvMsg: map["updateConvMsg"],
-      onlinePushOnce: map["onlinePushOnce"],
     );
   }
 
@@ -87,7 +77,6 @@ class NoticeOptionsModel {
     return json.encode({
       "storageForClient": storageForClient,
       "updateConvMsg": updateConvMsg,
-      "onlinePushOnce": onlinePushOnce,
     });
   }
 }
