@@ -62,16 +62,6 @@ const NoticeModelSchema = CollectionSchema(
       id: 8,
       name: r'title',
       type: IsarType.string,
-    ),
-    r'unreadAbsolute': PropertySchema(
-      id: 9,
-      name: r'unreadAbsolute',
-      type: IsarType.bool,
-    ),
-    r'unreadCount': PropertySchema(
-      id: 10,
-      name: r'unreadCount',
-      type: IsarType.long,
     )
   },
   estimateSize: _noticeModelEstimateSize,
@@ -152,8 +142,6 @@ void _noticeModelSerialize(
     object.options,
   );
   writer.writeString(offsets[8], object.title);
-  writer.writeBool(offsets[9], object.unreadAbsolute);
-  writer.writeLong(offsets[10], object.unreadCount);
 }
 
 NoticeModel _noticeModelDeserialize(
@@ -177,8 +165,6 @@ NoticeModel _noticeModelDeserialize(
         ) ??
         NoticeOptionsModel(),
     title: reader.readString(offsets[8]),
-    unreadAbsolute: reader.readBool(offsets[9]),
-    unreadCount: reader.readLong(offsets[10]),
   );
   object.id = id;
   return object;
@@ -214,10 +200,6 @@ P _noticeModelDeserializeProp<P>(
           NoticeOptionsModel()) as P;
     case 8:
       return (reader.readString(offset)) as P;
-    case 9:
-      return (reader.readBool(offset)) as P;
-    case 10:
-      return (reader.readLong(offset)) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
   }
@@ -1246,72 +1228,6 @@ extension NoticeModelQueryFilter
       ));
     });
   }
-
-  QueryBuilder<NoticeModel, NoticeModel, QAfterFilterCondition>
-      unreadAbsoluteEqualTo(bool value) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'unreadAbsolute',
-        value: value,
-      ));
-    });
-  }
-
-  QueryBuilder<NoticeModel, NoticeModel, QAfterFilterCondition>
-      unreadCountEqualTo(int value) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'unreadCount',
-        value: value,
-      ));
-    });
-  }
-
-  QueryBuilder<NoticeModel, NoticeModel, QAfterFilterCondition>
-      unreadCountGreaterThan(
-    int value, {
-    bool include = false,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        include: include,
-        property: r'unreadCount',
-        value: value,
-      ));
-    });
-  }
-
-  QueryBuilder<NoticeModel, NoticeModel, QAfterFilterCondition>
-      unreadCountLessThan(
-    int value, {
-    bool include = false,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.lessThan(
-        include: include,
-        property: r'unreadCount',
-        value: value,
-      ));
-    });
-  }
-
-  QueryBuilder<NoticeModel, NoticeModel, QAfterFilterCondition>
-      unreadCountBetween(
-    int lower,
-    int upper, {
-    bool includeLower = true,
-    bool includeUpper = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.between(
-        property: r'unreadCount',
-        lower: lower,
-        includeLower: includeLower,
-        upper: upper,
-        includeUpper: includeUpper,
-      ));
-    });
-  }
 }
 
 extension NoticeModelQueryObject
@@ -1422,31 +1338,6 @@ extension NoticeModelQuerySortBy
   QueryBuilder<NoticeModel, NoticeModel, QAfterSortBy> sortByTitleDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'title', Sort.desc);
-    });
-  }
-
-  QueryBuilder<NoticeModel, NoticeModel, QAfterSortBy> sortByUnreadAbsolute() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'unreadAbsolute', Sort.asc);
-    });
-  }
-
-  QueryBuilder<NoticeModel, NoticeModel, QAfterSortBy>
-      sortByUnreadAbsoluteDesc() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'unreadAbsolute', Sort.desc);
-    });
-  }
-
-  QueryBuilder<NoticeModel, NoticeModel, QAfterSortBy> sortByUnreadCount() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'unreadCount', Sort.asc);
-    });
-  }
-
-  QueryBuilder<NoticeModel, NoticeModel, QAfterSortBy> sortByUnreadCountDesc() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'unreadCount', Sort.desc);
     });
   }
 }
@@ -1560,31 +1451,6 @@ extension NoticeModelQuerySortThenBy
       return query.addSortBy(r'title', Sort.desc);
     });
   }
-
-  QueryBuilder<NoticeModel, NoticeModel, QAfterSortBy> thenByUnreadAbsolute() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'unreadAbsolute', Sort.asc);
-    });
-  }
-
-  QueryBuilder<NoticeModel, NoticeModel, QAfterSortBy>
-      thenByUnreadAbsoluteDesc() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'unreadAbsolute', Sort.desc);
-    });
-  }
-
-  QueryBuilder<NoticeModel, NoticeModel, QAfterSortBy> thenByUnreadCount() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'unreadCount', Sort.asc);
-    });
-  }
-
-  QueryBuilder<NoticeModel, NoticeModel, QAfterSortBy> thenByUnreadCountDesc() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'unreadCount', Sort.desc);
-    });
-  }
 }
 
 extension NoticeModelQueryWhereDistinct
@@ -1639,18 +1505,6 @@ extension NoticeModelQueryWhereDistinct
       {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'title', caseSensitive: caseSensitive);
-    });
-  }
-
-  QueryBuilder<NoticeModel, NoticeModel, QDistinct> distinctByUnreadAbsolute() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addDistinctBy(r'unreadAbsolute');
-    });
-  }
-
-  QueryBuilder<NoticeModel, NoticeModel, QDistinct> distinctByUnreadCount() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addDistinctBy(r'unreadCount');
     });
   }
 }
@@ -1717,18 +1571,6 @@ extension NoticeModelQueryProperty
       return query.addPropertyName(r'title');
     });
   }
-
-  QueryBuilder<NoticeModel, bool, QQueryOperations> unreadAbsoluteProperty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addPropertyName(r'unreadAbsolute');
-    });
-  }
-
-  QueryBuilder<NoticeModel, int, QQueryOperations> unreadCountProperty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addPropertyName(r'unreadCount');
-    });
-  }
 }
 
 // **************************************************************************
@@ -1742,18 +1584,13 @@ const NoticeOptionsModelSchema = Schema(
   name: r'NoticeOptionsModel',
   id: -5692169215493622784,
   properties: {
-    r'onlinePushOnce': PropertySchema(
-      id: 0,
-      name: r'onlinePushOnce',
-      type: IsarType.bool,
-    ),
     r'storageForClient': PropertySchema(
-      id: 1,
+      id: 0,
       name: r'storageForClient',
       type: IsarType.bool,
     ),
     r'updateConvMsg': PropertySchema(
-      id: 2,
+      id: 1,
       name: r'updateConvMsg',
       type: IsarType.bool,
     )
@@ -1779,9 +1616,8 @@ void _noticeOptionsModelSerialize(
   List<int> offsets,
   Map<Type, List<int>> allOffsets,
 ) {
-  writer.writeBool(offsets[0], object.onlinePushOnce);
-  writer.writeBool(offsets[1], object.storageForClient);
-  writer.writeBool(offsets[2], object.updateConvMsg);
+  writer.writeBool(offsets[0], object.storageForClient);
+  writer.writeBool(offsets[1], object.updateConvMsg);
 }
 
 NoticeOptionsModel _noticeOptionsModelDeserialize(
@@ -1791,9 +1627,8 @@ NoticeOptionsModel _noticeOptionsModelDeserialize(
   Map<Type, List<int>> allOffsets,
 ) {
   final object = NoticeOptionsModel(
-    onlinePushOnce: reader.readBoolOrNull(offsets[0]),
-    storageForClient: reader.readBoolOrNull(offsets[1]),
-    updateConvMsg: reader.readBoolOrNull(offsets[2]),
+    storageForClient: reader.readBoolOrNull(offsets[0]),
+    updateConvMsg: reader.readBoolOrNull(offsets[1]),
   );
   return object;
 }
@@ -1809,8 +1644,6 @@ P _noticeOptionsModelDeserializeProp<P>(
       return (reader.readBoolOrNull(offset)) as P;
     case 1:
       return (reader.readBoolOrNull(offset)) as P;
-    case 2:
-      return (reader.readBoolOrNull(offset)) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
   }
@@ -1818,34 +1651,6 @@ P _noticeOptionsModelDeserializeProp<P>(
 
 extension NoticeOptionsModelQueryFilter
     on QueryBuilder<NoticeOptionsModel, NoticeOptionsModel, QFilterCondition> {
-  QueryBuilder<NoticeOptionsModel, NoticeOptionsModel, QAfterFilterCondition>
-      onlinePushOnceIsNull() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(const FilterCondition.isNull(
-        property: r'onlinePushOnce',
-      ));
-    });
-  }
-
-  QueryBuilder<NoticeOptionsModel, NoticeOptionsModel, QAfterFilterCondition>
-      onlinePushOnceIsNotNull() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(const FilterCondition.isNotNull(
-        property: r'onlinePushOnce',
-      ));
-    });
-  }
-
-  QueryBuilder<NoticeOptionsModel, NoticeOptionsModel, QAfterFilterCondition>
-      onlinePushOnceEqualTo(bool? value) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'onlinePushOnce',
-        value: value,
-      ));
-    });
-  }
-
   QueryBuilder<NoticeOptionsModel, NoticeOptionsModel, QAfterFilterCondition>
       storageForClientIsNull() {
     return QueryBuilder.apply(this, (query) {

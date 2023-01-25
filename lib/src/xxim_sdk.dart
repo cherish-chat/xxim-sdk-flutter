@@ -58,8 +58,8 @@ class XXIMSDK {
           onPushMsgDataList: (msgDataList) {
             _sdkManager?.onPushMsgDataList(msgDataList.msgDataList);
           },
-          onPushNoticeDataList: (noticeDataList) {
-            _sdkManager?.onPushNoticeDataList(noticeDataList.noticeDataList);
+          onPushNoticeData: (noticeData) {
+            _sdkManager?.onPushNoticeData(noticeData);
           },
         ),
       );
