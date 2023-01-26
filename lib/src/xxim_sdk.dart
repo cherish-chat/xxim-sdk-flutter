@@ -91,6 +91,7 @@ class XXIMSDK {
 
   /// 断连
   void disconnect() {
+    _sdkManager?.closeDatabase();
     _xximCore?.disconnect();
     closePullSubscribe();
   }
@@ -135,6 +136,7 @@ class XXIMSDK {
       ),
     );
     if (resp == null) return false;
+    await _sdkManager?.closeDatabase();
     await _sdkManager?.openDatabase(
       userId: userId,
       isarName: isarName,
