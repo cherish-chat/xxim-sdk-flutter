@@ -320,13 +320,13 @@
 
 ### 获取单条通知
 
-     NoticeModel? noticeModel = await sdk.noticeManager.getSingleMsg(
+     NoticeModel? noticeModel = await sdk.noticeManager.getSingleNotice(
        noticeId: "",
      );
 
 ### 获取多条通知
 
-     List<NoticeModel> noticeList = await sdk.noticeManager.getMultipleMsg(
+     List<NoticeModel> noticeList = await sdk.noticeManager.getMultipleNotice(
        noticeIdList: [],
      );
 
