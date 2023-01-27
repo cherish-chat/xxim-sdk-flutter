@@ -45,12 +45,12 @@ class XXIMSDK {
         requestTimeout: requestTimeout,
         connectListener: ConnectListener(
           onConnecting: connectListener.onConnecting,
-          onSuccess: () {
-            connectListener.onSuccess();
-            Future.doWhile(() async {
+          onSuccess: () async {
+            await Future.doWhile(() async {
               await Future.delayed(const Duration(milliseconds: 5));
               return !(await setCxnParams(cxnParams));
             });
+            connectListener.onSuccess();
           },
           onClose: connectListener.onClose,
         ),
@@ -136,7 +136,6 @@ class XXIMSDK {
       ),
     );
     if (resp == null) return false;
-    await _sdkManager?.closeDatabase();
     await _sdkManager?.openDatabase(
       userId: userId,
       isarName: isarName,

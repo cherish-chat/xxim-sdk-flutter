@@ -90,7 +90,10 @@ class SDKManager {
 
   /// 关闭数据库
   Future closeDatabase() async {
-    await isar.close();
+    Set<String> names = Isar.instanceNames;
+    for (String name in names) {
+      await Isar.getInstance(name)?.close();
+    }
   }
 
   /// 记录表
