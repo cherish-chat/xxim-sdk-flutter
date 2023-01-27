@@ -41,7 +41,8 @@ class ConvManager {
       }
     }
     if (noticeIdList.isNotEmpty) {
-      List<NoticeModel> noticeModelList = await _noticeManager.getMultipleMsg(
+      List<NoticeModel> noticeModelList =
+          await _noticeManager.getMultipleNotice(
         noticeIdList: noticeIdList,
       );
       for (NoticeModel noticeModel in noticeModelList) {
@@ -98,7 +99,7 @@ class ConvManager {
       );
     }
     if (convModel.noticeId != null) {
-      convModel.noticeModel = await _noticeManager.getSingleMsg(
+      convModel.noticeModel = await _noticeManager.getSingleNotice(
         noticeId: convModel.noticeId!,
       );
     }

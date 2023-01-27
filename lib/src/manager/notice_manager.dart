@@ -39,7 +39,7 @@ class NoticeManager {
   }
 
   /// 获取单条通知
-  Future<NoticeModel?> getSingleMsg({
+  Future<NoticeModel?> getSingleNotice({
     required String noticeId,
   }) {
     return _sdkManager
@@ -50,7 +50,7 @@ class NoticeManager {
   }
 
   /// 获取多条通知
-  Future<List<NoticeModel>> getMultipleMsg({
+  Future<List<NoticeModel>> getMultipleNotice({
     required List<String> noticeIdList,
   }) {
     return _sdkManager
