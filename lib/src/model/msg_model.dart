@@ -58,7 +58,7 @@ class MsgModel {
     this.deleted = false,
   });
 
-  static MsgModel fromProto(MsgData msgData, AESParams? aesParams) {
+  static MsgModel fromProto(MsgData msgData, AesParams? aesParams) {
     MsgOptionsModel options = MsgOptionsModel.fromProto(msgData.options);
     return MsgModel(
       clientMsgId: msgData.clientMsgId,
