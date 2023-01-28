@@ -44,15 +44,15 @@ class XXIMSDK {
       ..init(
         requestTimeout: requestTimeout,
         connectListener: ConnectListener(
-          onConnecting: connectListener.onConnecting,
+          onConnecting: connectListener.connecting,
           onSuccess: () async {
             await Future.doWhile(() async {
               await Future.delayed(const Duration(milliseconds: 5));
               return !(await setCxnParams(cxnParams));
             });
-            connectListener.onSuccess();
+            connectListener.success();
           },
-          onClose: connectListener.onClose,
+          onClose: connectListener.close,
         ),
         receivePushListener: ReceivePushListener(
           onPushMsgDataList: (msgDataList) {
