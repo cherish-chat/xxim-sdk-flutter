@@ -238,12 +238,12 @@ class SDKManager {
     _cancelTimer();
   }
 
-  Future<Map<String, AESParams>> _convAESParams(List<MsgData> msgDataList) {
+  Future<Map<String, AesParams>> _convAesParams(List<MsgData> msgDataList) {
     List<String> convIdList = [];
     for (MsgData msgData in msgDataList) {
       convIdList.add(msgData.convId);
     }
-    return subscribeCallback.convAESParams(convIdList);
+    return subscribeCallback.convAesParams(convIdList);
   }
 
   /// 拉取消息列表
@@ -257,11 +257,11 @@ class SDKManager {
       ),
     );
     if (resp == null) return null;
-    Map<String, AESParams> convAESMap = await _convAESParams(resp.msgDataList);
+    Map<String, AesParams> convAesMap = await _convAesParams(resp.msgDataList);
     List<MsgModel> msgModelList = [];
     await isar.writeTxn(() async {
       for (MsgData msgData in resp.msgDataList) {
-        msgModelList.add(await _handleMsg(msgData, convAESMap[msgData.convId]));
+        msgModelList.add(await _handleMsg(msgData, convAesMap[msgData.convId]));
       }
     });
     return msgModelList;
@@ -281,10 +281,10 @@ class SDKManager {
     );
     if (resp == null) return null;
     MsgData msgData = resp.msgData;
-    Map<String, AESParams> convAESMap = await _convAESParams([msgData]);
+    Map<String, AesParams> convAesMap = await _convAesParams([msgData]);
     MsgModel? msgModel;
     await isar.writeTxn(() async {
-      msgModel = await _handleMsg(msgData, convAESMap[msgData.convId]);
+      msgModel = await _handleMsg(msgData, convAesMap[msgData.convId]);
     });
     return msgModel;
   }
@@ -294,11 +294,11 @@ class SDKManager {
     List<MsgData> msgDataList,
   ) async {
     bool isFirstPull = await msgModels().count() == 0;
-    Map<String, AESParams> convAESMap = await _convAESParams(msgDataList);
+    Map<String, AesParams> convAesMap = await _convAesParams(msgDataList);
     List<MsgModel> msgModelList = [];
     await isar.writeTxn(() async {
       for (MsgData msgData in msgDataList) {
-        msgModelList.add(await _handleMsg(msgData, convAESMap[msgData.convId]));
+        msgModelList.add(await _handleMsg(msgData, convAesMap[msgData.convId]));
       }
     });
     if (!isFirstPull && msgModelList.isNotEmpty) {
@@ -331,7 +331,7 @@ class SDKManager {
   }
 
   /// 处理消息
-  Future<MsgModel> _handleMsg(MsgData msgData, AESParams? aesParams) async {
+  Future<MsgModel> _handleMsg(MsgData msgData, AesParams? aesParams) async {
     MsgModel msgModel = MsgModel.fromProto(msgData, aesParams);
     msgModel.sendStatus = SendStatus.success;
     await _updateRecord(msgModel);
@@ -593,7 +593,7 @@ class SDKManager {
     for (MsgModel msgModel in msgModelList) {
       convIdList.add(msgModel.convId);
     }
-    Map<String, AESParams> convAESMap = await subscribeCallback.convAESParams(
+    Map<String, AesParams> convAesMap = await subscribeCallback.convAesParams(
       convIdList,
     );
     SendMsgListResp? resp = await xximCore.sendMsgList(
@@ -603,7 +603,7 @@ class SDKManager {
           if (senderInfo != null) {
             msgModel.senderInfo = senderInfo;
           }
-          AESParams? aesParams = convAESMap[msgModel.convId];
+          AesParams? aesParams = convAesMap[msgModel.convId];
           return MsgData(
             clientMsgId: msgModel.clientMsgId,
             clientTime: msgModel.clientTime.toString(),

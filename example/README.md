@@ -46,7 +46,7 @@
          onConvIdList: () async {
            return [];
          },
-         onConvAESParams: (convIdList) async {
+         onConvAesParams: (convIdList) async {
            return {};
          },
        ),
