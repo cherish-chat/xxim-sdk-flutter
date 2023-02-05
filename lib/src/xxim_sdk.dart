@@ -125,6 +125,10 @@ class XXIMSDK {
     String? isarName,
     List<String>? convIdList,
   }) async {
+    await _sdkManager?.openDatabase(
+      userId: userId,
+      isarName: isarName,
+    );
     SetUserParamsResp? resp = await _xximCore?.setUserParams(
       reqId: SDKTool.getUUId(),
       req: SetUserParamsReq(
@@ -133,11 +137,10 @@ class XXIMSDK {
         ext: ext,
       ),
     );
-    if (resp == null) return false;
-    await _sdkManager?.openDatabase(
-      userId: userId,
-      isarName: isarName,
-    );
+    if (resp == null) {
+      await _sdkManager?.closeDatabase();
+      return false;
+    }
     openPullSubscribe(
       convIdList: convIdList,
     );
