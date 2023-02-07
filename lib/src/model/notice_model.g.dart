@@ -1589,9 +1589,9 @@ const NoticeOptionsModelSchema = Schema(
       name: r'storageForClient',
       type: IsarType.bool,
     ),
-    r'updateConvMsg': PropertySchema(
+    r'updateConvNotice': PropertySchema(
       id: 1,
-      name: r'updateConvMsg',
+      name: r'updateConvNotice',
       type: IsarType.bool,
     )
   },
@@ -1617,7 +1617,7 @@ void _noticeOptionsModelSerialize(
   Map<Type, List<int>> allOffsets,
 ) {
   writer.writeBool(offsets[0], object.storageForClient);
-  writer.writeBool(offsets[1], object.updateConvMsg);
+  writer.writeBool(offsets[1], object.updateConvNotice);
 }
 
 NoticeOptionsModel _noticeOptionsModelDeserialize(
@@ -1628,7 +1628,7 @@ NoticeOptionsModel _noticeOptionsModelDeserialize(
 ) {
   final object = NoticeOptionsModel(
     storageForClient: reader.readBoolOrNull(offsets[0]),
-    updateConvMsg: reader.readBoolOrNull(offsets[1]),
+    updateConvNotice: reader.readBoolOrNull(offsets[1]),
   );
   return object;
 }
@@ -1680,28 +1680,28 @@ extension NoticeOptionsModelQueryFilter
   }
 
   QueryBuilder<NoticeOptionsModel, NoticeOptionsModel, QAfterFilterCondition>
-      updateConvMsgIsNull() {
+      updateConvNoticeIsNull() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(const FilterCondition.isNull(
-        property: r'updateConvMsg',
+        property: r'updateConvNotice',
       ));
     });
   }
 
   QueryBuilder<NoticeOptionsModel, NoticeOptionsModel, QAfterFilterCondition>
-      updateConvMsgIsNotNull() {
+      updateConvNoticeIsNotNull() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(const FilterCondition.isNotNull(
-        property: r'updateConvMsg',
+        property: r'updateConvNotice',
       ));
     });
   }
 
   QueryBuilder<NoticeOptionsModel, NoticeOptionsModel, QAfterFilterCondition>
-      updateConvMsgEqualTo(bool? value) {
+      updateConvNoticeEqualTo(bool? value) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'updateConvMsg',
+        property: r'updateConvNotice',
         value: value,
       ));
     });

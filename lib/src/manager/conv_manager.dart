@@ -127,9 +127,9 @@ class ConvManager {
       convId: convId,
     );
     if (msgModel == null) return;
-    await _msgManager.sendRead(
-      convId: convId,
+    await _msgManager.sendReadMsg(
       content: ReadContent(
+        convId: convId,
         seq: msgModel.seq,
       ),
     );
@@ -149,8 +149,6 @@ class ConvManager {
         .msgModels()
         .filter()
         .convIdEqualTo(convId)
-        .and()
-        .contentTypeBetween(ContentType.text, ContentType.custom)
         .and()
         .deletedEqualTo(false)
         .sortBySeqDesc()

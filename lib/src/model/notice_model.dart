@@ -49,17 +49,17 @@ class NoticeModel {
 @Embedded()
 class NoticeOptionsModel {
   bool? storageForClient;
-  bool? updateConvMsg;
+  bool? updateConvNotice;
 
   NoticeOptionsModel({
     this.storageForClient,
-    this.updateConvMsg,
+    this.updateConvNotice,
   });
 
   static NoticeOptionsModel fromProto(NoticeData_Options options) {
     return NoticeOptionsModel(
       storageForClient: options.storageForClient,
-      updateConvMsg: options.updateConvMsg,
+      updateConvNotice: options.updateConvNotice,
     );
   }
 }

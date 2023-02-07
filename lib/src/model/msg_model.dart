@@ -53,7 +53,7 @@ class MsgModel {
     this.deleted = false,
   });
 
-  static MsgModel fromProto(MsgData msgData, AesParams? aesParams) {
+  static MsgModel fromProto(MsgData msgData, AesParams aesParams) {
     MsgOptionsModel options = MsgOptionsModel.fromProto(msgData.options);
     return MsgModel(
       clientMsgId: msgData.clientMsgId,
@@ -65,7 +65,7 @@ class MsgModel {
       convId: msgData.convId,
       atUsers: msgData.atUsers,
       contentType: msgData.contentType,
-      content: options.needDecrypt == true && aesParams != null
+      content: options.needDecrypt == true
           ? SDKTool.aesDecode(
               key: aesParams.key,
               iv: aesParams.iv,
