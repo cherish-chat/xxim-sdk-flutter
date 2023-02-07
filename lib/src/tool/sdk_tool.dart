@@ -30,8 +30,8 @@ class SDKTool {
     });
   }
 
-  static List<int> utf8Encode(String content) {
-    return utf8.encode(content);
+  static List<int> utf8Encode(String value) {
+    return utf8.encode(value);
   }
 
   static String utf8Decode(List<int> bytes) {
