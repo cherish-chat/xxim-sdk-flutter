@@ -22,10 +22,10 @@ import 'package:xxim_sdk_flutter/src/tool/sdk_tool.dart';
 
 class SDKManager {
   final XXIMCore xximCore;
+  final String? directory;
   final Duration autoPullTime;
   final int pullMsgCount;
   final List<CollectionSchema> isarSchemas;
-  final String isarDirectory;
   final bool isarInspector;
   final SubscribeCallback subscribeCallback;
   final IsarListener? isarListener;
@@ -37,10 +37,10 @@ class SDKManager {
 
   SDKManager({
     required this.xximCore,
+    required this.directory,
     required this.autoPullTime,
     required this.pullMsgCount,
     required this.isarSchemas,
-    required this.isarDirectory,
     required this.isarInspector,
     required this.subscribeCallback,
     this.isarListener,
@@ -77,7 +77,7 @@ class SDKManager {
           ReadModelSchema,
           ...isarSchemas,
         ],
-        directory: isarDirectory,
+        directory: directory,
         name: isarName,
         inspector: isarInspector,
       );
@@ -87,10 +87,7 @@ class SDKManager {
 
   /// 关闭数据库
   Future closeDatabase() async {
-    Set<String> names = Isar.instanceNames;
-    for (String name in names) {
-      await Isar.getInstance(name)?.close();
-    }
+    await isar.close();
   }
 
   /// 记录表
@@ -134,13 +131,13 @@ class SDKManager {
 
   /// 打开拉取订阅
   void openPullSubscribe({
-    List<String>? convIdList,
+    Map<String, AesParams>? convParams,
   }) async {
     _pullStatus = true;
     _cancelTimer();
     pullListener?.start();
-    convIdList ??= await subscribeCallback.convIdList();
-    if (convIdList.isEmpty) {
+    convParams ??= await subscribeCallback.convParams();
+    if (convParams.isEmpty) {
       pullListener?.end();
       if (_pullStatus) _startTimer();
       return;
@@ -148,7 +145,7 @@ class SDKManager {
     BatchGetConvSeqResp? resp = await xximCore.batchGetConvSeq(
       reqId: SDKTool.getUUId(),
       req: BatchGetConvSeqReq(
-        convIdList: convIdList,
+        convIdList: convParams.keys.toList(),
       ),
     );
     if (resp == null || resp.convSeqMap.isEmpty) {
@@ -235,14 +232,6 @@ class SDKManager {
     _cancelTimer();
   }
 
-  Future<Map<String, AesParams>> _convAesParams(List<MsgData> msgDataList) {
-    List<String> convIdList = [];
-    for (MsgData msgData in msgDataList) {
-      convIdList.add(msgData.convId);
-    }
-    return subscribeCallback.convAesParams(convIdList);
-  }
-
   /// 拉取消息列表
   Future<List<MsgModel>?> pullMsgDataList(
     List<BatchGetMsgListByConvIdReq_Item> items,
@@ -254,11 +243,14 @@ class SDKManager {
       ),
     );
     if (resp == null) return null;
-    Map<String, AesParams> convAesMap = await _convAesParams(resp.msgDataList);
+    Map<String, AesParams> convParams = await subscribeCallback.convParams();
     List<MsgModel> msgModelList = [];
     await isar.writeTxn((isar) async {
       for (MsgData msgData in resp.msgDataList) {
-        msgModelList.add(await _handleMsg(msgData, convAesMap[msgData.convId]));
+        msgModelList.add(await _handleMsg(
+          msgData,
+          convParams[msgData.convId]!,
+        ));
       }
     });
     return msgModelList;
@@ -278,10 +270,13 @@ class SDKManager {
     );
     if (resp == null) return null;
     MsgData msgData = resp.msgData;
-    Map<String, AesParams> convAesMap = await _convAesParams([msgData]);
+    Map<String, AesParams> convParams = await subscribeCallback.convParams();
     MsgModel? msgModel;
     await isar.writeTxn((isar) async {
-      msgModel = await _handleMsg(msgData, convAesMap[msgData.convId]);
+      msgModel = await _handleMsg(
+        msgData,
+        convParams[msgData.convId]!,
+      );
     });
     return msgModel;
   }
@@ -291,11 +286,14 @@ class SDKManager {
     List<MsgData> msgDataList,
   ) async {
     bool isFirstPull = await msgModels().count() == 0;
-    Map<String, AesParams> convAesMap = await _convAesParams(msgDataList);
+    Map<String, AesParams> convParams = await subscribeCallback.convParams();
     List<MsgModel> msgModelList = [];
     await isar.writeTxn((isar) async {
       for (MsgData msgData in msgDataList) {
-        msgModelList.add(await _handleMsg(msgData, convAesMap[msgData.convId]));
+        msgModelList.add(await _handleMsg(
+          msgData,
+          convParams[msgData.convId]!,
+        ));
       }
     });
     if (!isFirstPull && msgModelList.isNotEmpty) {
@@ -328,15 +326,12 @@ class SDKManager {
   }
 
   /// 处理消息
-  Future<MsgModel> _handleMsg(MsgData msgData, AesParams? aesParams) async {
+  Future<MsgModel> _handleMsg(MsgData msgData, AesParams aesParams) async {
     MsgModel msgModel = MsgModel.fromProto(msgData, aesParams);
     msgModel.sendStatus = SendStatus.success;
     await _updateRecord(msgModel);
     await _updateMsg(msgModel);
-    if (msgData.serverMsgId.isNotEmpty) {
-      await _updateRead(msgModel);
-      await _updateMsgConv(msgModel);
-    }
+    await _updateMsgConv(msgModel);
     return msgModel;
   }
 
@@ -353,7 +348,7 @@ class SDKManager {
   }
 
   Future _updateMsg(MsgModel msgModel) async {
-    if (msgModel.options.storageForClient != true) return;
+    if (!msgModel.options.storageForClient) return;
     MsgModel? model = await msgModels()
         .filter()
         .convIdEqualTo(msgModel.convId)
@@ -382,33 +377,13 @@ class SDKManager {
         model.seq = msgModel.seq;
         updated = true;
       }
+      if (model.ext != msgModel.ext) {
+        model.ext = msgModel.ext;
+        updated = true;
+      }
       if (updated) await msgModels().put(model);
     } else {
       await msgModels().put(msgModel);
-    }
-  }
-
-  Future _updateRead(MsgModel msgModel) async {
-    if (msgModel.contentType != ContentType.read) return;
-    ReadContent content = ReadContent.fromJson(msgModel.content);
-    ReadModel? readModel = await readModels()
-        .filter()
-        .senderIdEqualTo(msgModel.senderId)
-        .and()
-        .convIdEqualTo(msgModel.convId)
-        .findFirst();
-    if (readModel != null) {
-      if (content.seq > readModel.seq) {
-        readModel.seq = content.seq;
-        await readModels().put(readModel);
-      }
-    } else {
-      readModel = ReadModel(
-        senderId: msgModel.senderId,
-        convId: msgModel.convId,
-        seq: content.seq,
-      );
-      await readModels().put(readModel);
     }
   }
 
@@ -430,7 +405,7 @@ class SDKManager {
           .clientMsgIdEqualTo(convModel.clientMsgId!)
           .findFirst();
     }
-    if (msgModel.options.updateConvMsg == true) {
+    if (msgModel.options.updateConvMsg) {
       if (model != null) {
         if (msgModel.seq > model.seq) {
           convModel.clientMsgId = msgModel.clientMsgId;
@@ -445,8 +420,7 @@ class SDKManager {
         convModel.deleted = false;
       }
     }
-    if (msgModel.options.updateUnreadCount == true &&
-        msgModel.senderId != userId) {
+    if (msgModel.options.updateUnreadCount && msgModel.senderId != userId) {
       ReadModel? readModel = await readModels()
           .filter()
           .senderIdEqualTo(userId)
@@ -473,13 +447,19 @@ class SDKManager {
   /// 处理通知
   Future<NoticeModel> _handleNotice(NoticeData noticeData) async {
     NoticeModel noticeModel = NoticeModel.fromProto(noticeData);
-    await _updateNotice(noticeModel);
-    await _updateNoticeConv(noticeModel);
+    if (noticeData.contentType == NoticeContentType.read) {
+      await _handleReadMsg(noticeModel.content);
+    } else if (noticeData.contentType == NoticeContentType.edit) {
+      await _handleEditMsg(MsgData.fromBuffer(noticeData.content));
+    } else {
+      await _updateNotice(noticeModel);
+      await _updateNoticeConv(noticeModel);
+    }
     return noticeModel;
   }
 
   Future _updateNotice(NoticeModel noticeModel) async {
-    if (noticeModel.options.storageForClient != true) return;
+    if (!noticeModel.options.storageForClient) return;
     NoticeModel? model = await noticeModels()
         .filter()
         .convIdEqualTo(noticeModel.convId)
@@ -496,6 +476,7 @@ class SDKManager {
   }
 
   Future _updateNoticeConv(NoticeModel noticeModel) async {
+    if (!noticeModel.options.updateConvNotice) return;
     ConvModel? convModel = await convModels()
         .filter()
         .convIdEqualTo(
@@ -513,23 +494,51 @@ class SDKManager {
           .noticeIdEqualTo(convModel.noticeId!)
           .findFirst();
     }
-    if (noticeModel.options.updateConvMsg == true) {
-      if (model != null) {
-        if (model.noticeId != noticeModel.noticeId) {
-          convModel.noticeId = noticeModel.noticeId;
-          convModel.time = noticeModel.createTime;
-          convModel.hidden = false;
-          convModel.deleted = false;
-        }
-      } else {
+    if (model != null) {
+      if (model.noticeId != noticeModel.noticeId) {
         convModel.noticeId = noticeModel.noticeId;
         convModel.time = noticeModel.createTime;
         convModel.hidden = false;
         convModel.deleted = false;
       }
+    } else {
+      convModel.noticeId = noticeModel.noticeId;
+      convModel.time = noticeModel.createTime;
+      convModel.hidden = false;
+      convModel.deleted = false;
     }
     convModel.unreadCount = ++convModel.unreadCount;
     await convModels().put(convModel);
+  }
+
+  /// 处理已读消息
+  Future _handleReadMsg(String content) async {
+    ReadContent readContent = ReadContent.fromJson(content);
+    ReadModel? readModel = await readModels()
+        .filter()
+        .senderIdEqualTo(readContent.senderId!)
+        .and()
+        .convIdEqualTo(readContent.convId)
+        .findFirst();
+    if (readModel != null) {
+      if (readContent.seq > readModel.seq) {
+        readModel.seq = readContent.seq;
+        await readModels().put(readModel);
+      }
+    } else {
+      readModel = ReadModel(
+        senderId: readContent.senderId!,
+        convId: readContent.convId,
+        seq: readContent.seq,
+      );
+      await readModels().put(readModel);
+    }
+  }
+
+  /// 处理编辑消息
+  Future _handleEditMsg(MsgData msgData) async {
+    Map<String, AesParams> convParams = await subscribeCallback.convParams();
+    _handleMsg(msgData, convParams[msgData.convId]!);
   }
 
   /// 计算未读数量
@@ -590,9 +599,7 @@ class SDKManager {
     for (MsgModel msgModel in msgModelList) {
       convIdList.add(msgModel.convId);
     }
-    Map<String, AesParams> convAesMap = await subscribeCallback.convAesParams(
-      convIdList,
-    );
+    Map<String, AesParams> convParams = await subscribeCallback.convParams();
     SendMsgListResp? resp = await xximCore.sendMsgList(
       reqId: SDKTool.getUUId(),
       req: SendMsgListReq(
@@ -600,7 +607,7 @@ class SDKManager {
           if (senderInfo != null) {
             msgModel.senderInfo = senderInfo;
           }
-          AesParams? aesParams = convAesMap[msgModel.convId];
+          AesParams aesParams = convParams[msgModel.convId]!;
           return MsgData(
             clientMsgId: msgModel.clientMsgId,
             clientTime: msgModel.clientTime.toString(),
@@ -610,7 +617,7 @@ class SDKManager {
             convId: msgModel.convId,
             atUsers: msgModel.atUsers,
             contentType: msgModel.contentType,
-            content: msgModel.options.needDecrypt == true && aesParams != null
+            content: msgModel.options.needDecrypt
                 ? SDKTool.aesEncode(
                     key: aesParams.key,
                     iv: aesParams.iv,
@@ -651,12 +658,77 @@ class SDKManager {
     return resp != null;
   }
 
+  /// 发送已读消息
+  Future<bool> sendReadMsg(ReadContent content) async {
+    content.senderId = userId;
+    ReadMsgResp? resp = await xximCore.sendReadMsg(
+      reqId: SDKTool.getUUId(),
+      req: ReadMsgReq(
+        senderId: content.senderId,
+        convId: content.convId,
+        seq: content.seq.toString(),
+        noticeContent: SDKTool.utf8Encode(content.toJson()),
+      ),
+    );
+    return resp != null;
+  }
+
+  /// 发送编辑消息
+  Future<bool> sendEditMsg(MsgModel msgModel) async {
+    Map<String, AesParams> convParams = await subscribeCallback.convParams();
+    AesParams aesParams = convParams[msgModel.convId]!;
+    MsgData msgData = MsgData(
+      clientMsgId: msgModel.clientMsgId,
+      clientTime: msgModel.clientTime.toString(),
+      serverTime: msgModel.serverTime.toString(),
+      senderId: msgModel.senderId,
+      senderInfo: SDKTool.utf8Encode(msgModel.senderInfo),
+      convId: msgModel.convId,
+      atUsers: msgModel.atUsers,
+      contentType: msgModel.contentType,
+      content: msgModel.options.needDecrypt
+          ? SDKTool.aesEncode(
+              key: aesParams.key,
+              iv: aesParams.iv,
+              value: msgModel.content,
+            )
+          : SDKTool.utf8Encode(msgModel.content),
+      seq: msgModel.seq.toString(),
+      options: MsgData_Options(
+        storageForServer: msgModel.options.storageForServer,
+        storageForClient: msgModel.options.storageForClient,
+        needDecrypt: msgModel.options.needDecrypt,
+        offlinePush: msgModel.options.offlinePush,
+        updateConvMsg: msgModel.options.updateConvMsg,
+        updateUnreadCount: msgModel.options.updateUnreadCount,
+      ),
+      offlinePush: MsgData_OfflinePush(
+        title: msgModel.offlinePush.title,
+        content: msgModel.offlinePush.content,
+        payload: msgModel.offlinePush.payload,
+      ),
+      ext: SDKTool.utf8Encode(msgModel.ext),
+    );
+    EditMsgResp? resp = await xximCore.sendEditMsg(
+      reqId: SDKTool.getUUId(),
+      req: EditMsgReq(
+        senderId: msgData.senderId,
+        serverMsgId: msgData.serverMsgId,
+        contentType: msgData.contentType,
+        content: msgData.content,
+        ext: msgData.ext,
+        noticeContent: msgData.writeToBuffer(),
+      ),
+    );
+    return resp != null;
+  }
+
   Future upsertMsg({
     required MsgModel msgModel,
     bool includeMsgConv = false,
   }) async {
     await isar.writeTxn((isar) async {
-      if (msgModel.options.storageForClient == true) {
+      if (msgModel.options.storageForClient) {
         await msgModels().put(msgModel);
       }
       if (includeMsgConv) await _updateMsgConv(msgModel);

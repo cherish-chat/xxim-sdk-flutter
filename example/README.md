@@ -21,7 +21,7 @@
      XXIMSDK sdk = XXIMSDK();
      sdk.init(
        requestTimeout: const Duration(seconds: 10),
-       cxnParams: const CxnParams(
+       cxnParams: CxnParams(
          deviceModel: "",
          deviceId: "",
          osVersion: "",
@@ -43,11 +43,8 @@
          onClose: (code, error) {},
        ),
        subscribeCallback: SubscribeCallback(
-         onConvIdList: () async {
-           return [];
-         },
-         onConvAesParams: (convIdList) async {
-           return {};
+         onConvParams: () async {
+           return {"": const AesParams(key: "", iv: "")};
          },
        ),
        isarListener: IsarListener(
@@ -231,36 +228,13 @@
        ext: "",
      );
 
-### 发送已读消息
-
-     bool status = await sdk.msgManager.sendRead(
-       convId: "",
-       content: ReadContent(
-         seq: 0,
-       ),
-       storageForServer: true ?? false,
-       storageForClient: true ?? false,
-       ext: "",
-     );
-
-### 发送撤回消息
-
-     bool status = await sdk.msgManager.sendRevoke(
-       clientMsgId: "",
-       content: RevokeContent(
-         text: "",
-         contentType: ContentType.text,
-         content: "",
-       ),
-       ext: "",
-     );
-
 ### 发送提示消息
 
      bool status = await sdk.msgManager.sendTip(
        convId: "",
        content: TipContent(
          tip: "",
+         ext: "",
        ),
        ext: "",
      );
@@ -277,7 +251,7 @@
      MsgModel msgModel = await sdk.msgManager.createMerge(...);
      MsgModel msgModel = await sdk.msgManager.createEmoji(...);
      MsgModel msgModel = await sdk.msgManager.createCommand(...);
-     MsgModel msgModel = await sdk.msgManager.createRichTxt(...);
+     MsgModel msgModel = await sdk.msgManager.createRichText(...);
      MsgModel msgModel = await sdk.msgManager.createMarkdown(...);
      MsgModel msgModel = await sdk.msgManager.createCustom(...);
 
@@ -289,7 +263,41 @@
        deliverAfter: 0,
      );
 
-### 更新消息
+### 发送已读消息
+
+     bool status = await sdk.msgManager.sendReadMsg(
+       content: ReadContent(
+        senderId: "",
+        convId: "",
+        seq: 0,
+      ),
+     );
+
+### 发送撤回消息
+
+     bool status = await sdk.msgManager.sendRevokeMsg(
+       clientMsgId: "",
+       content: TipContent(
+         tip: "",
+         ext: "",
+       ),
+     );
+
+### 发送编辑消息
+
+     bool status = await sdk.msgManager.sendEditMsg(
+       needDecrypt: false,
+       content: EditContent(
+         senderId: "",
+         convId: "",
+         clientMsgId: "",
+         serverMsgId: "",
+         contentType: MsgContentType.text,
+         content: "",
+       ),
+     );
+
+### 更新插入消息
 
      sdk.msgManager.upsertMsg(
        msgModel: msgModel,

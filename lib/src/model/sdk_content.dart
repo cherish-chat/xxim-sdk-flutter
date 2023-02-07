@@ -20,72 +20,28 @@ class TypingContent {
   }
 }
 
-/// 已读消息
-class ReadContent {
-  int seq;
+/// 提示消息
+class TipContent {
+  String tip;
+  String ext;
 
-  ReadContent({
-    required this.seq,
+  TipContent({
+    required this.tip,
+    this.ext = "",
   });
 
-  static ReadContent fromJson(String content) {
+  static TipContent fromJson(String content) {
     Map<String, dynamic> map = json.decode(content);
-    return ReadContent(seq: map["seq"]);
-  }
-
-  String toJson() {
-    return json.encode({
-      "seq": seq,
-    });
-  }
-}
-
-/// 撤回消息
-class RevokeContent {
-  String text;
-  int? contentType;
-  String? content;
-
-  RevokeContent({
-    required this.text,
-    this.contentType,
-    this.content,
-  });
-
-  static RevokeContent fromJson(String content) {
-    Map<String, dynamic> map = json.decode(content);
-    return RevokeContent(
-      text: map["text"],
-      contentType: map["contentType"],
-      content: map["content"],
+    return TipContent(
+      tip: map["tip"],
+      ext: map["ext"],
     );
   }
 
   String toJson() {
     return json.encode({
-      "text": text,
-      "contentType": contentType,
-      "content": content,
-    });
-  }
-}
-
-/// 提示消息
-class TipContent {
-  String tip;
-
-  TipContent({
-    required this.tip,
-  });
-
-  static TipContent fromJson(String content) {
-    Map<String, dynamic> map = json.decode(content);
-    return TipContent(tip: map["tip"]);
-  }
-
-  String toJson() {
-    return json.encode({
       "tip": tip,
+      "ext": ext,
     });
   }
 }
@@ -185,6 +141,7 @@ class VideoContent {
   int duration;
   int width;
   int height;
+  int size;
 
   VideoContent({
     required this.coverName,
@@ -196,6 +153,7 @@ class VideoContent {
     this.duration = 0,
     this.width = 0,
     this.height = 0,
+    this.size = 0,
   });
 
   static VideoContent fromJson(String content) {
@@ -210,6 +168,7 @@ class VideoContent {
       duration: map["duration"],
       width: map["width"],
       height: map["height"],
+      size: map["size"],
     );
   }
 
@@ -224,6 +183,7 @@ class VideoContent {
       "duration": duration,
       "width": width,
       "height": height,
+      "size": size,
     });
   }
 }
@@ -455,11 +415,11 @@ class MarkdownContent {
 /// 自定义消息
 class CustomContent {
   String data;
-  String? ext;
+  String ext;
 
   CustomContent({
     required this.data,
-    this.ext,
+    this.ext = "",
   });
 
   static CustomContent fromJson(String content) {
@@ -474,6 +434,36 @@ class CustomContent {
     return json.encode({
       "data": data,
       "ext": ext,
+    });
+  }
+}
+
+/// 已读消息
+class ReadContent {
+  String? senderId;
+  String convId;
+  int seq;
+
+  ReadContent({
+    this.senderId,
+    required this.convId,
+    required this.seq,
+  });
+
+  static ReadContent fromJson(String content) {
+    Map<String, dynamic> map = json.decode(content);
+    return ReadContent(
+      senderId: map["senderId"],
+      convId: map["convId"],
+      seq: map["seq"],
+    );
+  }
+
+  String toJson() {
+    return json.encode({
+      "senderId": senderId,
+      "convId": convId,
+      "seq": seq,
     });
   }
 }

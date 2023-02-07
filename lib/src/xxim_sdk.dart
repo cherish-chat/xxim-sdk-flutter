@@ -1,6 +1,8 @@
+import 'package:hive/hive.dart';
 import 'package:isar/isar.dart';
 import 'package:xxim_core_flutter/xxim_core_flutter.dart';
 import 'package:xxim_sdk_flutter/src/callback/subscribe_callback.dart';
+import 'package:xxim_sdk_flutter/src/common/aes_params.dart';
 import 'package:xxim_sdk_flutter/src/common/cxn_params.dart';
 import 'package:xxim_sdk_flutter/src/listener/conv_listener.dart';
 import 'package:xxim_sdk_flutter/src/listener/isar_listener.dart';
@@ -23,12 +25,12 @@ class XXIMSDK {
 
   /// 初始化
   void init({
+    required String? directory,
     Duration requestTimeout = const Duration(seconds: 10),
     required CxnParams cxnParams,
     Duration autoPullTime = const Duration(seconds: 20),
     int pullMsgCount = 200,
     List<CollectionSchema> isarSchemas = const [],
-    required String isarDirectory,
     bool isarInspector = false,
     required ConnectListener connectListener,
     required SubscribeCallback subscribeCallback,
@@ -39,6 +41,9 @@ class XXIMSDK {
     NoticeListener? noticeListener,
     UnreadListener? unreadListener,
   }) {
+    if (directory != null && directory.isNotEmpty) {
+      Hive.init(directory);
+    }
     _xximCore = XXIMCore()
       ..init(
         requestTimeout: requestTimeout,
@@ -47,7 +52,7 @@ class XXIMSDK {
           onSuccess: () async {
             await Future.doWhile(() async {
               await Future.delayed(const Duration(milliseconds: 5));
-              return !(await setCxnParams(cxnParams));
+              return !(await setCxnParams(cxnParams: cxnParams));
             });
             connectListener.success();
           },
@@ -64,10 +69,10 @@ class XXIMSDK {
       );
     _sdkManager = SDKManager(
       xximCore: _xximCore!,
+      directory: directory,
       autoPullTime: autoPullTime,
       pullMsgCount: pullMsgCount,
       isarSchemas: isarSchemas,
-      isarDirectory: isarDirectory,
       isarInspector: isarInspector,
       subscribeCallback: subscribeCallback,
       isarListener: isarListener,
@@ -100,10 +105,25 @@ class XXIMSDK {
   }
 
   /// 设置连接参数
-  Future<bool> setCxnParams(CxnParams cxnParams) async {
+  Future<bool> setCxnParams({
+    String hiveName = "xxim",
+    required CxnParams cxnParams,
+  }) async {
+    Box box;
+    if (Hive.isBoxOpen(hiveName)) {
+      box = Hive.box(hiveName);
+    } else {
+      box = await Hive.openBox(hiveName);
+    }
+    String packageId = box.get("packageId", defaultValue: "");
+    if (packageId.isEmpty) {
+      packageId = SDKTool.getUUId();
+      box.put("packageId", packageId);
+    }
     SetCxnParamsResp? resp = await _xximCore?.setCxnParams(
       reqId: SDKTool.getUUId(),
       req: SetCxnParamsReq(
+        packageId: packageId,
         platform: cxnParams.platform,
         deviceId: cxnParams.deviceId,
         deviceModel: cxnParams.deviceModel,
@@ -123,7 +143,7 @@ class XXIMSDK {
     required String token,
     List<int>? ext,
     String? isarName,
-    List<String>? convIdList,
+    Map<String, AesParams>? convParams,
   }) async {
     await _sdkManager?.openDatabase(
       userId: userId,
@@ -142,17 +162,17 @@ class XXIMSDK {
       return false;
     }
     openPullSubscribe(
-      convIdList: convIdList,
+      convParams: convParams,
     );
     return true;
   }
 
   /// 打开拉取订阅
   void openPullSubscribe({
-    List<String>? convIdList,
+    Map<String, AesParams>? convParams,
   }) {
     _sdkManager?.openPullSubscribe(
-      convIdList: convIdList,
+      convParams: convParams,
     );
   }
 

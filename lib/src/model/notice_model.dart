@@ -51,17 +51,17 @@ class NoticeModel {
 
 class NoticeOptionsModel {
   bool storageForClient;
-  bool updateConvMsg;
+  bool updateConvNotice;
 
   NoticeOptionsModel({
     this.storageForClient = false,
-    this.updateConvMsg = false,
+    this.updateConvNotice = false,
   });
 
   static NoticeOptionsModel fromProto(NoticeData_Options options) {
     return NoticeOptionsModel(
       storageForClient: options.storageForClient,
-      updateConvMsg: options.updateConvMsg,
+      updateConvNotice: options.updateConvNotice,
     );
   }
 
@@ -69,14 +69,14 @@ class NoticeOptionsModel {
     Map<String, dynamic> map = json.decode(source);
     return NoticeOptionsModel(
       storageForClient: map["storageForClient"],
-      updateConvMsg: map["updateConvMsg"],
+      updateConvNotice: map["updateConvNotice"],
     );
   }
 
   String toJson() {
     return json.encode({
       "storageForClient": storageForClient,
-      "updateConvMsg": updateConvMsg,
+      "updateConvNotice": updateConvNotice,
     });
   }
 }
