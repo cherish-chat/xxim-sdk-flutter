@@ -1,5 +1,4 @@
 import 'package:isar/isar.dart';
-import 'package:xxim_sdk_flutter/src/common/content_type.dart';
 import 'package:xxim_sdk_flutter/src/common/conv_type.dart';
 import 'package:xxim_sdk_flutter/src/manager/msg_manager.dart';
 import 'package:xxim_sdk_flutter/src/manager/notice_manager.dart';

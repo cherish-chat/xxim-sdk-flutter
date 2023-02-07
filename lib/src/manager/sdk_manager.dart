@@ -599,10 +599,6 @@ class SDKManager {
     required List<MsgModel> msgModelList,
     required int deliverAfter,
   }) async {
-    List<String> convIdList = [];
-    for (MsgModel msgModel in msgModelList) {
-      convIdList.add(msgModel.convId);
-    }
     Map<String, AesParams> convParams = await subscribeCallback.convParams();
     SendMsgListResp? resp = await xximCore.sendMsgList(
       reqId: SDKTool.getUUId(),
