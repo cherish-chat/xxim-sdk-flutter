@@ -1,4 +1,5 @@
 import 'package:isar/isar.dart';
+import 'package:xxim_sdk_flutter/src/common/content_type.dart';
 import 'package:xxim_sdk_flutter/src/manager/sdk_manager.dart';
 import 'package:xxim_sdk_flutter/src/model/notice_model.dart';
 
@@ -73,7 +74,7 @@ class NoticeManager {
         .noticeIdEqualTo(noticeId)
         .findFirst();
     if (noticeModel == null) return;
-    noticeModel.contentType = 0;
+    noticeModel.contentType = NoticeContentType.invalid;
     noticeModel.content = "";
     noticeModel.deleted = true;
     await _sdkManager.isar.writeTxn(() async {
@@ -95,7 +96,7 @@ class NoticeManager {
     if (list.isEmpty) return;
     await _sdkManager.isar.writeTxn(() async {
       for (NoticeModel noticeModel in list) {
-        noticeModel.contentType = 0;
+        noticeModel.contentType = NoticeContentType.invalid;
         noticeModel.content = "";
         noticeModel.deleted = true;
       }
