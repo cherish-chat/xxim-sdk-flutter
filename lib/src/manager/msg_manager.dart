@@ -260,7 +260,7 @@ class MsgManager {
           MsgOptionsModel(
             storageForServer: true,
             storageForClient: true,
-            needDecrypt: true,
+            needDecrypt: false,
             offlinePush: true,
             updateConvMsg: true,
             updateUnreadCount: true,
@@ -290,7 +290,7 @@ class MsgManager {
           MsgOptionsModel(
             storageForServer: true,
             storageForClient: true,
-            needDecrypt: true,
+            needDecrypt: false,
             offlinePush: true,
             updateConvMsg: true,
             updateUnreadCount: true,
@@ -320,7 +320,7 @@ class MsgManager {
           MsgOptionsModel(
             storageForServer: true,
             storageForClient: true,
-            needDecrypt: true,
+            needDecrypt: false,
             offlinePush: true,
             updateConvMsg: true,
             updateUnreadCount: true,
@@ -350,7 +350,7 @@ class MsgManager {
           MsgOptionsModel(
             storageForServer: true,
             storageForClient: true,
-            needDecrypt: true,
+            needDecrypt: false,
             offlinePush: true,
             updateConvMsg: true,
             updateUnreadCount: true,
@@ -380,7 +380,7 @@ class MsgManager {
           MsgOptionsModel(
             storageForServer: true,
             storageForClient: true,
-            needDecrypt: true,
+            needDecrypt: false,
             offlinePush: true,
             updateConvMsg: true,
             updateUnreadCount: true,
@@ -410,7 +410,7 @@ class MsgManager {
           MsgOptionsModel(
             storageForServer: true,
             storageForClient: true,
-            needDecrypt: true,
+            needDecrypt: false,
             offlinePush: true,
             updateConvMsg: true,
             updateUnreadCount: true,
@@ -440,7 +440,7 @@ class MsgManager {
           MsgOptionsModel(
             storageForServer: true,
             storageForClient: true,
-            needDecrypt: true,
+            needDecrypt: false,
             offlinePush: true,
             updateConvMsg: true,
             updateUnreadCount: true,
@@ -470,7 +470,7 @@ class MsgManager {
           MsgOptionsModel(
             storageForServer: true,
             storageForClient: true,
-            needDecrypt: true,
+            needDecrypt: false,
             offlinePush: true,
             updateConvMsg: true,
             updateUnreadCount: true,
@@ -500,7 +500,7 @@ class MsgManager {
           MsgOptionsModel(
             storageForServer: true,
             storageForClient: true,
-            needDecrypt: true,
+            needDecrypt: false,
             offlinePush: true,
             updateConvMsg: true,
             updateUnreadCount: true,
@@ -530,7 +530,7 @@ class MsgManager {
           MsgOptionsModel(
             storageForServer: true,
             storageForClient: true,
-            needDecrypt: true,
+            needDecrypt: false,
             offlinePush: true,
             updateConvMsg: true,
             updateUnreadCount: true,
@@ -560,7 +560,7 @@ class MsgManager {
           MsgOptionsModel(
             storageForServer: true,
             storageForClient: true,
-            needDecrypt: true,
+            needDecrypt: false,
             offlinePush: true,
             updateConvMsg: true,
             updateUnreadCount: true,
@@ -590,7 +590,7 @@ class MsgManager {
           MsgOptionsModel(
             storageForServer: true,
             storageForClient: true,
-            needDecrypt: true,
+            needDecrypt: false,
             offlinePush: true,
             updateConvMsg: true,
             updateUnreadCount: true,
@@ -620,7 +620,7 @@ class MsgManager {
           MsgOptionsModel(
             storageForServer: true,
             storageForClient: true,
-            needDecrypt: true,
+            needDecrypt: false,
             offlinePush: true,
             updateConvMsg: true,
             updateUnreadCount: true,
