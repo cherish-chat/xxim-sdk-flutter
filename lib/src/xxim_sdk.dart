@@ -106,9 +106,9 @@ class XXIMSDK {
 
   /// 设置连接参数
   Future<bool> setCxnParams({
-    String hiveName = "xxim",
     required CxnParams cxnParams,
   }) async {
+    String hiveName = "xxim";
     Box box;
     if (Hive.isBoxOpen(hiveName)) {
       box = Hive.box(hiveName);
