@@ -361,16 +361,16 @@ class CommandContent {
 }
 
 /// 富文本消息
-class RichTxtContent {
+class RichTextContent {
   List<Map> list;
 
-  RichTxtContent({
+  RichTextContent({
     required this.list,
   });
 
-  static RichTxtContent fromJson(String content) {
+  static RichTextContent fromJson(String content) {
     Map<String, dynamic> map = json.decode(content);
-    return RichTxtContent(
+    return RichTextContent(
       list: map["list"],
     );
   }

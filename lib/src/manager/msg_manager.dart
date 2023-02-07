@@ -545,7 +545,7 @@ class MsgManager {
     String senderInfo = "",
     required String convId,
     List<String> atUsers = const [],
-    required RichTxtContent content,
+    required RichTextContent content,
     MsgOptionsModel? options,
     required MsgOfflinePushModel offlinePush,
     String ext = "",
