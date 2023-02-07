@@ -43,16 +43,19 @@ class SDKTool {
     required String iv,
     required String value,
   }) {
-    Encrypter encrypter = Encrypter(AES(
-      Key.fromUtf8(key),
-      mode: AESMode.cbc,
-      padding: "PKCS7",
-    ));
-    Encrypted encrypted = encrypter.encrypt(
-      value,
-      iv: IV.fromUtf8(iv),
-    );
-    return encrypted.bytes;
+    try {
+      Encrypter encrypter = Encrypter(AES(
+        Key.fromUtf8(key),
+        mode: AESMode.cbc,
+        padding: "PKCS7",
+      ));
+      Encrypted encrypted = encrypter.encrypt(
+        value,
+        iv: IV.fromUtf8(iv),
+      );
+      return encrypted.bytes;
+    } catch (_) {}
+    return utf8Encode(value);
   }
 
   static String aesDecode({
@@ -60,15 +63,18 @@ class SDKTool {
     required String iv,
     required List<int> bytes,
   }) {
-    Encrypter encrypter = Encrypter(AES(
-      Key.fromUtf8(key),
-      mode: AESMode.cbc,
-      padding: "PKCS7",
-    ));
-    String source = encrypter.decrypt(
-      Encrypted(Uint8List.fromList(bytes)),
-      iv: IV.fromUtf8(iv),
-    );
-    return source;
+    try {
+      Encrypter encrypter = Encrypter(AES(
+        Key.fromUtf8(key),
+        mode: AESMode.cbc,
+        padding: "PKCS7",
+      ));
+      String source = encrypter.decrypt(
+        Encrypted(Uint8List.fromList(bytes)),
+        iv: IV.fromUtf8(iv),
+      );
+      return source;
+    } catch (_) {}
+    return utf8Decode(bytes);
   }
 }
