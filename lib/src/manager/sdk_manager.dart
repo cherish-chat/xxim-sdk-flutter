@@ -447,9 +447,9 @@ class SDKManager {
   /// 处理通知
   Future<NoticeModel> _handleNotice(NoticeData noticeData) async {
     NoticeModel noticeModel = NoticeModel.fromProto(noticeData);
-    if (noticeData.contentType == NoticeContentType.read) {
+    if (noticeModel.contentType == NoticeContentType.read) {
       await _handleReadMsg(noticeModel.content);
-    } else if (noticeData.contentType == NoticeContentType.edit) {
+    } else if (noticeModel.contentType == NoticeContentType.edit) {
       await _handleEditMsg(MsgData.fromBuffer(noticeData.content));
     } else {
       await _updateNotice(noticeModel);
