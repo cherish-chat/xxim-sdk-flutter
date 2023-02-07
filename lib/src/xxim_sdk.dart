@@ -53,7 +53,7 @@ class XXIMSDK {
           onSuccess: () async {
             await Future.doWhile(() async {
               await Future.delayed(const Duration(milliseconds: 5));
-              return !(await setCxnParams(cxnParams));
+              return !(await setCxnParams(cxnParams: cxnParams));
             });
             connectListener.success();
           },
@@ -107,7 +107,9 @@ class XXIMSDK {
   }
 
   /// 设置连接参数
-  Future<bool> setCxnParams(CxnParams cxnParams) async {
+  Future<bool> setCxnParams({
+    required CxnParams cxnParams,
+  }) async {
     String hiveName = "xxim";
     Box box;
     if (Hive.isBoxOpen(hiveName)) {
