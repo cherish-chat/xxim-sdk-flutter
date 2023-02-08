@@ -5,7 +5,7 @@ import 'package:xxim_sdk_flutter/src/model/sdk_content.dart';
 /// 通知监听
 class NoticeListener {
   final Future<bool> Function(
-    ReadContent content,
+    ReadContent readContent,
   ) onReadMsg; // 已读消息
   final Future<bool> Function(
     MsgModel msgModel,
