@@ -493,7 +493,6 @@ class SDKManager {
         .findFirst();
     if (msgModel == null) return readContent;
     int unreadCount = msgModel.seq - readContent.seq;
-    if (unreadCount <= 0) return readContent;
     ConvModel? convModel = await convModels()
         .filter()
         .convIdEqualTo(
@@ -501,8 +500,10 @@ class SDKManager {
         )
         .findFirst();
     if (convModel == null) return readContent;
-    convModel.unreadCount = unreadCount;
-    await convModels().put(convModel);
+    if (convModel.unreadCount != unreadCount) {
+      convModel.unreadCount = unreadCount;
+      await convModels().put(convModel);
+    }
     return readContent;
   }
 
