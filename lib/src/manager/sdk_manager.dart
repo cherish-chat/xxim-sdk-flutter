@@ -489,6 +489,7 @@ class SDKManager {
       );
       await readModels().put(readModel);
     }
+    if (readContent.senderId != userId) return readContent;
     MsgModel? msgModel = await msgModels()
         .filter()
         .convIdEqualTo(readContent.convId)
