@@ -274,7 +274,7 @@ class SDKManager {
     if (resp == null) return null;
     MsgData msgData = resp.msgData;
     Map<String, AesParams> convParams = await subscribeCallback.convParams();
-    MsgModel? msgModel;
+    late MsgModel msgModel;
     await isar.writeTxn(() async {
       msgModel = await _handleMsg(
         msgData,
@@ -310,17 +310,36 @@ class SDKManager {
   void onPushNoticeData(
     NoticeData noticeData,
   ) async {
-    late NoticeModel noticeModel;
-    await isar.writeTxn(() async {
-      noticeModel = await _handleNotice(noticeData);
-    });
-    bool? status = await noticeListener?.receive(noticeModel);
+    bool? status;
+    if (noticeData.contentType == NoticeContentType.read) {
+      late ReadContent readContent;
+      await isar.writeTxn(() async {
+        readContent = await _handleReadMsg(
+          SDKTool.utf8Decode(noticeData.content),
+        );
+      });
+      status = await noticeListener?.readMsg(readContent);
+    } else if (noticeData.contentType == NoticeContentType.edit) {
+      late MsgModel msgModel;
+      await isar.writeTxn(() async {
+        msgModel = await _handleEditMsg(
+          MsgData.fromBuffer(noticeData.content),
+        );
+      });
+      status = await noticeListener?.editMsg(msgModel);
+    } else {
+      late NoticeModel noticeModel;
+      await isar.writeTxn(() async {
+        noticeModel = await _handleNotice(noticeData);
+      });
+      status = await noticeListener?.receive(noticeModel);
+    }
     if (status == true) {
       await xximCore.ackNoticeData(
         reqId: SDKTool.getUUId(),
         req: AckNoticeDataReq(
-          convId: noticeModel.convId,
-          noticeId: noticeModel.noticeId,
+          convId: noticeData.convId,
+          noticeId: noticeData.noticeId,
         ),
       );
     }
@@ -448,17 +467,42 @@ class SDKManager {
     await convModels().put(convModel);
   }
 
+  /// 处理已读消息
+  Future<ReadContent> _handleReadMsg(String content) async {
+    ReadContent readContent = ReadContent.fromJson(content);
+    ReadModel? readModel = await readModels()
+        .filter()
+        .senderIdEqualTo(readContent.senderId!)
+        .and()
+        .convIdEqualTo(readContent.convId)
+        .findFirst();
+    if (readModel != null) {
+      if (readContent.seq > readModel.seq) {
+        readModel.seq = readContent.seq;
+        await readModels().put(readModel);
+      }
+    } else {
+      readModel = ReadModel(
+        senderId: readContent.senderId!,
+        convId: readContent.convId,
+        seq: readContent.seq,
+      );
+      await readModels().put(readModel);
+    }
+    return readContent;
+  }
+
+  /// 处理编辑消息
+  Future<MsgModel> _handleEditMsg(MsgData msgData) async {
+    Map<String, AesParams> convParams = await subscribeCallback.convParams();
+    return _handleMsg(msgData, convParams[msgData.convId]!);
+  }
+
   /// 处理通知
   Future<NoticeModel> _handleNotice(NoticeData noticeData) async {
     NoticeModel noticeModel = NoticeModel.fromProto(noticeData);
-    if (noticeModel.contentType == NoticeContentType.read) {
-      await _handleReadMsg(noticeModel.content);
-    } else if (noticeModel.contentType == NoticeContentType.edit) {
-      await _handleEditMsg(MsgData.fromBuffer(noticeData.content));
-    } else {
-      await _updateNotice(noticeModel);
-      await _updateNoticeConv(noticeModel);
-    }
+    await _updateNotice(noticeModel);
+    await _updateNoticeConv(noticeModel);
     return noticeModel;
   }
 
@@ -513,36 +557,6 @@ class SDKManager {
     }
     convModel.unreadCount = ++convModel.unreadCount;
     await convModels().put(convModel);
-  }
-
-  /// 处理已读消息
-  Future _handleReadMsg(String content) async {
-    ReadContent readContent = ReadContent.fromJson(content);
-    ReadModel? readModel = await readModels()
-        .filter()
-        .senderIdEqualTo(readContent.senderId!)
-        .and()
-        .convIdEqualTo(readContent.convId)
-        .findFirst();
-    if (readModel != null) {
-      if (readContent.seq > readModel.seq) {
-        readModel.seq = readContent.seq;
-        await readModels().put(readModel);
-      }
-    } else {
-      readModel = ReadModel(
-        senderId: readContent.senderId!,
-        convId: readContent.convId,
-        seq: readContent.seq,
-      );
-      await readModels().put(readModel);
-    }
-  }
-
-  /// 处理编辑消息
-  Future _handleEditMsg(MsgData msgData) async {
-    Map<String, AesParams> convParams = await subscribeCallback.convParams();
-    _handleMsg(msgData, convParams[msgData.convId]!);
   }
 
   /// 计算未读数量
