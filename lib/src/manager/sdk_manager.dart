@@ -177,7 +177,7 @@ class SDKManager {
         if (maxSeq - minSeq > pullMsgCount) {
           minSeq = maxSeq - pullMsgCount;
         }
-        if (maxSeq <= minSeq) return;
+        if (maxSeq <= minSeq) continue;
         items.add(BatchGetMsgListByConvIdReq_Item(
           convId: convId,
           seqList: SDKTool.generateSeqList(minSeq, maxSeq),
