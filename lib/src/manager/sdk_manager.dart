@@ -485,6 +485,23 @@ class SDKManager {
       );
       await readModels().put(readModel);
     }
+    MsgModel? msgModel = await msgModels()
+        .filter()
+        .convIdEqualTo(readContent.convId)
+        .sortBySeqDesc()
+        .findFirst();
+    if (msgModel == null) return readContent;
+    int unreadCount = msgModel.seq - readContent.seq;
+    if (unreadCount <= 0) return readContent;
+    ConvModel? convModel = await convModels()
+        .filter()
+        .convIdEqualTo(
+          msgModel.convId,
+        )
+        .findFirst();
+    if (convModel == null) return readContent;
+    convModel.unreadCount = unreadCount;
+    await convModels().put(convModel);
     return readContent;
   }
 
