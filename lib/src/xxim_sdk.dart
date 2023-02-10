@@ -56,7 +56,11 @@ class XXIMSDK {
             });
             connectListener.success();
           },
-          onClose: connectListener.close,
+          onClose: (code, error) {
+            _sdkManager?.closeDatabase();
+            closePullSubscribe();
+            connectListener.close(code, error);
+          },
         ),
         receivePushListener: ReceivePushListener(
           onPushMsgDataList: (msgDataList) {
