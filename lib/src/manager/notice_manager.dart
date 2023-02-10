@@ -9,7 +9,7 @@ class NoticeManager {
   NoticeManager(this._sdkManager);
 
   /// 获取通知列表
-  Future<List<NoticeModel>> getNoticeList({
+  List<NoticeModel> getNoticeList({
     required String convId,
     int? offset,
     int? limit,
@@ -38,22 +38,22 @@ class NoticeManager {
           offset: offset,
           limit: limit,
         )
-        .findAll();
+        .findAllSync();
   }
 
   /// 获取单条通知
-  Future<NoticeModel?> getSingleNotice({
+  NoticeModel? getSingleNotice({
     required String noticeId,
   }) {
     return _sdkManager
         .noticeModels()
         .filter()
         .noticeIdEqualTo(noticeId)
-        .findFirst();
+        .findFirstSync();
   }
 
   /// 获取多条通知
-  Future<List<NoticeModel>> getMultipleNotice({
+  List<NoticeModel> getMultipleNotice({
     required List<String> noticeIdList,
   }) {
     return _sdkManager
@@ -63,18 +63,18 @@ class NoticeManager {
           noticeIdList,
           (q, element) => q.noticeIdEqualTo(element),
         )
-        .findAll();
+        .findAllSync();
   }
 
   /// 删除通知
   Future deleteNotice({
     required String noticeId,
   }) async {
-    NoticeModel? noticeModel = await _sdkManager
+    NoticeModel? noticeModel = _sdkManager
         .noticeModels()
         .filter()
         .noticeIdEqualTo(noticeId)
-        .findFirst();
+        .findFirstSync();
     if (noticeModel == null) return;
     noticeModel.contentType = NoticeContentType.invalid;
     noticeModel.content = "";
@@ -88,13 +88,13 @@ class NoticeManager {
   Future clearNotice({
     required String convId,
   }) async {
-    List<NoticeModel> list = await _sdkManager
+    List<NoticeModel> list = _sdkManager
         .noticeModels()
         .filter()
         .convIdEqualTo(
           convId,
         )
-        .findAll();
+        .findAllSync();
     if (list.isEmpty) return;
     await _sdkManager.isar.writeTxn((isar) async {
       for (NoticeModel noticeModel in list) {
