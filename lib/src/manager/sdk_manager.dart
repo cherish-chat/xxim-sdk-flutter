@@ -187,6 +187,7 @@ class SDKManager {
     if (items.isNotEmpty) {
       await pullMsgDataList(items);
       convListener?.update();
+      calculateUnreadCount();
     }
     pullListener?.end();
     if (_pullStatus) _startTimer();
