@@ -189,6 +189,7 @@ class SDKManager {
     });
     if (items.isNotEmpty) {
       await pullMsgDataList(items);
+      convListener?.update();
     }
     pullListener?.end();
     if (_pullStatus) _startTimer();
@@ -580,8 +581,8 @@ class SDKManager {
   }
 
   /// 计算未读数量
-  void calculateUnreadCount() async {
-    int count = await convModels().where().unreadCountProperty().sum();
+  void calculateUnreadCount() {
+    int count = convModels().where().unreadCountProperty().sumSync();
     unreadListener?.unreadCount(count);
   }
 
@@ -600,11 +601,11 @@ class SDKManager {
   }) async {
     int timestamp = DateTime.now().millisecondsSinceEpoch;
     int seq = 0;
-    MsgModel? model = await msgModels()
+    MsgModel? model = msgModels()
         .filter()
         .convIdEqualTo(convId)
         .sortBySeqDesc()
-        .findFirst();
+        .findFirstSync();
     if (model != null) {
       seq = ++model.seq;
     }
