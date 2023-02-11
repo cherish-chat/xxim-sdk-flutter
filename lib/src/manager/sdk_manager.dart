@@ -54,6 +54,7 @@ class SDKManager {
   });
 
   late String userId;
+  late String isarName;
   late Isar isar;
 
   Timer? _timer;
@@ -65,8 +66,8 @@ class SDKManager {
     String? isarName,
   }) async {
     this.userId = userId;
-    isarName ??= userId;
-    Isar? isar = Isar.getInstance(isarName);
+    this.isarName = isarName ?? userId;
+    Isar? isar = Isar.getInstance(this.isarName);
     if (isar != null) {
       this.isar = isar;
     } else {
@@ -80,7 +81,7 @@ class SDKManager {
           ...isarSchemas,
         ],
         directory: directory,
-        name: isarName,
+        name: this.isarName,
         maxSizeMiB: isarMaxSizeMiB,
         inspector: isarInspector,
       );
@@ -90,7 +91,7 @@ class SDKManager {
 
   /// 关闭数据库
   Future closeDatabase() async {
-    await isar.close();
+    await Isar.getInstance(isarName)?.close();
   }
 
   /// 记录表
