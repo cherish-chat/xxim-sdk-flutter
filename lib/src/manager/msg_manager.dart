@@ -21,28 +21,28 @@ class MsgManager {
   }) async {
     bool includeUpper = maxSeq == null;
     if (maxSeq == null) {
-      MsgModel? msgModel = getFirstMsg(
+      MsgModel? msgModel = await getFirstMsg(
         convId: convId,
       );
       if (msgModel != null) {
         maxSeq = msgModel.seq;
       } else {
-        RecordModel? recordModel = _sdkManager
+        RecordModel? recordModel = await _sdkManager
             .recordModels()
             .filter()
             .convIdEqualTo(convId)
-            .findFirstSync();
+            .findFirst();
         if (recordModel != null) {
           maxSeq = recordModel.maxSeq;
         }
       }
     }
     if (maxSeq == null) return [];
-    RecordModel? recordModel = _sdkManager
+    RecordModel? recordModel = await _sdkManager
         .recordModels()
         .filter()
         .convIdEqualTo(convId)
-        .findFirstSync();
+        .findFirst();
     int minSeq = maxSeq - size;
     if (recordModel != null) {
       minSeq = minSeq > recordModel.minSeq ? minSeq : recordModel.minSeq;
@@ -52,7 +52,7 @@ class MsgManager {
     if (minSeq < 0) minSeq = 0;
     if (maxSeq <= minSeq) return [];
     List<String> expectList = SDKTool.generateSeqList(minSeq, maxSeq);
-    List<MsgModel> list = _getMsgList(
+    List<MsgModel> list = await _getMsgList(
       convId,
       contentType,
       minSeq,
@@ -89,7 +89,7 @@ class MsgManager {
     );
   }
 
-  List<MsgModel> _getMsgList(
+  Future<List<MsgModel>> _getMsgList(
     String convId,
     int? contentType,
     int minSeq,
@@ -127,11 +127,11 @@ class MsgManager {
           sort: Sort.desc,
         ),
       ],
-    ).findAllSync();
+    ).findAll();
   }
 
   /// 获取首个消息
-  MsgModel? getFirstMsg({
+  Future<MsgModel?> getFirstMsg({
     required String convId,
   }) {
     return _sdkManager
@@ -139,22 +139,22 @@ class MsgManager {
         .filter()
         .convIdEqualTo(convId)
         .sortBySeqDesc()
-        .findFirstSync();
+        .findFirst();
   }
 
   /// 获取单条消息
-  MsgModel? getSingleMsg({
+  Future<MsgModel?> getSingleMsg({
     required String clientMsgId,
   }) {
     return _sdkManager
         .msgModels()
         .filter()
         .clientMsgIdEqualTo(clientMsgId)
-        .findFirstSync();
+        .findFirst();
   }
 
   /// 获取多条消息
-  List<MsgModel> getMultipleMsg({
+  Future<List<MsgModel>> getMultipleMsg({
     required List<String> clientMsgIdList,
   }) {
     return _sdkManager
@@ -164,7 +164,7 @@ class MsgManager {
           clientMsgIdList,
           (q, element) => q.clientMsgIdEqualTo(element),
         )
-        .findAllSync();
+        .findAll();
   }
 
   /// 拉取云端消息
@@ -655,7 +655,7 @@ class MsgManager {
     required String clientMsgId,
     required TipContent content,
   }) async {
-    MsgModel? msgModel = getSingleMsg(
+    MsgModel? msgModel = await getSingleMsg(
       clientMsgId: clientMsgId,
     );
     if (msgModel == null || msgModel.serverMsgId == null) return false;
@@ -686,11 +686,11 @@ class MsgManager {
   Future deleteMsg({
     required String clientMsgId,
   }) async {
-    MsgModel? msgModel = _sdkManager
+    MsgModel? msgModel = await _sdkManager
         .msgModels()
         .filter()
         .clientMsgIdEqualTo(clientMsgId)
-        .findFirstSync();
+        .findFirst();
     if (msgModel == null) return;
     msgModel.contentType = MsgContentType.unknown;
     msgModel.content = "";
@@ -704,13 +704,13 @@ class MsgManager {
   Future clearMsg({
     required String convId,
   }) async {
-    List<MsgModel> list = _sdkManager
+    List<MsgModel> list = await _sdkManager
         .msgModels()
         .filter()
         .convIdEqualTo(
           convId,
         )
-        .findAllSync();
+        .findAll();
     if (list.isEmpty) return;
     await _sdkManager.isar.writeTxn(() async {
       for (MsgModel msgModel in list) {
