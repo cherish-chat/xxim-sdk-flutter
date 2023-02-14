@@ -440,6 +440,7 @@ class SDKManager {
           convId: msgModel.convId,
           convType: ConvType.msg,
         );
+        convModelList.add(convModel);
         updated = true;
       }
       MsgModel? model;
