@@ -16,8 +16,8 @@ class ConvManager {
   ConvManager(this._sdkManager, this._msgManager, this._noticeManager);
 
   /// 获取会话列表
-  List<ConvModel> getConvList() {
-    List<ConvModel> convList = _getConvList();
+  Future<List<ConvModel>> getConvList() async {
+    List<ConvModel> convList = await _getConvList();
     if (convList.isEmpty) return convList;
     List<String> clientMsgIdList = [];
     List<String> noticeIdList = [];
@@ -32,7 +32,7 @@ class ConvManager {
     Map<String, MsgModel> msgMap = {};
     Map<String, NoticeModel> noticeMap = {};
     if (clientMsgIdList.isNotEmpty) {
-      List<MsgModel> msgModelList = _msgManager.getMultipleMsg(
+      List<MsgModel> msgModelList = await _msgManager.getMultipleMsg(
         clientMsgIdList: clientMsgIdList,
       );
       for (MsgModel msgModel in msgModelList) {
@@ -40,7 +40,8 @@ class ConvManager {
       }
     }
     if (noticeIdList.isNotEmpty) {
-      List<NoticeModel> noticeModelList = _noticeManager.getMultipleNotice(
+      List<NoticeModel> noticeModelList =
+          await _noticeManager.getMultipleNotice(
         noticeIdList: noticeIdList,
       );
       for (NoticeModel noticeModel in noticeModelList) {
@@ -54,7 +55,7 @@ class ConvManager {
     return convList;
   }
 
-  List<ConvModel> _getConvList() {
+  Future<List<ConvModel>> _getConvList() {
     return _sdkManager.convModels().buildQuery<ConvModel>(
       filter: FilterGroup.and([
         FilterCondition(
@@ -78,28 +79,28 @@ class ConvManager {
           sort: Sort.desc,
         ),
       ],
-    ).findAllSync();
+    ).findAll();
   }
 
   /// 获取单条会话
-  ConvModel? getSingleConv({
+  Future<ConvModel?> getSingleConv({
     required String convId,
-  }) {
-    ConvModel? convModel = _sdkManager
+  }) async {
+    ConvModel? convModel = await _sdkManager
         .convModels()
         .filter()
         .convIdEqualTo(
           convId,
         )
-        .findFirstSync();
+        .findFirst();
     if (convModel == null) return convModel;
     if (convModel.clientMsgId != null) {
-      convModel.msgModel = _msgManager.getSingleMsg(
+      convModel.msgModel = await _msgManager.getSingleMsg(
         clientMsgId: convModel.clientMsgId!,
       );
     }
     if (convModel.noticeId != null) {
-      convModel.noticeModel = _noticeManager.getSingleNotice(
+      convModel.noticeModel = await _noticeManager.getSingleNotice(
         noticeId: convModel.noticeId!,
       );
     }
@@ -110,13 +111,13 @@ class ConvManager {
   Future setConvRead({
     required String convId,
   }) async {
-    ConvModel? convModel = _sdkManager
+    ConvModel? convModel = await _sdkManager
         .convModels()
         .filter()
         .convIdEqualTo(
           convId,
         )
-        .findFirstSync();
+        .findFirst();
     if (convModel == null) return;
     if (convModel.unreadCount == 0) return;
     convModel.unreadCount = 0;
@@ -125,7 +126,7 @@ class ConvManager {
     });
     _sdkManager.calculateUnreadCount();
     if (convModel.convType != ConvType.msg) return;
-    MsgModel? msgModel = _msgManager.getFirstMsg(
+    MsgModel? msgModel = await _msgManager.getFirstMsg(
       convId: convId,
     );
     if (msgModel == null) return;
@@ -141,22 +142,22 @@ class ConvManager {
   Future updateConvMsg({
     required String convId,
   }) async {
-    ConvModel? convModel = _sdkManager
+    ConvModel? convModel = await _sdkManager
         .convModels()
         .filter()
         .convIdEqualTo(
           convId,
         )
-        .findFirstSync();
+        .findFirst();
     if (convModel == null) return;
-    MsgModel? msgModel = _sdkManager
+    MsgModel? msgModel = await _sdkManager
         .msgModels()
         .filter()
         .convIdEqualTo(convId)
         .and()
         .deletedEqualTo(false)
         .sortBySeqDesc()
-        .findFirstSync();
+        .findFirst();
     if (msgModel == null) return;
     convModel.clientMsgId = msgModel.clientMsgId;
     convModel.time = msgModel.serverTime;
@@ -171,13 +172,13 @@ class ConvManager {
   Future deleteConvMsg({
     required String convId,
   }) async {
-    ConvModel? convModel = _sdkManager
+    ConvModel? convModel = await _sdkManager
         .convModels()
         .filter()
         .convIdEqualTo(
           convId,
         )
-        .findFirstSync();
+        .findFirst();
     if (convModel == null) return;
     convModel.clientMsgId = null;
     convModel.time = 0;
@@ -192,22 +193,22 @@ class ConvManager {
   Future updateConvNotice({
     required String convId,
   }) async {
-    ConvModel? convModel = _sdkManager
+    ConvModel? convModel = await _sdkManager
         .convModels()
         .filter()
         .convIdEqualTo(
           convId,
         )
-        .findFirstSync();
+        .findFirst();
     if (convModel == null) return;
-    NoticeModel? noticeModel = _sdkManager
+    NoticeModel? noticeModel = await _sdkManager
         .noticeModels()
         .filter()
         .convIdEqualTo(convId)
         .and()
         .deletedEqualTo(false)
         .sortByCreateTimeDesc()
-        .findFirstSync();
+        .findFirst();
     if (noticeModel == null) return;
     convModel.noticeId = noticeModel.noticeId;
     convModel.time = noticeModel.createTime;
@@ -222,13 +223,13 @@ class ConvManager {
   Future deleteConvNotice({
     required String convId,
   }) async {
-    ConvModel? convModel = _sdkManager
+    ConvModel? convModel = await _sdkManager
         .convModels()
         .filter()
         .convIdEqualTo(
           convId,
         )
-        .findFirstSync();
+        .findFirst();
     if (convModel == null) return;
     convModel.noticeId = null;
     convModel.time = 0;
@@ -244,13 +245,13 @@ class ConvManager {
     required String convId,
     DraftModel? draftModel,
   }) async {
-    ConvModel? convModel = _sdkManager
+    ConvModel? convModel = await _sdkManager
         .convModels()
         .filter()
         .convIdEqualTo(
           convId,
         )
-        .findFirstSync();
+        .findFirst();
     if (convModel == null) return;
     convModel.draftModel = draftModel;
     await _sdkManager.isar.writeTxn((isar) async {
@@ -263,13 +264,13 @@ class ConvManager {
     required String convId,
     required bool hidden,
   }) async {
-    ConvModel? convModel = _sdkManager
+    ConvModel? convModel = await _sdkManager
         .convModels()
         .filter()
         .convIdEqualTo(
           convId,
         )
-        .findFirstSync();
+        .findFirst();
     if (convModel == null) return;
     convModel.unreadCount = 0;
     convModel.hidden = hidden;
@@ -284,13 +285,13 @@ class ConvManager {
     required String convId,
     bool clear = true,
   }) async {
-    ConvModel? convModel = _sdkManager
+    ConvModel? convModel = await _sdkManager
         .convModels()
         .filter()
         .convIdEqualTo(
           convId,
         )
-        .findFirstSync();
+        .findFirst();
     if (convModel == null) return;
     if (clear) {
       convModel.clientMsgId = null;
@@ -320,7 +321,7 @@ class ConvManager {
   }
 
   /// 获取未读数量
-  int getUnreadCount() {
-    return _sdkManager.convModels().where().unreadCountProperty().sumSync();
+  Future<int> getUnreadCount() {
+    return _sdkManager.convModels().where().unreadCountProperty().sum();
   }
 }
