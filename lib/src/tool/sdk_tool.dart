@@ -20,8 +20,36 @@ class SDKTool {
     return _singlePrefix + id2 + _separator + id1;
   }
 
+  static String getSingleId(String convId, String selfId) {
+    List<String> splitList = convId
+        .trimLeft()
+        .substring(
+          _singlePrefix.length,
+        )
+        .split(_separator);
+    if (splitList.length == 2) {
+      if (splitList[0] == selfId) {
+        return splitList[1];
+      }
+      return splitList[0];
+    }
+    return '';
+  }
+
+  bool isSingleConv(String convId) {
+    return convId.startsWith(_singlePrefix);
+  }
+
   static String groupConvId(String id) {
     return _groupPrefix + id;
+  }
+
+  String getGroupId(String convId) {
+    return convId.trimLeft().substring(_groupPrefix.length);
+  }
+
+  bool isGroupConv(String convId) {
+    return convId.startsWith(_groupPrefix);
   }
 
   static List<String> generateSeqList(int minSeq, int maxSeq) {
