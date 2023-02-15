@@ -36,7 +36,7 @@ class SDKTool {
     return '';
   }
 
-  bool isSingleConv(String convId) {
+  static bool isSingleConv(String convId) {
     return convId.startsWith(_singlePrefix);
   }
 
@@ -44,11 +44,11 @@ class SDKTool {
     return _groupPrefix + id;
   }
 
-  String getGroupId(String convId) {
+  static String getGroupId(String convId) {
     return convId.trimLeft().substring(_groupPrefix.length);
   }
 
-  bool isGroupConv(String convId) {
+  static bool isGroupConv(String convId) {
     return convId.startsWith(_groupPrefix);
   }
 
