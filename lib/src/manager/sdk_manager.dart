@@ -385,7 +385,8 @@ class SDKManager {
     bool updated = false;
     for (MsgModel msgModel in msgModelList) {
       int index = modelList.indexWhere((item) {
-        return item.convId == msgModel.convId;
+        return item.convId == msgModel.convId &&
+            item.clientMsgId == msgModel.clientMsgId;
       });
       if (index != -1) {
         MsgModel model = modelList[index];
@@ -708,6 +709,16 @@ class SDKManager {
         deliverAfter: deliverAfter,
       ),
     );
+    msgModelList = await msgModels()
+        .filter()
+        .anyOf(
+          msgModelList,
+          (q, MsgModel element) => q
+              .convIdEqualTo(element.convId)
+              .and()
+              .clientMsgIdEqualTo(element.clientMsgId),
+        )
+        .findAll();
     for (MsgModel msgModel in msgModelList) {
       if (resp != null) {
         msgModel.sendStatus = SendStatus.success;
