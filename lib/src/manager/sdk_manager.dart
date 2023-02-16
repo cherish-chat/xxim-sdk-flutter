@@ -376,10 +376,7 @@ class SDKManager {
         .filter()
         .anyOf(
           msgModelList,
-          (q, MsgModel element) => q
-              .convIdEqualTo(element.convId)
-              .and()
-              .clientMsgIdEqualTo(element.clientMsgId),
+          (q, MsgModel element) => q.clientMsgIdEqualTo(element.clientMsgId),
         )
         .findAll();
     bool updated = false;
@@ -561,8 +558,6 @@ class SDKManager {
     if (noticeModel.options.storageForClient != true) return;
     NoticeModel? model = await noticeModels()
         .filter()
-        .convIdEqualTo(noticeModel.convId)
-        .and()
         .noticeIdEqualTo(noticeModel.noticeId)
         .findFirst();
     if (model != null) {
@@ -713,10 +708,7 @@ class SDKManager {
         .filter()
         .anyOf(
           msgModelList,
-          (q, MsgModel element) => q
-              .convIdEqualTo(element.convId)
-              .and()
-              .clientMsgIdEqualTo(element.clientMsgId),
+          (q, MsgModel element) => q.clientMsgIdEqualTo(element.clientMsgId),
         )
         .findAll();
     for (MsgModel msgModel in msgModelList) {
