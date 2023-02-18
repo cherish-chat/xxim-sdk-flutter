@@ -708,6 +708,9 @@ class SDKManager {
         )
         .findAll();
     for (MsgModel msgModel in msgModelList) {
+      if (senderInfo != null) {
+        msgModel.senderInfo = senderInfo;
+      }
       if (resp != null) {
         msgModel.sendStatus = SendStatus.success;
       } else {
