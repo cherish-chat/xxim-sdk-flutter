@@ -114,6 +114,7 @@ class ConvManager {
   /// 设置会话已读
   Future setConvRead({
     required String convId,
+    bool isSync = true,
   }) async {
     ConvModel? convModel = await _sdkManager.findFirst(
       query: _sdkManager
@@ -125,13 +126,14 @@ class ConvManager {
           .build(),
     );
     if (convModel == null) return;
-    if (convModel.unreadCount == 0) return;
-    convModel.unreadCount = 0;
-    await _sdkManager.isar.writeTxn((isar) async {
-      await _sdkManager.convModels().put(convModel);
-    });
-    _sdkManager.calculateUnreadCount();
-    if (convModel.convType != ConvType.msg) return;
+    if (convModel.unreadCount != 0) {
+      convModel.unreadCount = 0;
+      await _sdkManager.isar.writeTxn((isar) async {
+        await _sdkManager.convModels().put(convModel);
+      });
+      _sdkManager.calculateUnreadCount();
+    }
+    if (convModel.convType != ConvType.msg && !isSync) return;
     MsgModel? msgModel = await _msgManager.getFirstMsg(
       convId: convId,
     );
