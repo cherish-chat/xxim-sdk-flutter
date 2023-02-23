@@ -42,6 +42,39 @@ class ConvModel {
     this.hidden = false,
     this.deleted = false,
   });
+
+  static ConvModel fromJson(String source) {
+    Map<String, dynamic> map = json.decode(source);
+    DraftModel? draftModel;
+    if (map["draftModel"].toString().isNotEmpty) {
+      draftModel = DraftModel.fromJson(map["draftModel"]);
+    }
+    return ConvModel(
+      convId: map["convId"],
+      convType: map["convType"],
+      clientMsgId: map["clientMsgId"],
+      noticeId: map["noticeId"],
+      time: map["time"],
+      unreadCount: map["unreadCount"],
+      draftModel: draftModel,
+      hidden: map["hidden"],
+      deleted: map["deleted"],
+    );
+  }
+
+  String toJson() {
+    return json.encode({
+      "convId": convId,
+      "convType": convType,
+      "clientMsgId": clientMsgId,
+      "noticeId": noticeId,
+      "time": time,
+      "unreadCount": unreadCount,
+      "draftModel": draftModel?.toJson() ?? "",
+      "hidden": hidden,
+      "deleted": deleted,
+    });
+  }
 }
 
 class DraftModel {
