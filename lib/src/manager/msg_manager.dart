@@ -670,21 +670,21 @@ class MsgManager {
   }
 
   /// 发送撤回消息
-  Future<bool> sendRevokeMsg({
+  Future<MsgModel?> sendRevokeMsg({
     required String clientMsgId,
     required TipContent content,
   }) async {
     MsgModel? msgModel = await getSingleMsg(
       clientMsgId: clientMsgId,
     );
-    if (msgModel == null || msgModel.serverMsgId == null) return false;
+    if (msgModel == null || msgModel.serverMsgId == null) return null;
     msgModel.contentType = MsgContentType.tip;
     msgModel.content = content.toJson();
     return sendEditMsg(msgModel: msgModel);
   }
 
   /// 发送编辑消息
-  Future<bool> sendEditMsg({
+  Future<MsgModel?> sendEditMsg({
     required MsgModel msgModel,
   }) {
     return _sdkManager.sendEditMsg(msgModel);

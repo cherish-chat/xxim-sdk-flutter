@@ -760,7 +760,7 @@ class SDKManager {
   }
 
   /// 发送编辑消息
-  Future<bool> sendEditMsg(MsgModel msgModel) async {
+  Future<MsgModel?> sendEditMsg(MsgModel msgModel) async {
     Map<String, AesParams> convParams = await subscribeCallback.convParams();
     AesParams aesParams = convParams[msgModel.convId]!;
     MsgData msgData = MsgData(
@@ -807,7 +807,14 @@ class SDKManager {
         noticeContent: msgData.writeToBuffer(),
       ),
     );
-    return resp != null;
+    if (resp != null) {
+      await upsertMsg(
+        msgModel: msgModel,
+        includeMsgConv: true,
+      );
+      return msgModel;
+    }
+    return null;
   }
 
   Future upsertMsg({
