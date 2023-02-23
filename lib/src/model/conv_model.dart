@@ -66,8 +66,8 @@ class ConvModel {
     return json.encode({
       "convId": convId,
       "convType": convType,
-      "clientMsgId": clientMsgId,
-      "noticeId": noticeId,
+      "clientMsgId": clientMsgId ?? "",
+      "noticeId": noticeId ?? "",
       "time": time,
       "unreadCount": unreadCount,
       "draftModel": draftModel?.toJson() ?? "",

@@ -107,7 +107,7 @@ class MsgModel {
   String toJson() {
     return json.encode({
       "clientMsgId": clientMsgId,
-      "serverMsgId": serverMsgId,
+      "serverMsgId": serverMsgId ?? "",
       "clientTime": clientTime,
       "serverTime": serverTime,
       "senderId": senderId,
