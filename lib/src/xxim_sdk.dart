@@ -1,6 +1,9 @@
+import 'package:hive/hive.dart';
 import 'package:isar/isar.dart';
 import 'package:xxim_core_flutter/xxim_core_flutter.dart';
 import 'package:xxim_sdk_flutter/src/callback/subscribe_callback.dart';
+import 'package:xxim_sdk_flutter/src/common/aes_params.dart';
+import 'package:xxim_sdk_flutter/src/common/cxn_params.dart';
 import 'package:xxim_sdk_flutter/src/listener/conv_listener.dart';
 import 'package:xxim_sdk_flutter/src/listener/isar_listener.dart';
 import 'package:xxim_sdk_flutter/src/listener/msg_listener.dart';
@@ -11,6 +14,7 @@ import 'package:xxim_sdk_flutter/src/manager/conv_manager.dart';
 import 'package:xxim_sdk_flutter/src/manager/msg_manager.dart';
 import 'package:xxim_sdk_flutter/src/manager/notice_manager.dart';
 import 'package:xxim_sdk_flutter/src/manager/sdk_manager.dart';
+import 'package:xxim_sdk_flutter/src/tool/sdk_tool.dart';
 
 class XXIMSDK {
   XXIMCore? _xximCore;
@@ -21,42 +25,60 @@ class XXIMSDK {
 
   /// 初始化
   void init({
-    required Params params,
+    required String? directory,
+    Duration requestTimeout = const Duration(seconds: 10),
+    required CxnParams cxnParams,
     Duration autoPullTime = const Duration(seconds: 20),
     int pullMsgCount = 200,
     List<CollectionSchema> isarSchemas = const [],
     int isarMaxSizeMiB = Isar.defaultMaxSizeMiB,
-    required String isarDirectory,
     bool isarInspector = false,
+    required ConnectListener connectListener,
     required SubscribeCallback subscribeCallback,
     IsarListener? isarListener,
-    ConnectListener? connectListener,
     PullListener? pullListener,
     ConvListener? convListener,
     MsgListener? msgListener,
     NoticeListener? noticeListener,
     UnreadListener? unreadListener,
   }) {
+    if (directory != null && directory.isNotEmpty) {
+      Hive.init(directory);
+    }
     _xximCore = XXIMCore()
       ..init(
-        params: params,
-        connectListener: connectListener,
+        requestTimeout: requestTimeout,
+        connectListener: ConnectListener(
+          onConnecting: connectListener.connecting,
+          onSuccess: () async {
+            await Future.doWhile(() async {
+              await Future.delayed(const Duration(milliseconds: 5));
+              return !(await setCxnParams(cxnParams: cxnParams));
+            });
+            connectListener.success();
+          },
+          onClose: (code, error) {
+            _sdkManager?.closeDatabase();
+            closePullSubscribe();
+            connectListener.close(code, error);
+          },
+        ),
         receivePushListener: ReceivePushListener(
           onPushMsgDataList: (msgDataList) {
             _sdkManager?.onPushMsgDataList(msgDataList.msgDataList);
           },
-          onPushNoticeDataList: (noticeDataList) {
-            _sdkManager?.onPushNoticeDataList(noticeDataList.noticeDataList);
+          onPushNoticeData: (noticeData) {
+            _sdkManager?.onPushNoticeData(noticeData);
           },
         ),
       );
     _sdkManager = SDKManager(
       xximCore: _xximCore!,
+      directory: directory,
       autoPullTime: autoPullTime,
       pullMsgCount: pullMsgCount,
       isarSchemas: isarSchemas,
       isarMaxSizeMiB: isarMaxSizeMiB,
-      isarDirectory: isarDirectory,
       isarInspector: isarInspector,
       subscribeCallback: subscribeCallback,
       isarListener: isarListener,
@@ -71,84 +93,113 @@ class XXIMSDK {
     convManager = ConvManager(_sdkManager!, msgManager, noticeManager);
   }
 
-  /// 登录
-  Future login({
-    required String apiUrl,
-    required String wsUrl,
-    required String token,
-    required String userId,
-    required String networkUsed,
-    String? isarName,
-    List<String>? convIdList,
-  }) async {
-    await _sdkManager?.openDatabase(
-      userId: userId,
-      isarName: isarName,
-    );
-    connect(
-      apiUrl: apiUrl,
-      wsUrl: wsUrl,
-      token: token,
-      userId: userId,
-      networkUsed: networkUsed,
-      convIdList: convIdList,
-    );
-  }
-
-  /// 登出
-  Future logout() async {
-    await _sdkManager?.closeDatabase();
-    disconnect();
-  }
-
   /// 连接
-  void connect({
-    required String apiUrl,
-    required String wsUrl,
-    required String token,
-    required String userId,
-    required String networkUsed,
-    List<String>? convIdList,
-  }) {
-    _xximCore?.login(
-      apiUrl: apiUrl,
-      wsUrl: wsUrl,
-      token: token,
-      userId: userId,
-      networkUsed: networkUsed,
-    );
-    openPullSubscribe(
-      convIdList: convIdList,
-    );
+  void connect(String wsUrl) {
+    _xximCore?.connect(wsUrl);
   }
 
   /// 断连
   void disconnect() {
-    _xximCore?.logout();
+    _sdkManager?.closeDatabase();
+    _xximCore?.disconnect();
     closePullSubscribe();
   }
 
   /// 是否连接
   bool isConnect() {
-    return _xximCore?.isLogin() ?? false;
+    return _xximCore?.isConnect() ?? false;
   }
 
-  /// 修改语言
-  void setLanguage(String language) {
-    _xximCore?.setLanguage(language);
+  /// 设置连接参数
+  Future<bool> setCxnParams({
+    required CxnParams cxnParams,
+  }) async {
+    String hiveName = "xxim";
+    Box box;
+    if (Hive.isBoxOpen(hiveName)) {
+      box = Hive.box(hiveName);
+    } else {
+      box = await Hive.openBox(hiveName);
+    }
+    String packageId = box.get("packageId", defaultValue: "");
+    if (packageId.isEmpty) {
+      packageId = SDKTool.getUUId();
+      box.put("packageId", packageId);
+    }
+    SetCxnParamsResp? resp = await _xximCore?.setCxnParams(
+      reqId: SDKTool.getUUId(),
+      req: SetCxnParamsReq(
+        packageId: packageId,
+        platform: cxnParams.platform,
+        deviceId: cxnParams.deviceId,
+        deviceModel: cxnParams.deviceModel,
+        osVersion: cxnParams.osVersion,
+        appVersion: cxnParams.appVersion,
+        language: cxnParams.language,
+        networkUsed: cxnParams.networkUsed,
+        ext: cxnParams.ext,
+      ),
+    );
+    return resp != null;
+  }
+
+  /// 设置用户参数
+  Future<bool> setUserParams({
+    required String userId,
+    required String token,
+    List<int>? ext,
+    String? isarName,
+    Map<String, AesParams>? convParams,
+  }) async {
+    await _sdkManager?.openDatabase(
+      userId: userId,
+      isarName: isarName,
+    );
+    SetUserParamsResp? resp = await _xximCore?.setUserParams(
+      reqId: SDKTool.getUUId(),
+      req: SetUserParamsReq(
+        userId: userId,
+        token: token,
+        ext: ext,
+      ),
+    );
+    if (resp == null) {
+      await _sdkManager?.closeDatabase();
+      return false;
+    }
+    openPullSubscribe(
+      convParams: convParams,
+    );
+    return true;
   }
 
   /// 打开拉取订阅
   void openPullSubscribe({
-    List<String>? convIdList,
+    Map<String, AesParams>? convParams,
   }) {
     _sdkManager?.openPullSubscribe(
-      convIdList: convIdList,
+      convParams: convParams,
     );
   }
 
   /// 关闭拉取订阅
   void closePullSubscribe() {
     _sdkManager?.closePullSubscribe();
+  }
+
+  /// 自定义请求
+  Future<List<int>?>? customRequest({
+    required String method,
+    required List<int> bytes,
+    SuccessCallback<List<int>>? onSuccess,
+    ErrorCallback? onError,
+  }) {
+    return _xximCore?.customRequest(
+      reqId: SDKTool.getUUId(),
+      method: method,
+      bytes: bytes,
+      onSuccess: onSuccess,
+      onError: onError,
+    );
   }
 }

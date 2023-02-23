@@ -22,10 +22,10 @@ import 'package:xxim_sdk_flutter/src/tool/sdk_tool.dart';
 
 class SDKManager {
   final XXIMCore xximCore;
+  final String? directory;
   final Duration autoPullTime;
   final int pullMsgCount;
   final List<CollectionSchema> isarSchemas;
-  final String isarDirectory;
   final int isarMaxSizeMiB;
   final bool isarInspector;
   final SubscribeCallback subscribeCallback;
@@ -38,11 +38,11 @@ class SDKManager {
 
   SDKManager({
     required this.xximCore,
+    required this.directory,
     required this.autoPullTime,
     required this.pullMsgCount,
     required this.isarSchemas,
     required this.isarMaxSizeMiB,
-    required this.isarDirectory,
     required this.isarInspector,
     required this.subscribeCallback,
     this.isarListener,
@@ -54,7 +54,9 @@ class SDKManager {
   });
 
   late String userId;
+  late String isarName;
   late Isar isar;
+
   Timer? _timer;
   bool _pullStatus = false;
 
@@ -64,8 +66,8 @@ class SDKManager {
     String? isarName,
   }) async {
     this.userId = userId;
-    isarName ??= userId;
-    Isar? isar = Isar.getInstance(isarName);
+    this.isarName = isarName ?? userId;
+    Isar? isar = Isar.getInstance(this.isarName);
     if (isar != null) {
       this.isar = isar;
     } else {
@@ -74,11 +76,12 @@ class SDKManager {
           RecordModelSchema,
           ConvModelSchema,
           MsgModelSchema,
+          NoticeModelSchema,
           ReadModelSchema,
           ...isarSchemas,
         ],
-        directory: isarDirectory,
-        name: isarName,
+        directory: directory,
+        name: this.isarName,
         maxSizeMiB: isarMaxSizeMiB,
         inspector: isarInspector,
       );
@@ -88,7 +91,7 @@ class SDKManager {
 
   /// 关闭数据库
   Future closeDatabase() async {
-    await isar.close();
+    await Isar.getInstance(isarName)?.close();
   }
 
   /// 记录表
@@ -118,6 +121,7 @@ class SDKManager {
 
   /// 启动定时器
   void _startTimer() {
+    _cancelTimer();
     _timer = Timer(autoPullTime, () {
       openPullSubscribe();
     });
@@ -131,20 +135,21 @@ class SDKManager {
 
   /// 打开拉取订阅
   void openPullSubscribe({
-    List<String>? convIdList,
+    Map<String, AesParams>? convParams,
   }) async {
     _pullStatus = true;
     _cancelTimer();
     pullListener?.start();
-    convIdList ??= await subscribeCallback.convIdList();
-    if (convIdList.isEmpty) {
+    convParams ??= await subscribeCallback.convParams();
+    if (convParams.isEmpty) {
       pullListener?.end();
       if (_pullStatus) _startTimer();
       return;
     }
     BatchGetConvSeqResp? resp = await xximCore.batchGetConvSeq(
+      reqId: SDKTool.getUUId(),
       req: BatchGetConvSeqReq(
-        convIdList: convIdList,
+        convIdList: convParams.keys.toList(),
       ),
     );
     if (resp == null || resp.convSeqMap.isEmpty) {
@@ -154,20 +159,8 @@ class SDKManager {
     }
     List<BatchGetMsgListByConvIdReq_Item> items = [];
     await isar.writeTxn(() async {
-      List<String> convIdList = resp.convSeqMap.keys.toList();
-      List<RecordModel> recordModelList = await recordModels()
-          .filter()
-          .anyOf(
-            convIdList,
-            (q, element) => q.convIdEqualTo(element),
-          )
-          .findAll();
-      for (String convId in convIdList) {
-        RecordModel recordModel = await _handleConvSeq(
-          recordModelList,
-          convId,
-          resp.convSeqMap[convId]!,
-        );
+      List<RecordModel> recordModelList = await _handleConvSeq(resp.convSeqMap);
+      for (RecordModel recordModel in recordModelList) {
         int minSeq = recordModel.minSeq;
         int maxSeq = recordModel.maxSeq;
         if (recordModel.seq >= minSeq) {
@@ -176,56 +169,63 @@ class SDKManager {
         if (maxSeq - minSeq > pullMsgCount) {
           minSeq = maxSeq - pullMsgCount;
         }
-        if (maxSeq <= minSeq) return;
+        if (maxSeq <= minSeq) continue;
         items.add(BatchGetMsgListByConvIdReq_Item(
-          convId: convId,
+          convId: recordModel.convId,
           seqList: SDKTool.generateSeqList(minSeq, maxSeq),
         ));
       }
     });
     if (items.isNotEmpty) {
-      await pullMsgDataList(
-        items,
-        push: true,
-      );
+      await pullMsgDataList(items);
+      convListener?.update();
+      calculateUnreadCount();
     }
     pullListener?.end();
     if (_pullStatus) _startTimer();
   }
 
-  Future<RecordModel> _handleConvSeq(
-    List<RecordModel> recordModelList,
-    String convId,
-    BatchGetConvSeqResp_ConvSeq convSeq,
+  Future<List<RecordModel>> _handleConvSeq(
+    Map<String, BatchGetConvSeqResp_ConvSeq> convSeqMap,
   ) async {
-    int index = recordModelList.indexWhere((item) {
-      return item.convId == convId;
-    });
-    RecordModel recordModel;
-    if (index != -1) {
-      int minSeq = int.parse(convSeq.minSeq);
-      int maxSeq = int.parse(convSeq.maxSeq);
-      int updateTime = int.parse(convSeq.updateTime);
-      recordModel = recordModelList[index];
-      bool updated = false;
-      if (recordModel.minSeq != minSeq) {
-        recordModel.minSeq = minSeq;
+    List<String> convIdList = convSeqMap.keys.toList();
+    List<RecordModel> recordModelList = await recordModels()
+        .filter()
+        .anyOf(
+          convIdList,
+          (q, element) => q.convIdEqualTo(element),
+        )
+        .findAll();
+    bool updated = false;
+    for (String convId in convIdList) {
+      BatchGetConvSeqResp_ConvSeq convSeq = convSeqMap[convId]!;
+      int index = recordModelList.indexWhere((item) {
+        return item.convId == convId;
+      });
+      if (index != -1) {
+        int minSeq = int.parse(convSeq.minSeq);
+        int maxSeq = int.parse(convSeq.maxSeq);
+        int updateTime = int.parse(convSeq.updateTime);
+        RecordModel recordModel = recordModelList[index];
+        if (recordModel.minSeq != minSeq) {
+          recordModel.minSeq = minSeq;
+          updated = true;
+        }
+        if (recordModel.maxSeq != maxSeq) {
+          recordModel.maxSeq = maxSeq;
+          updated = true;
+        }
+        if (recordModel.updateTime != updateTime) {
+          recordModel.updateTime = updateTime;
+          updated = true;
+        }
+      } else {
+        recordModelList.add(RecordModel.fromProto(convSeq));
         updated = true;
       }
-      if (recordModel.maxSeq != maxSeq) {
-        recordModel.maxSeq = maxSeq;
-        updated = true;
-      }
-      if (recordModel.updateTime != updateTime) {
-        recordModel.updateTime = updateTime;
-        updated = true;
-      }
-      if (updated) await recordModels().put(recordModel);
-    } else {
-      recordModel = RecordModel.fromProto(convSeq);
-      await recordModels().put(recordModel);
     }
-    return recordModel;
+    if (updated) await recordModels().putAll(recordModelList);
+    return recordModelList;
   }
 
   /// 关闭拉取订阅
@@ -234,32 +234,20 @@ class SDKManager {
     _cancelTimer();
   }
 
-  Future<Map<String, AESParams>> _convAESParams(List<MsgData> msgDataList) {
-    List<String> convIdList = [];
-    for (MsgData msgData in msgDataList) {
-      convIdList.add(msgData.convId);
-    }
-    return subscribeCallback.convAESParams(convIdList);
-  }
-
   /// 拉取消息列表
   Future<List<MsgModel>?> pullMsgDataList(
-    List<BatchGetMsgListByConvIdReq_Item> items, {
-    required bool push,
-  }) async {
+    List<BatchGetMsgListByConvIdReq_Item> items,
+  ) async {
     GetMsgListResp? resp = await xximCore.batchGetMsgListByConvId(
+      reqId: SDKTool.getUUId(),
       req: BatchGetMsgListByConvIdReq(
         items: items,
-        push: push,
       ),
     );
-    if (push || resp == null) return null;
-    Map<String, AESParams> convAESMap = await _convAESParams(resp.msgDataList);
+    if (resp == null) return null;
     List<MsgModel> msgModelList = [];
     await isar.writeTxn(() async {
-      for (MsgData msgData in resp.msgDataList) {
-        msgModelList.add(await _handleMsg(msgData, convAESMap[msgData.convId]));
-      }
+      msgModelList = await _handleMsgList(resp.msgDataList);
     });
     return msgModelList;
   }
@@ -268,36 +256,30 @@ class SDKManager {
   Future<MsgModel?> pullMsgDataById({
     String? serverMsgId,
     String? clientMsgId,
-    required bool push,
   }) async {
     GetMsgByIdResp? resp = await xximCore.getMsgById(
+      reqId: SDKTool.getUUId(),
       req: GetMsgByIdReq(
         serverMsgId: serverMsgId,
         clientMsgId: clientMsgId,
-        push: push,
       ),
     );
-    if (push || resp == null) return null;
-    MsgData msgData = resp.msgData;
-    Map<String, AESParams> convAESMap = await _convAESParams([msgData]);
-    MsgModel? msgModel;
+    if (resp == null) return null;
+    late MsgModel msgModel;
     await isar.writeTxn(() async {
-      msgModel = await _handleMsg(msgData, convAESMap[msgData.convId]);
+      msgModel = (await _handleMsgList([resp.msgData])).first;
     });
     return msgModel;
   }
 
-  /// 推送消息
+  /// 推送消息列表
   void onPushMsgDataList(
     List<MsgData> msgDataList,
   ) async {
     bool isFirstPull = await msgModels().count() == 0;
-    Map<String, AESParams> convAESMap = await _convAESParams(msgDataList);
     List<MsgModel> msgModelList = [];
     await isar.writeTxn(() async {
-      for (MsgData msgData in msgDataList) {
-        msgModelList.add(await _handleMsg(msgData, convAESMap[msgData.convId]));
-      }
+      msgModelList = await _handleMsgList(msgDataList);
     });
     if (!isFirstPull && msgModelList.isNotEmpty) {
       msgListener?.receive(msgModelList);
@@ -307,173 +289,268 @@ class SDKManager {
   }
 
   /// 推送通知
-  void onPushNoticeDataList(
-    List<NoticeData> noticeDataList,
+  void onPushNoticeData(
+    NoticeData noticeData,
   ) async {
-    bool isFirstPull = await noticeModels().count() == 0;
-    List<NoticeModel> noticeModelList = [];
-    List<String> noticeIds = [];
-    await isar.writeTxn(() async {
-      for (NoticeData noticeData in noticeDataList) {
-        noticeModelList.add(await _handleNotice(noticeData));
-        noticeIds.add(noticeData.noticeId);
-      }
-    });
-    if (!isFirstPull && noticeModelList.isNotEmpty) {
-      bool? status = await noticeListener?.receive(noticeModelList);
-      if (status == true) {
-        await xximCore.ackNoticeDataReq(
-          req: AckNoticeDataReq(
-            noticeIds: noticeIds,
-          ),
+    bool? status;
+    if (noticeData.contentType == NoticeContentType.read) {
+      late ReadContent readContent;
+      await isar.writeTxn(() async {
+        readContent = await _handleReadMsg(
+          SDKTool.utf8Decode(noticeData.content),
         );
-      }
+      });
+      status = await noticeListener?.readMsg(readContent);
+    } else if (noticeData.contentType == NoticeContentType.edit) {
+      late MsgModel msgModel;
+      await isar.writeTxn(() async {
+        msgModel = await _handleEditMsg(
+          MsgData.fromBuffer(noticeData.content),
+        );
+      });
+      status = await noticeListener?.editMsg(msgModel);
+    } else {
+      late NoticeModel noticeModel;
+      await isar.writeTxn(() async {
+        noticeModel = await _handleNotice(noticeData);
+      });
+      status = await noticeListener?.receive(noticeModel);
+    }
+    if (status == true) {
+      await xximCore.ackNoticeData(
+        reqId: SDKTool.getUUId(),
+        req: AckNoticeDataReq(
+          convId: noticeData.convId,
+          noticeId: noticeData.noticeId,
+        ),
+      );
     }
     convListener?.update();
     calculateUnreadCount();
   }
 
-  /// 处理消息
-  Future<MsgModel> _handleMsg(MsgData msgData, AESParams? aesParams) async {
-    MsgModel msgModel = MsgModel.fromProto(msgData, aesParams);
-    msgModel.sendStatus = SendStatus.success;
-    await _updateRecord(msgModel);
-    await _updateMsg(msgModel);
-    if (msgData.serverMsgId.isNotEmpty) {
-      await _updateRead(msgModel);
-      await _updateMsgConv(msgModel);
+  /// 处理消息列表
+  Future<List<MsgModel>> _handleMsgList(List<MsgData> msgDataList) async {
+    Map<String, AesParams> convParams = await subscribeCallback.convParams();
+    List<MsgModel> msgModelList = [];
+    for (MsgData msgData in msgDataList) {
+      MsgModel msgModel = MsgModel.fromProto(
+        msgData,
+        convParams[msgData.convId]!,
+      );
+      msgModel.sendStatus = SendStatus.success;
+      msgModelList.add(msgModel);
     }
-    return msgModel;
+    await _updateRecordList(msgModelList);
+    await _updateMsgList(msgModelList);
+    await _updateMsgConvList(msgModelList);
+    return msgModelList;
   }
 
-  Future _updateRecord(MsgModel msgModel) async {
-    RecordModel? recordModel = await recordModels()
+  Future _updateRecordList(List<MsgModel> msgModelList) async {
+    List<RecordModel> recordModelList = await recordModels()
         .filter()
-        .convIdEqualTo(msgModel.convId)
-        .findFirst();
-    if (recordModel == null) return;
-    if (msgModel.seq > recordModel.seq) {
-      recordModel.seq = msgModel.seq;
-      await recordModels().put(recordModel);
+        .anyOf(
+          msgModelList,
+          (q, MsgModel element) => q.convIdEqualTo(element.convId),
+        )
+        .findAll();
+    bool updated = false;
+    for (MsgModel msgModel in msgModelList) {
+      int index = recordModelList.indexWhere((item) {
+        return item.convId == msgModel.convId;
+      });
+      if (index != -1) {
+        RecordModel recordModel = recordModelList[index];
+        if (msgModel.seq > recordModel.seq) {
+          recordModel.seq = msgModel.seq;
+          updated = true;
+        }
+      }
     }
+    if (updated) await recordModels().putAll(recordModelList);
   }
 
-  Future _updateMsg(MsgModel msgModel) async {
-    if (msgModel.options.storageForClient != true) return;
-    MsgModel? model = await msgModels()
+  Future _updateMsgList(List<MsgModel> msgModelList) async {
+    List<MsgModel> modelList = await msgModels()
         .filter()
-        .convIdEqualTo(msgModel.convId)
-        .and()
-        .clientMsgIdEqualTo(msgModel.clientMsgId)
-        .findFirst();
-    if (model != null) {
-      bool updated = false;
-      if (model.serverMsgId != msgModel.serverMsgId) {
-        model.serverMsgId = msgModel.serverMsgId;
+        .anyOf(
+          msgModelList,
+          (q, MsgModel element) => q.clientMsgIdEqualTo(element.clientMsgId),
+        )
+        .findAll();
+    bool updated = false;
+    for (MsgModel msgModel in msgModelList) {
+      int index = modelList.indexWhere((item) {
+        return item.clientMsgId == msgModel.clientMsgId;
+      });
+      if (index != -1) {
+        MsgModel model = modelList[index];
+        if (model.serverMsgId != msgModel.serverMsgId) {
+          model.serverMsgId = msgModel.serverMsgId;
+          updated = true;
+        }
+        if (model.serverTime != msgModel.serverTime) {
+          model.serverTime = msgModel.serverTime;
+          updated = true;
+        }
+        if (model.senderInfo != msgModel.senderInfo) {
+          model.senderInfo = msgModel.senderInfo;
+          updated = true;
+        }
+        if (model.contentType != msgModel.contentType) {
+          model.contentType = msgModel.contentType;
+          updated = true;
+        }
+        if (model.content != msgModel.content) {
+          model.content = msgModel.content;
+          updated = true;
+        }
+        if (model.seq != msgModel.seq) {
+          model.seq = msgModel.seq;
+          updated = true;
+        }
+        if (model.ext != msgModel.ext) {
+          model.ext = msgModel.ext;
+          updated = true;
+        }
+        if (model.sendStatus != SendStatus.success) {
+          model.sendStatus = SendStatus.success;
+          updated = true;
+        }
+      } else {
+        modelList.add(msgModel);
         updated = true;
       }
-      if (model.serverTime != msgModel.serverTime) {
-        model.serverTime = msgModel.serverTime;
-        updated = true;
-      }
-      if (model.contentType != msgModel.contentType) {
-        model.contentType = msgModel.contentType;
-        updated = true;
-      }
-      if (model.content != msgModel.content) {
-        model.content = msgModel.content;
-        updated = true;
-      }
-      if (model.seq != msgModel.seq) {
-        model.seq = msgModel.seq;
-        updated = true;
-      }
-      if (updated) await msgModels().put(model);
-    } else {
-      await msgModels().put(msgModel);
     }
+    if (updated) await msgModels().putAll(modelList);
   }
 
-  Future _updateRead(MsgModel msgModel) async {
-    if (msgModel.contentType != ContentType.read) return;
-    ReadContent content = ReadContent.fromJson(msgModel.content);
+  Future _updateMsgConvList(List<MsgModel> msgModelList) async {
+    List<ConvModel> convModelList = await convModels()
+        .filter()
+        .anyOf(
+          msgModelList,
+          (q, MsgModel element) => q.convIdEqualTo(element.convId),
+        )
+        .findAll();
+    bool updated = false;
+    for (MsgModel msgModel in msgModelList) {
+      int index = convModelList.indexWhere((item) {
+        return item.convId == msgModel.convId;
+      });
+      ConvModel? convModel;
+      if (index != -1) {
+        convModel = convModelList[index];
+      } else {
+        convModel = ConvModel(
+          convId: msgModel.convId,
+          convType: ConvType.msg,
+        );
+        convModelList.add(convModel);
+        updated = true;
+      }
+      MsgModel? model;
+      if (convModel.clientMsgId != null) {
+        model = await msgModels()
+            .filter()
+            .clientMsgIdEqualTo(convModel.clientMsgId!)
+            .findFirst();
+      }
+      if (msgModel.options.updateConvMsg == true) {
+        if (model != null) {
+          if (msgModel.seq > model.seq) {
+            convModel.clientMsgId = msgModel.clientMsgId;
+            convModel.time = msgModel.serverTime;
+            convModel.hidden = false;
+            convModel.deleted = false;
+            updated = true;
+          }
+        } else {
+          convModel.clientMsgId = msgModel.clientMsgId;
+          convModel.time = msgModel.serverTime;
+          convModel.hidden = false;
+          convModel.deleted = false;
+          updated = true;
+        }
+      }
+      if (msgModel.options.updateUnreadCount == true &&
+          msgModel.senderId != userId) {
+        ReadModel? readModel = await readModels()
+            .filter()
+            .senderIdEqualTo(userId)
+            .and()
+            .convIdEqualTo(msgModel.convId)
+            .findFirst();
+        if (readModel != null) {
+          if (msgModel.seq > readModel.seq) {
+            convModel.unreadCount = ++convModel.unreadCount;
+            updated = true;
+          }
+        } else {
+          if (model != null) {
+            if (msgModel.seq > model.seq) {
+              convModel.unreadCount = ++convModel.unreadCount;
+              updated = true;
+            }
+          } else {
+            convModel.unreadCount = ++convModel.unreadCount;
+            updated = true;
+          }
+        }
+      }
+    }
+    if (updated) await convModels().putAll(convModelList);
+  }
+
+  /// 处理已读消息
+  Future<ReadContent> _handleReadMsg(String content) async {
+    ReadContent readContent = ReadContent.fromJson(content);
     ReadModel? readModel = await readModels()
         .filter()
-        .senderIdEqualTo(msgModel.senderId)
+        .senderIdEqualTo(readContent.senderId!)
         .and()
-        .convIdEqualTo(msgModel.convId)
+        .convIdEqualTo(readContent.convId)
         .findFirst();
     if (readModel != null) {
-      if (content.seq > readModel.seq) {
-        readModel.seq = content.seq;
+      if (readContent.seq > readModel.seq) {
+        readModel.seq = readContent.seq;
         await readModels().put(readModel);
       }
     } else {
       readModel = ReadModel(
-        senderId: msgModel.senderId,
-        convId: msgModel.convId,
-        seq: content.seq,
+        senderId: readContent.senderId!,
+        convId: readContent.convId,
+        seq: readContent.seq,
       );
       await readModels().put(readModel);
     }
-  }
-
-  Future _updateMsgConv(MsgModel msgModel) async {
+    if (readContent.senderId != userId) return readContent;
+    MsgModel? msgModel = await msgModels()
+        .filter()
+        .convIdEqualTo(readContent.convId)
+        .sortBySeqDesc()
+        .findFirst();
+    if (msgModel == null) return readContent;
+    int unreadCount = msgModel.seq - readContent.seq;
+    if (unreadCount < 0) return readContent;
     ConvModel? convModel = await convModels()
         .filter()
         .convIdEqualTo(
           msgModel.convId,
         )
         .findFirst();
-    convModel ??= ConvModel(
-      convId: msgModel.convId,
-      convType: ConvType.msg,
-    );
-    MsgModel? model;
-    if (convModel.clientMsgId != null) {
-      model = await msgModels()
-          .filter()
-          .clientMsgIdEqualTo(convModel.clientMsgId!)
-          .findFirst();
+    if (convModel == null) return readContent;
+    if (convModel.unreadCount != unreadCount) {
+      convModel.unreadCount = unreadCount;
+      await convModels().put(convModel);
     }
-    if (msgModel.options.updateConvMsg == true) {
-      if (model != null) {
-        if (msgModel.seq > model.seq) {
-          convModel.clientMsgId = msgModel.clientMsgId;
-          convModel.time = msgModel.serverTime;
-          convModel.hidden = false;
-          convModel.deleted = false;
-        }
-      } else {
-        convModel.clientMsgId = msgModel.clientMsgId;
-        convModel.time = msgModel.serverTime;
-        convModel.hidden = false;
-        convModel.deleted = false;
-      }
-    }
-    if (msgModel.options.updateUnreadCount == true &&
-        msgModel.senderId != userId) {
-      ReadModel? readModel = await readModels()
-          .filter()
-          .senderIdEqualTo(userId)
-          .and()
-          .convIdEqualTo(msgModel.convId)
-          .findFirst();
-      if (readModel != null) {
-        if (msgModel.seq > readModel.seq) {
-          convModel.unreadCount = ++convModel.unreadCount;
-        }
-      } else {
-        if (model != null) {
-          if (msgModel.seq > model.seq) {
-            convModel.unreadCount = ++convModel.unreadCount;
-          }
-        } else {
-          convModel.unreadCount = ++convModel.unreadCount;
-        }
-      }
-    }
-    await convModels().put(convModel);
+    return readContent;
+  }
+
+  /// 处理编辑消息
+  Future<MsgModel> _handleEditMsg(MsgData msgData) async {
+    return (await _handleMsgList([msgData])).first;
   }
 
   /// 处理通知
@@ -488,8 +565,6 @@ class SDKManager {
     if (noticeModel.options.storageForClient != true) return;
     NoticeModel? model = await noticeModels()
         .filter()
-        .convIdEqualTo(noticeModel.convId)
-        .and()
         .noticeIdEqualTo(noticeModel.noticeId)
         .findFirst();
     if (model != null) {
@@ -502,6 +577,7 @@ class SDKManager {
   }
 
   Future _updateNoticeConv(NoticeModel noticeModel) async {
+    if (noticeModel.options.updateConvNotice != true) return;
     ConvModel? convModel = await convModels()
         .filter()
         .convIdEqualTo(
@@ -519,21 +595,20 @@ class SDKManager {
           .noticeIdEqualTo(convModel.noticeId!)
           .findFirst();
     }
-    if (noticeModel.options.updateConvMsg == true) {
-      if (model != null) {
-        if (model.noticeId != noticeModel.noticeId) {
-          convModel.noticeId = noticeModel.noticeId;
-          convModel.time = noticeModel.createTime;
-          convModel.hidden = false;
-          convModel.deleted = false;
-        }
-      } else {
+    if (model != null) {
+      if (model.noticeId != noticeModel.noticeId) {
         convModel.noticeId = noticeModel.noticeId;
         convModel.time = noticeModel.createTime;
         convModel.hidden = false;
         convModel.deleted = false;
       }
+    } else {
+      convModel.noticeId = noticeModel.noticeId;
+      convModel.time = noticeModel.createTime;
+      convModel.hidden = false;
+      convModel.deleted = false;
     }
+    convModel.unreadCount = ++convModel.unreadCount;
     await convModels().put(convModel);
   }
 
@@ -567,7 +642,7 @@ class SDKManager {
       seq = ++model.seq;
     }
     MsgModel msgModel = MsgModel(
-      clientMsgId: clientMsgID ?? SDKTool.getClientMsgId(),
+      clientMsgId: clientMsgID ?? SDKTool.getUUId(),
       clientTime: serverTime ?? timestamp,
       serverTime: serverTime ?? timestamp,
       senderId: userId,
@@ -591,20 +666,24 @@ class SDKManager {
     required List<MsgModel> msgModelList,
     required int deliverAfter,
   }) async {
-    List<String> convIdList = [];
-    for (MsgModel msgModel in msgModelList) {
-      convIdList.add(msgModel.convId);
+    if (senderInfo != null) {
+      await isar.writeTxn(() async {
+        List<MsgModel> modelList = [];
+        for (MsgModel msgModel in msgModelList) {
+          msgModel.senderInfo = senderInfo;
+          if (msgModel.options.storageForClient == true) {
+            modelList.add(msgModel);
+          }
+        }
+        if (modelList.isNotEmpty) await msgModels().putAll(modelList);
+      });
     }
-    Map<String, AESParams> convAESMap = await subscribeCallback.convAESParams(
-      convIdList,
-    );
-    bool? status = await xximCore.sendMsgList(
+    Map<String, AesParams> convParams = await subscribeCallback.convParams();
+    SendMsgListResp? resp = await xximCore.sendMsgList(
+      reqId: SDKTool.getUUId(),
       req: SendMsgListReq(
         msgDataList: msgModelList.map((msgModel) {
-          if (senderInfo != null) {
-            msgModel.senderInfo = senderInfo;
-          }
-          AESParams? aesParams = convAESMap[msgModel.convId];
+          AesParams aesParams = convParams[msgModel.convId]!;
           return MsgData(
             clientMsgId: msgModel.clientMsgId,
             clientTime: msgModel.clientTime.toString(),
@@ -614,7 +693,7 @@ class SDKManager {
             convId: msgModel.convId,
             atUsers: msgModel.atUsers,
             contentType: msgModel.contentType,
-            content: msgModel.options.needDecrypt == true && aesParams != null
+            content: msgModel.options.needDecrypt == true
                 ? SDKTool.aesEncode(
                     key: aesParams.key,
                     iv: aesParams.iv,
@@ -641,18 +720,97 @@ class SDKManager {
         deliverAfter: deliverAfter,
       ),
     );
-    for (MsgModel msgModel in msgModelList) {
-      if (status == true) {
-        msgModel.sendStatus = SendStatus.success;
-      } else {
-        msgModel.sendStatus = SendStatus.failed;
+    await isar.writeTxn(() async {
+      List<MsgModel> modelList = await msgModels()
+          .filter()
+          .anyOf(
+            msgModelList,
+            (q, MsgModel element) => q.clientMsgIdEqualTo(element.clientMsgId),
+          )
+          .findAll();
+      for (MsgModel msgModel in msgModelList) {
+        int index = modelList.indexWhere((item) {
+          return item.clientMsgId == msgModel.clientMsgId;
+        });
+        if (index != -1) {
+          msgModel = modelList[index];
+        }
+        if (resp != null) {
+          msgModel.sendStatus = SendStatus.success;
+        } else {
+          msgModel.sendStatus = SendStatus.failed;
+        }
       }
-      await upsertMsg(
-        msgModel: msgModel,
-        includeMsgConv: true,
-      );
-    }
-    return status ?? false;
+      if (modelList.isNotEmpty) await msgModels().putAll(modelList);
+      await _updateMsgConvList(msgModelList);
+    });
+    return resp != null;
+  }
+
+  /// 发送已读消息
+  Future<bool> sendReadMsg(ReadContent content) async {
+    content.senderId = userId;
+    ReadMsgResp? resp = await xximCore.sendReadMsg(
+      reqId: SDKTool.getUUId(),
+      req: ReadMsgReq(
+        senderId: content.senderId,
+        convId: content.convId,
+        seq: content.seq.toString(),
+        noticeContent: SDKTool.utf8Encode(content.toJson()),
+      ),
+    );
+    return resp != null;
+  }
+
+  /// 发送编辑消息
+  Future<bool> sendEditMsg(MsgModel msgModel) async {
+    Map<String, AesParams> convParams = await subscribeCallback.convParams();
+    AesParams aesParams = convParams[msgModel.convId]!;
+    MsgData msgData = MsgData(
+      clientMsgId: msgModel.clientMsgId,
+      serverMsgId: msgModel.serverMsgId,
+      clientTime: msgModel.clientTime.toString(),
+      serverTime: msgModel.serverTime.toString(),
+      senderId: msgModel.senderId,
+      senderInfo: SDKTool.utf8Encode(msgModel.senderInfo),
+      convId: msgModel.convId,
+      atUsers: msgModel.atUsers,
+      contentType: msgModel.contentType,
+      content: msgModel.options.needDecrypt == true
+          ? SDKTool.aesEncode(
+              key: aesParams.key,
+              iv: aesParams.iv,
+              value: msgModel.content,
+            )
+          : SDKTool.utf8Encode(msgModel.content),
+      seq: msgModel.seq.toString(),
+      options: MsgData_Options(
+        storageForServer: msgModel.options.storageForServer,
+        storageForClient: msgModel.options.storageForClient,
+        needDecrypt: msgModel.options.needDecrypt,
+        offlinePush: msgModel.options.offlinePush,
+        updateConvMsg: msgModel.options.updateConvMsg,
+        updateUnreadCount: msgModel.options.updateUnreadCount,
+      ),
+      offlinePush: MsgData_OfflinePush(
+        title: msgModel.offlinePush.title,
+        content: msgModel.offlinePush.content,
+        payload: msgModel.offlinePush.payload,
+      ),
+      ext: SDKTool.utf8Encode(msgModel.ext),
+    );
+    EditMsgResp? resp = await xximCore.sendEditMsg(
+      reqId: SDKTool.getUUId(),
+      req: EditMsgReq(
+        senderId: msgData.senderId,
+        serverMsgId: msgData.serverMsgId,
+        contentType: msgData.contentType,
+        content: msgData.content,
+        ext: msgData.ext,
+        noticeContent: msgData.writeToBuffer(),
+      ),
+    );
+    return resp != null;
   }
 
   Future upsertMsg({
@@ -663,7 +821,7 @@ class SDKManager {
       if (msgModel.options.storageForClient == true) {
         await msgModels().put(msgModel);
       }
-      if (includeMsgConv) await _updateMsgConv(msgModel);
+      if (includeMsgConv) await _updateMsgConvList([msgModel]);
     });
   }
 }

@@ -9,7 +9,7 @@ class SDKTool {
   static const String _singlePrefix = "single:";
   static const String _groupPrefix = "group:";
 
-  static String getClientMsgId() {
+  static String getUUId() {
     return _uuid.v1().replaceAll("-", "");
   }
 
@@ -20,8 +20,36 @@ class SDKTool {
     return _singlePrefix + id2 + _separator + id1;
   }
 
+  static String getSingleId(String convId, String selfId) {
+    List<String> splitList = convId
+        .trimLeft()
+        .substring(
+          _singlePrefix.length,
+        )
+        .split(_separator);
+    if (splitList.length == 2) {
+      if (splitList[0] == selfId) {
+        return splitList[1];
+      }
+      return splitList[0];
+    }
+    return '';
+  }
+
+  static bool isSingleConv(String convId) {
+    return convId.startsWith(_singlePrefix);
+  }
+
   static String groupConvId(String id) {
     return _groupPrefix + id;
+  }
+
+  static String getGroupId(String convId) {
+    return convId.trimLeft().substring(_groupPrefix.length);
+  }
+
+  static bool isGroupConv(String convId) {
+    return convId.startsWith(_groupPrefix);
   }
 
   static List<String> generateSeqList(int minSeq, int maxSeq) {
@@ -30,8 +58,8 @@ class SDKTool {
     });
   }
 
-  static List<int> utf8Encode(String content) {
-    return utf8.encode(content);
+  static List<int> utf8Encode(String value) {
+    return utf8.encode(value);
   }
 
   static String utf8Decode(List<int> bytes) {
@@ -43,16 +71,19 @@ class SDKTool {
     required String iv,
     required String value,
   }) {
-    Encrypter encrypter = Encrypter(AES(
-      Key.fromUtf8(key),
-      mode: AESMode.cbc,
-      padding: "PKCS7",
-    ));
-    Encrypted encrypted = encrypter.encrypt(
-      value,
-      iv: IV.fromUtf8(iv),
-    );
-    return encrypted.bytes;
+    try {
+      Encrypter encrypter = Encrypter(AES(
+        Key.fromUtf8(key),
+        mode: AESMode.cbc,
+        padding: "PKCS7",
+      ));
+      Encrypted encrypted = encrypter.encrypt(
+        value,
+        iv: IV.fromUtf8(iv),
+      );
+      return encrypted.bytes;
+    } catch (_) {}
+    return utf8Encode(value);
   }
 
   static String aesDecode({
@@ -60,15 +91,18 @@ class SDKTool {
     required String iv,
     required List<int> bytes,
   }) {
-    Encrypter encrypter = Encrypter(AES(
-      Key.fromUtf8(key),
-      mode: AESMode.cbc,
-      padding: "PKCS7",
-    ));
-    String source = encrypter.decrypt(
-      Encrypted(Uint8List.fromList(bytes)),
-      iv: IV.fromUtf8(iv),
-    );
-    return source;
+    try {
+      Encrypter encrypter = Encrypter(AES(
+        Key.fromUtf8(key),
+        mode: AESMode.cbc,
+        padding: "PKCS7",
+      ));
+      String source = encrypter.decrypt(
+        Encrypted(Uint8List.fromList(bytes)),
+        iv: IV.fromUtf8(iv),
+      );
+      return source;
+    } catch (_) {}
+    return utf8Decode(bytes);
   }
 }

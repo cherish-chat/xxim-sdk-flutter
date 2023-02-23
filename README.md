@@ -20,35 +20,35 @@
 
      XXIMSDK sdk = XXIMSDK();
      sdk.init(
-       params: Params(
+       requestTimeout: const Duration(seconds: 10),
+       cxnParams: CxnParams(
          deviceModel: "",
          deviceId: "",
          osVersion: "",
          platform: "",
          appVersion: "",
          language: "",
+         networkUsed: "",
+         ext: utf8.encode(""),
        ),
        autoPullTime: const Duration(seconds: 20),
        pullMsgCount: 200,
        isarSchemas: [],
-       isarMaxSizeMiB: 2048,
+       isarMaxSizeMiB: Isar.defaultMaxSizeMiB,
        isarDirectory: "",
        isarInspector: false,
+       connectListener: ConnectListener(
+         onConnecting: () {},
+         onSuccess: () {},
+         onClose: (code, error) {},
+       ),
        subscribeCallback: SubscribeCallback(
-         onConvIdList: () async {
-           return [];
-         },
-         onConvAESParams: (convIdList) async {
-           return {};
+         onConvParams: () async {
+           return {"": const AesParams(key: "", iv: "")};
          },
        ),
        isarListener: IsarListener(
          onCreate: (isar) {},
-       ),
-       connectListener: ConnectListener(
-         onConnecting: () {},
-         onSuccess: () {},
-         onClose: ({error}) {},
        ),
        pullListener: PullListener(
          onStart: () {},
@@ -61,7 +61,7 @@
          onReceive: (msgModelList) {},
        ),
        noticeListener: NoticeListener(
-         onReceive: (noticeModelList) async {
+         onReceive: (noticeModel) async {
            return true;
          },
        ),
@@ -70,32 +70,9 @@
        ),
      );
 
-## 登录
-
-     sdk.login(
-       apiUrl: "",
-       wsUrl: "",
-       token: "",
-       userId: "",
-       networkUsed: "",
-       isarName: "",
-       convIdList: [],
-     );
-
-## 登出
-
-     sdk.logout();
-
 ## 连接
 
-     sdk.connect(
-       apiUrl: "",
-       wsUrl: "",
-       token: "",
-       userId: "",
-       networkUsed: "",
-       convIdList: [],
-     );
+     sdk.connect("");
 
 ## 断连
 
@@ -105,9 +82,19 @@
 
      sdk.isConnect();
 
-## 修改语言
+## 设置连接参数
 
-     sdk.setLanguage("");
+     sdk.setCxnParams(cxnParams);
+
+## 设置用户参数
+
+     sdk.setUserParams(
+       userId: "",
+       token: "",
+       ext: utf8.encode(""),
+       isarName: "",
+       convIdList: [],
+     );
 
 ## 打开拉取订阅
 
@@ -118,6 +105,13 @@
 ## 关闭拉取订阅
 
      sdk.closePullSubscribe();
+
+## 自定义请求
+
+     List<int>? resp = await sdk.customRequest(
+       method: "",
+       bytes: [],
+     );
 
 ## 会话管理
 
@@ -195,6 +189,9 @@
 
      List<MsgModel> msgList = await sdk.msgManager.getMsgList(
        convId: "",
+       contentType: ContentType.text,
+       maxSeq: null,
+       size: 100,
      );
 
 ### 获取首个消息
@@ -219,7 +216,6 @@
 
      MsgModel? msgModel = await sdk.msgManager.pullCloudMsg(
        clientMsgId: "",
-       push: true ?? false,
      );
 
 ### 发送正在输入
@@ -232,24 +228,13 @@
        ext: "",
      );
 
-### 发送已读消息
+### 发送提示消息
 
-     bool status = await sdk.msgManager.sendRead(
+     bool status = await sdk.msgManager.sendTip(
        convId: "",
-       content: ReadContent(
-         seq: 0,
-       ),
-       storageForServer: true ?? false,
-       storageForClient: true ?? false,
-       ext: "",
-     );
-
-### 发送撤回消息
-
-     bool status = await sdk.msgManager.sendRevoke(
-       clientMsgId: "",
-       content: RevokeContent(
-         content: "",
+       content: TipContent(
+         tip: "",
+         ext: "",
        ),
        ext: "",
      );
@@ -266,7 +251,7 @@
      MsgModel msgModel = await sdk.msgManager.createMerge(...);
      MsgModel msgModel = await sdk.msgManager.createEmoji(...);
      MsgModel msgModel = await sdk.msgManager.createCommand(...);
-     MsgModel msgModel = await sdk.msgManager.createRichTxt(...);
+     MsgModel msgModel = await sdk.msgManager.createRichText(...);
      MsgModel msgModel = await sdk.msgManager.createMarkdown(...);
      MsgModel msgModel = await sdk.msgManager.createCustom(...);
 
@@ -278,7 +263,32 @@
        deliverAfter: 0,
      );
 
-### 更新消息
+### 发送已读消息
+
+      bool status = await sdk.msgManager.sendReadMsg(
+        content: ReadContent(
+         convId: "",
+         seq: 0,
+       ),
+      );
+
+### 发送撤回消息
+
+      bool status = await sdk.msgManager.sendRevokeMsg(
+        clientMsgId: "",
+        content: TipContent(
+          tip: "",
+          ext: "",
+        ),
+      );
+
+### 发送编辑消息
+
+      bool status = await sdk.msgManager.sendEditMsg(
+        msgModel: msgModel,
+      );
+
+### 更新插入消息
 
      sdk.msgManager.upsertMsg(
        msgModel: msgModel,
@@ -303,17 +313,19 @@
 
      List<NoticeModel> noticeList = await sdk.noticeManager.getNoticeList(
        convId: "",
+       offset: 0,
+       limit: 10,
      );
 
 ### 获取单条通知
 
-     NoticeModel? noticeModel = await sdk.noticeManager.getSingleMsg(
+     NoticeModel? noticeModel = await sdk.noticeManager.getSingleNotice(
        noticeId: "",
      );
 
 ### 获取多条通知
 
-     List<NoticeModel> noticeList = await sdk.noticeManager.getMultipleMsg(
+     List<NoticeModel> noticeList = await sdk.noticeManager.getMultipleNotice(
        noticeIdList: [],
      );
 

@@ -1,8 +1,8 @@
-class AESParams {
+class AesParams {
   final String key;
   final String iv;
 
-  const AESParams({
+  const AesParams({
     required this.key,
     required this.iv,
   });

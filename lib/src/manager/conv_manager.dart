@@ -1,5 +1,4 @@
 import 'package:isar/isar.dart';
-import 'package:xxim_sdk_flutter/src/common/content_type.dart';
 import 'package:xxim_sdk_flutter/src/common/conv_type.dart';
 import 'package:xxim_sdk_flutter/src/manager/msg_manager.dart';
 import 'package:xxim_sdk_flutter/src/manager/notice_manager.dart';
@@ -41,7 +40,8 @@ class ConvManager {
       }
     }
     if (noticeIdList.isNotEmpty) {
-      List<NoticeModel> noticeModelList = await _noticeManager.getMultipleMsg(
+      List<NoticeModel> noticeModelList =
+          await _noticeManager.getMultipleNotice(
         noticeIdList: noticeIdList,
       );
       for (NoticeModel noticeModel in noticeModelList) {
@@ -98,7 +98,7 @@ class ConvManager {
       );
     }
     if (convModel.noticeId != null) {
-      convModel.noticeModel = await _noticeManager.getSingleMsg(
+      convModel.noticeModel = await _noticeManager.getSingleNotice(
         noticeId: convModel.noticeId!,
       );
     }
@@ -108,27 +108,31 @@ class ConvManager {
   /// 设置会话已读
   Future setConvRead({
     required String convId,
+    bool isSync = true,
   }) async {
     ConvModel? convModel = await _sdkManager
         .convModels()
         .filter()
-        .convIdEqualTo(convId)
+        .convIdEqualTo(
+          convId,
+        )
         .findFirst();
     if (convModel == null) return;
-    if (convModel.unreadCount == 0) return;
-    convModel.unreadCount = 0;
-    await _sdkManager.isar.writeTxn(() async {
-      await _sdkManager.convModels().put(convModel);
-    });
-    _sdkManager.calculateUnreadCount();
-    if (convModel.convType != ConvType.msg) return;
+    if (convModel.unreadCount != 0) {
+      convModel.unreadCount = 0;
+      await _sdkManager.isar.writeTxn(() async {
+        await _sdkManager.convModels().put(convModel);
+      });
+      _sdkManager.calculateUnreadCount();
+    }
+    if (convModel.convType != ConvType.msg && !isSync) return;
     MsgModel? msgModel = await _msgManager.getFirstMsg(
       convId: convId,
     );
     if (msgModel == null) return;
-    await _msgManager.sendRead(
-      convId: convId,
+    await _msgManager.sendReadMsg(
       content: ReadContent(
+        convId: convId,
         seq: msgModel.seq,
       ),
     );
@@ -141,15 +145,15 @@ class ConvManager {
     ConvModel? convModel = await _sdkManager
         .convModels()
         .filter()
-        .convIdEqualTo(convId)
+        .convIdEqualTo(
+          convId,
+        )
         .findFirst();
     if (convModel == null) return;
     MsgModel? msgModel = await _sdkManager
         .msgModels()
         .filter()
         .convIdEqualTo(convId)
-        .and()
-        .contentTypeBetween(ContentType.text, ContentType.custom)
         .and()
         .deletedEqualTo(false)
         .sortBySeqDesc()
@@ -171,7 +175,9 @@ class ConvManager {
     ConvModel? convModel = await _sdkManager
         .convModels()
         .filter()
-        .convIdEqualTo(convId)
+        .convIdEqualTo(
+          convId,
+        )
         .findFirst();
     if (convModel == null) return;
     convModel.clientMsgId = null;
@@ -190,7 +196,9 @@ class ConvManager {
     ConvModel? convModel = await _sdkManager
         .convModels()
         .filter()
-        .convIdEqualTo(convId)
+        .convIdEqualTo(
+          convId,
+        )
         .findFirst();
     if (convModel == null) return;
     NoticeModel? noticeModel = await _sdkManager
@@ -218,7 +226,9 @@ class ConvManager {
     ConvModel? convModel = await _sdkManager
         .convModels()
         .filter()
-        .convIdEqualTo(convId)
+        .convIdEqualTo(
+          convId,
+        )
         .findFirst();
     if (convModel == null) return;
     convModel.noticeId = null;
@@ -238,7 +248,9 @@ class ConvManager {
     ConvModel? convModel = await _sdkManager
         .convModels()
         .filter()
-        .convIdEqualTo(convId)
+        .convIdEqualTo(
+          convId,
+        )
         .findFirst();
     if (convModel == null) return;
     convModel.draftModel = draftModel;
@@ -255,7 +267,9 @@ class ConvManager {
     ConvModel? convModel = await _sdkManager
         .convModels()
         .filter()
-        .convIdEqualTo(convId)
+        .convIdEqualTo(
+          convId,
+        )
         .findFirst();
     if (convModel == null) return;
     convModel.unreadCount = 0;
@@ -274,7 +288,9 @@ class ConvManager {
     ConvModel? convModel = await _sdkManager
         .convModels()
         .filter()
-        .convIdEqualTo(convId)
+        .convIdEqualTo(
+          convId,
+        )
         .findFirst();
     if (convModel == null) return;
     if (clear) {

@@ -10,8 +10,6 @@ class NoticeModel {
 
   @Index()
   String convId;
-  int unreadCount;
-  bool unreadAbsolute;
   @Index()
   String noticeId;
   int createTime;
@@ -24,8 +22,6 @@ class NoticeModel {
 
   NoticeModel({
     required this.convId,
-    required this.unreadCount,
-    required this.unreadAbsolute,
     required this.noticeId,
     required this.createTime,
     required this.title,
@@ -39,8 +35,6 @@ class NoticeModel {
   static NoticeModel fromProto(NoticeData noticeData) {
     return NoticeModel(
       convId: noticeData.convId,
-      unreadCount: noticeData.unreadCount,
-      unreadAbsolute: noticeData.unreadAbsolute,
       noticeId: noticeData.noticeId,
       createTime: int.parse(noticeData.createTime),
       title: noticeData.title,
@@ -55,20 +49,17 @@ class NoticeModel {
 @Embedded()
 class NoticeOptionsModel {
   bool? storageForClient;
-  bool? updateConvMsg;
-  bool? onlinePushOnce;
+  bool? updateConvNotice;
 
   NoticeOptionsModel({
     this.storageForClient,
-    this.updateConvMsg,
-    this.onlinePushOnce,
+    this.updateConvNotice,
   });
 
   static NoticeOptionsModel fromProto(NoticeData_Options options) {
     return NoticeOptionsModel(
       storageForClient: options.storageForClient,
-      updateConvMsg: options.updateConvMsg,
-      onlinePushOnce: options.onlinePushOnce,
+      updateConvNotice: options.updateConvNotice,
     );
   }
 }

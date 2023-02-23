@@ -17,7 +17,7 @@ class MsgManager {
     required String convId,
     int? contentType,
     int? maxSeq,
-    int size = 50,
+    int size = 100,
   }) async {
     bool includeUpper = maxSeq == null;
     if (maxSeq == null) {
@@ -38,7 +38,6 @@ class MsgManager {
       }
     }
     if (maxSeq == null) return [];
-    if (maxSeq == 1) maxSeq = 0;
     RecordModel? recordModel = await _sdkManager
         .recordModels()
         .filter()
@@ -77,7 +76,6 @@ class MsgManager {
               seqList: seqList,
             ),
           ],
-          push: false,
         );
       }
     }
@@ -172,11 +170,9 @@ class MsgManager {
   /// 拉取云端消息
   Future<MsgModel?> pullCloudMsg({
     required String clientMsgId,
-    bool push = false,
   }) {
     return _sdkManager.pullMsgDataById(
       clientMsgId: clientMsgId,
-      push: push,
     );
   }
 
@@ -191,7 +187,7 @@ class MsgManager {
         await _sdkManager.createMsg(
           convId: convId,
           atUsers: [],
-          contentType: ContentType.typing,
+          contentType: MsgContentType.typing,
           content: content.toJson(),
           options: MsgOptionsModel(
             storageForServer: false,
@@ -212,12 +208,10 @@ class MsgManager {
     );
   }
 
-  /// 发送已读消息
-  Future<bool> sendRead({
+  /// 发送提示消息
+  Future<bool> sendTip({
     required String convId,
-    required ReadContent content,
-    bool storageForServer = true,
-    bool storageForClient = true,
+    required TipContent content,
     String ext = "",
   }) async {
     return sendMsgList(
@@ -225,11 +219,11 @@ class MsgManager {
         await _sdkManager.createMsg(
           convId: convId,
           atUsers: [],
-          contentType: ContentType.read,
+          contentType: MsgContentType.tip,
           content: content.toJson(),
           options: MsgOptionsModel(
-            storageForServer: storageForServer,
-            storageForClient: storageForClient,
+            storageForServer: true,
+            storageForClient: true,
             needDecrypt: false,
             offlinePush: false,
             updateConvMsg: false,
@@ -242,31 +236,6 @@ class MsgManager {
           ),
           ext: ext,
         ),
-      ],
-    );
-  }
-
-  /// 发送撤回消息
-  Future<bool> sendRevoke({
-    required String clientMsgId,
-    required RevokeContent content,
-    String ext = "",
-  }) async {
-    MsgModel? msgModel = await getSingleMsg(
-      clientMsgId: clientMsgId,
-    );
-    if (msgModel == null) return false;
-    if (content.contentType == null && content.content == null) {
-      content.contentType = msgModel.contentType;
-      content.content = msgModel.content;
-    }
-    msgModel.contentType = ContentType.revoke;
-    msgModel.content = content.toJson();
-    msgModel.offlinePush.content = content.content;
-    msgModel.ext = ext;
-    return sendMsgList(
-      msgModelList: [
-        msgModel,
       ],
     );
   }
@@ -285,13 +254,13 @@ class MsgManager {
       senderInfo: senderInfo,
       convId: convId,
       atUsers: atUsers,
-      contentType: ContentType.text,
+      contentType: MsgContentType.text,
       content: text,
       options: options ??
           MsgOptionsModel(
             storageForServer: true,
             storageForClient: true,
-            needDecrypt: true,
+            needDecrypt: false,
             offlinePush: true,
             updateConvMsg: true,
             updateUnreadCount: true,
@@ -315,13 +284,13 @@ class MsgManager {
       senderInfo: senderInfo,
       convId: convId,
       atUsers: atUsers,
-      contentType: ContentType.image,
+      contentType: MsgContentType.image,
       content: content.toJson(),
       options: options ??
           MsgOptionsModel(
             storageForServer: true,
             storageForClient: true,
-            needDecrypt: true,
+            needDecrypt: false,
             offlinePush: true,
             updateConvMsg: true,
             updateUnreadCount: true,
@@ -345,13 +314,13 @@ class MsgManager {
       senderInfo: senderInfo,
       convId: convId,
       atUsers: atUsers,
-      contentType: ContentType.audio,
+      contentType: MsgContentType.audio,
       content: content.toJson(),
       options: options ??
           MsgOptionsModel(
             storageForServer: true,
             storageForClient: true,
-            needDecrypt: true,
+            needDecrypt: false,
             offlinePush: true,
             updateConvMsg: true,
             updateUnreadCount: true,
@@ -375,13 +344,13 @@ class MsgManager {
       senderInfo: senderInfo,
       convId: convId,
       atUsers: atUsers,
-      contentType: ContentType.video,
+      contentType: MsgContentType.video,
       content: content.toJson(),
       options: options ??
           MsgOptionsModel(
             storageForServer: true,
             storageForClient: true,
-            needDecrypt: true,
+            needDecrypt: false,
             offlinePush: true,
             updateConvMsg: true,
             updateUnreadCount: true,
@@ -405,13 +374,13 @@ class MsgManager {
       senderInfo: senderInfo,
       convId: convId,
       atUsers: atUsers,
-      contentType: ContentType.file,
+      contentType: MsgContentType.file,
       content: content.toJson(),
       options: options ??
           MsgOptionsModel(
             storageForServer: true,
             storageForClient: true,
-            needDecrypt: true,
+            needDecrypt: false,
             offlinePush: true,
             updateConvMsg: true,
             updateUnreadCount: true,
@@ -435,13 +404,13 @@ class MsgManager {
       senderInfo: senderInfo,
       convId: convId,
       atUsers: atUsers,
-      contentType: ContentType.location,
+      contentType: MsgContentType.location,
       content: content.toJson(),
       options: options ??
           MsgOptionsModel(
             storageForServer: true,
             storageForClient: true,
-            needDecrypt: true,
+            needDecrypt: false,
             offlinePush: true,
             updateConvMsg: true,
             updateUnreadCount: true,
@@ -465,13 +434,13 @@ class MsgManager {
       senderInfo: senderInfo,
       convId: convId,
       atUsers: atUsers,
-      contentType: ContentType.card,
+      contentType: MsgContentType.card,
       content: content.toJson(),
       options: options ??
           MsgOptionsModel(
             storageForServer: true,
             storageForClient: true,
-            needDecrypt: true,
+            needDecrypt: false,
             offlinePush: true,
             updateConvMsg: true,
             updateUnreadCount: true,
@@ -495,13 +464,13 @@ class MsgManager {
       senderInfo: senderInfo,
       convId: convId,
       atUsers: atUsers,
-      contentType: ContentType.merge,
+      contentType: MsgContentType.merge,
       content: content.toJson(),
       options: options ??
           MsgOptionsModel(
             storageForServer: true,
             storageForClient: true,
-            needDecrypt: true,
+            needDecrypt: false,
             offlinePush: true,
             updateConvMsg: true,
             updateUnreadCount: true,
@@ -525,13 +494,13 @@ class MsgManager {
       senderInfo: senderInfo,
       convId: convId,
       atUsers: atUsers,
-      contentType: ContentType.emoji,
+      contentType: MsgContentType.emoji,
       content: content.toJson(),
       options: options ??
           MsgOptionsModel(
             storageForServer: true,
             storageForClient: true,
-            needDecrypt: true,
+            needDecrypt: false,
             offlinePush: true,
             updateConvMsg: true,
             updateUnreadCount: true,
@@ -555,13 +524,13 @@ class MsgManager {
       senderInfo: senderInfo,
       convId: convId,
       atUsers: atUsers,
-      contentType: ContentType.command,
+      contentType: MsgContentType.command,
       content: content.toJson(),
       options: options ??
           MsgOptionsModel(
             storageForServer: true,
             storageForClient: true,
-            needDecrypt: true,
+            needDecrypt: false,
             offlinePush: true,
             updateConvMsg: true,
             updateUnreadCount: true,
@@ -572,11 +541,11 @@ class MsgManager {
   }
 
   /// 创建富文本消息
-  Future<MsgModel> createRichTxt({
+  Future<MsgModel> createRichText({
     String senderInfo = "",
     required String convId,
     List<String> atUsers = const [],
-    required RichTxtContent content,
+    required RichTextContent content,
     MsgOptionsModel? options,
     required MsgOfflinePushModel offlinePush,
     String ext = "",
@@ -585,13 +554,13 @@ class MsgManager {
       senderInfo: senderInfo,
       convId: convId,
       atUsers: atUsers,
-      contentType: ContentType.richTxt,
+      contentType: MsgContentType.richText,
       content: content.toJson(),
       options: options ??
           MsgOptionsModel(
             storageForServer: true,
             storageForClient: true,
-            needDecrypt: true,
+            needDecrypt: false,
             offlinePush: true,
             updateConvMsg: true,
             updateUnreadCount: true,
@@ -615,13 +584,13 @@ class MsgManager {
       senderInfo: senderInfo,
       convId: convId,
       atUsers: atUsers,
-      contentType: ContentType.markdown,
+      contentType: MsgContentType.markdown,
       content: content.toJson(),
       options: options ??
           MsgOptionsModel(
             storageForServer: true,
             storageForClient: true,
-            needDecrypt: true,
+            needDecrypt: false,
             offlinePush: true,
             updateConvMsg: true,
             updateUnreadCount: true,
@@ -645,13 +614,13 @@ class MsgManager {
       senderInfo: senderInfo,
       convId: convId,
       atUsers: atUsers,
-      contentType: ContentType.custom,
+      contentType: MsgContentType.custom,
       content: content.toJson(),
       options: options ??
           MsgOptionsModel(
             storageForServer: true,
             storageForClient: true,
-            needDecrypt: true,
+            needDecrypt: false,
             offlinePush: true,
             updateConvMsg: true,
             updateUnreadCount: true,
@@ -672,6 +641,34 @@ class MsgManager {
       msgModelList: msgModelList,
       deliverAfter: deliverAfter,
     );
+  }
+
+  /// 发送已读消息
+  Future<bool> sendReadMsg({
+    required ReadContent content,
+  }) {
+    return _sdkManager.sendReadMsg(content);
+  }
+
+  /// 发送撤回消息
+  Future<bool> sendRevokeMsg({
+    required String clientMsgId,
+    required TipContent content,
+  }) async {
+    MsgModel? msgModel = await getSingleMsg(
+      clientMsgId: clientMsgId,
+    );
+    if (msgModel == null || msgModel.serverMsgId == null) return false;
+    msgModel.contentType = MsgContentType.tip;
+    msgModel.content = content.toJson();
+    return sendEditMsg(msgModel: msgModel);
+  }
+
+  /// 发送编辑消息
+  Future<bool> sendEditMsg({
+    required MsgModel msgModel,
+  }) {
+    return _sdkManager.sendEditMsg(msgModel);
   }
 
   /// 更新消息
@@ -695,7 +692,7 @@ class MsgManager {
         .clientMsgIdEqualTo(clientMsgId)
         .findFirst();
     if (msgModel == null) return;
-    msgModel.contentType = ContentType.unknown;
+    msgModel.contentType = MsgContentType.unknown;
     msgModel.content = "";
     msgModel.deleted = true;
     await _sdkManager.isar.writeTxn(() async {
@@ -717,7 +714,7 @@ class MsgManager {
     if (list.isEmpty) return;
     await _sdkManager.isar.writeTxn(() async {
       for (MsgModel msgModel in list) {
-        msgModel.contentType = ContentType.unknown;
+        msgModel.contentType = MsgContentType.unknown;
         msgModel.content = "";
         msgModel.deleted = true;
       }
