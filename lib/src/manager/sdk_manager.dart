@@ -392,6 +392,10 @@ class SDKManager {
           model.serverTime = msgModel.serverTime;
           updated = true;
         }
+        if (model.senderInfo != msgModel.senderInfo) {
+          model.senderInfo = msgModel.senderInfo;
+          updated = true;
+        }
         if (model.contentType != msgModel.contentType) {
           model.contentType = msgModel.contentType;
           updated = true;
@@ -406,6 +410,10 @@ class SDKManager {
         }
         if (model.ext != msgModel.ext) {
           model.ext = msgModel.ext;
+          updated = true;
+        }
+        if (model.sendStatus != SendStatus.success) {
+          model.sendStatus = SendStatus.success;
           updated = true;
         }
       } else {
@@ -655,14 +663,23 @@ class SDKManager {
     required List<MsgModel> msgModelList,
     required int deliverAfter,
   }) async {
+    if (senderInfo != null) {
+      await isar.writeTxn((isar) async {
+        List<MsgModel> modelList = [];
+        for (MsgModel msgModel in msgModelList) {
+          msgModel.senderInfo = senderInfo;
+          if (msgModel.options.storageForClient) {
+            modelList.add(msgModel);
+          }
+        }
+        if (modelList.isNotEmpty) await msgModels().putAll(modelList);
+      });
+    }
     Map<String, AesParams> convParams = await subscribeCallback.convParams();
     SendMsgListResp? resp = await xximCore.sendMsgList(
       reqId: SDKTool.getUUId(),
       req: SendMsgListReq(
         msgDataList: msgModelList.map((msgModel) {
-          if (senderInfo != null) {
-            msgModel.senderInfo = senderInfo;
-          }
           AesParams aesParams = convParams[msgModel.convId]!;
           return MsgData(
             clientMsgId: msgModel.clientMsgId,
@@ -700,27 +717,30 @@ class SDKManager {
         deliverAfter: deliverAfter,
       ),
     );
-    msgModelList = await msgModels()
-        .filter()
-        .repeat(
-          msgModelList,
-          (q, MsgModel element) => q.clientMsgIdEqualTo(element.clientMsgId),
-        )
-        .findAll();
-    for (MsgModel msgModel in msgModelList) {
-      if (senderInfo != null) {
-        msgModel.senderInfo = senderInfo;
+    await isar.writeTxn((isar) async {
+      List<MsgModel> modelList = await msgModels()
+          .filter()
+          .repeat(
+            msgModelList,
+            (q, MsgModel element) => q.clientMsgIdEqualTo(element.clientMsgId),
+          )
+          .findAll();
+      for (MsgModel msgModel in msgModelList) {
+        int index = modelList.indexWhere((item) {
+          return item.clientMsgId == msgModel.clientMsgId;
+        });
+        if (index != -1) {
+          msgModel = modelList[index];
+        }
+        if (resp != null) {
+          msgModel.sendStatus = SendStatus.success;
+        } else {
+          msgModel.sendStatus = SendStatus.failed;
+        }
       }
-      if (resp != null) {
-        msgModel.sendStatus = SendStatus.success;
-      } else {
-        msgModel.sendStatus = SendStatus.failed;
-      }
-      await upsertMsg(
-        msgModel: msgModel,
-        includeMsgConv: true,
-      );
-    }
+      if (modelList.isNotEmpty) await msgModels().putAll(modelList);
+      await _updateMsgConvList(msgModelList);
+    });
     return resp != null;
   }
 
@@ -745,6 +765,7 @@ class SDKManager {
     AesParams aesParams = convParams[msgModel.convId]!;
     MsgData msgData = MsgData(
       clientMsgId: msgModel.clientMsgId,
+      serverMsgId: msgModel.serverMsgId,
       clientTime: msgModel.clientTime.toString(),
       serverTime: msgModel.serverTime.toString(),
       senderId: msgModel.senderId,
