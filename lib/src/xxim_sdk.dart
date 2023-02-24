@@ -29,7 +29,7 @@ class XXIMSDK {
     String rsaPublicKey = "",
     required CxnParams cxnParams,
     Duration autoPullTime = const Duration(seconds: 20),
-    int pullMsgCount = 200,
+    int pullMsgCount = 50,
     List<CollectionSchema> isarSchemas = const [],
     bool isarInspector = false,
     required ConnectListener connectListener,
@@ -130,6 +130,7 @@ class XXIMSDK {
     }
     bool? status = await _xximCore?.setCxnParams(
       reqId: SDKTool.getUUId(),
+      packageId: packageId,
       rsaPublicKey: rsaPublicKey,
       cxnParams: cxnParams,
     );

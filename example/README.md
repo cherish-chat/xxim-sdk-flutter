@@ -20,7 +20,9 @@
 
      XXIMSDK sdk = XXIMSDK();
      sdk.init(
+       directory: "",
        requestTimeout: const Duration(seconds: 10),
+       rsaPublicKey: "",
        cxnParams: CxnParams(
          deviceModel: "",
          deviceId: "",
@@ -32,10 +34,9 @@
          ext: utf8.encode(""),
        ),
        autoPullTime: const Duration(seconds: 20),
-       pullMsgCount: 200,
+       pullMsgCount: 50,
        isarSchemas: [],
        isarMaxSizeMiB: Isar.defaultMaxSizeMiB,
-       isarDirectory: "",
        isarInspector: false,
        connectListener: ConnectListener(
          onConnecting: () {},
@@ -84,7 +85,10 @@
 
 ## 设置连接参数
 
-     sdk.setCxnParams(cxnParams);
+     sdk.setCxnParams(
+       rsaPublicKey: "",
+       cxnParams: cxnParams,
+     );
 
 ## 设置用户参数
 
@@ -267,7 +271,6 @@
 
      bool status = await sdk.msgManager.sendReadMsg(
        content: ReadContent(
-        senderId: "",
         convId: "",
         seq: 0,
       ),
@@ -286,15 +289,7 @@
 ### 发送编辑消息
 
      bool status = await sdk.msgManager.sendEditMsg(
-       needDecrypt: false,
-       content: EditContent(
-         senderId: "",
-         convId: "",
-         clientMsgId: "",
-         serverMsgId: "",
-         contentType: MsgContentType.text,
-         content: "",
-       ),
+       msgModel: msgModel,
      );
 
 ### 更新插入消息
