@@ -3,7 +3,6 @@ import 'package:isar/isar.dart';
 import 'package:xxim_core_flutter/xxim_core_flutter.dart';
 import 'package:xxim_sdk_flutter/src/callback/subscribe_callback.dart';
 import 'package:xxim_sdk_flutter/src/common/aes_params.dart';
-import 'package:xxim_sdk_flutter/src/common/cxn_params.dart';
 import 'package:xxim_sdk_flutter/src/listener/conv_listener.dart';
 import 'package:xxim_sdk_flutter/src/listener/isar_listener.dart';
 import 'package:xxim_sdk_flutter/src/listener/msg_listener.dart';
@@ -27,6 +26,7 @@ class XXIMSDK {
   void init({
     required String? directory,
     Duration requestTimeout = const Duration(seconds: 10),
+    String rsaPublicKey = "",
     required CxnParams cxnParams,
     Duration autoPullTime = const Duration(seconds: 20),
     int pullMsgCount = 200,
@@ -52,7 +52,10 @@ class XXIMSDK {
           onSuccess: () async {
             await Future.doWhile(() async {
               await Future.delayed(const Duration(milliseconds: 5));
-              return !(await setCxnParams(cxnParams: cxnParams));
+              return !(await setCxnParams(
+                rsaPublicKey: rsaPublicKey,
+                cxnParams: cxnParams,
+              ));
             });
             connectListener.success();
           },
@@ -110,6 +113,7 @@ class XXIMSDK {
 
   /// 设置连接参数
   Future<bool> setCxnParams({
+    String rsaPublicKey = "",
     required CxnParams cxnParams,
   }) async {
     String hiveName = "xxim";
@@ -124,21 +128,12 @@ class XXIMSDK {
       packageId = SDKTool.getUUId();
       box.put("packageId", packageId);
     }
-    SetCxnParamsResp? resp = await _xximCore?.setCxnParams(
+    bool? status = await _xximCore?.setCxnParams(
       reqId: SDKTool.getUUId(),
-      req: SetCxnParamsReq(
-        packageId: packageId,
-        platform: cxnParams.platform,
-        deviceId: cxnParams.deviceId,
-        deviceModel: cxnParams.deviceModel,
-        osVersion: cxnParams.osVersion,
-        appVersion: cxnParams.appVersion,
-        language: cxnParams.language,
-        networkUsed: cxnParams.networkUsed,
-        ext: cxnParams.ext,
-      ),
+      rsaPublicKey: rsaPublicKey,
+      cxnParams: cxnParams,
     );
-    return resp != null;
+    return status == true;
   }
 
   /// 设置用户参数
