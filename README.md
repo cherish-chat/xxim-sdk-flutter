@@ -20,6 +20,7 @@
 
      XXIMSDK sdk = XXIMSDK();
      sdk.init(
+       directory: "",
        requestTimeout: const Duration(seconds: 10),
        cxnParams: CxnParams(
          deviceModel: "",
@@ -32,10 +33,9 @@
          ext: utf8.encode(""),
        ),
        autoPullTime: const Duration(seconds: 20),
-       pullMsgCount: 200,
+       pullMsgCount: 50,
        isarSchemas: [],
        isarMaxSizeMiB: Isar.defaultMaxSizeMiB,
-       isarDirectory: "",
        isarInspector: false,
        connectListener: ConnectListener(
          onConnecting: () {},
@@ -84,7 +84,10 @@
 
 ## 设置连接参数
 
-     sdk.setCxnParams(cxnParams);
+     sdk.setCxnParams(
+       rsaPublicKey: "",
+       cxnParams: cxnParams,
+     );
 
 ## 设置用户参数
 
