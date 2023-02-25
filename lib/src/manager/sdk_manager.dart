@@ -721,6 +721,7 @@ class SDKManager {
       ),
     );
     await isar.writeTxn(() async {
+      int sendStatus = resp != null ? SendStatus.success : SendStatus.failed;
       List<MsgModel> modelList = await msgModels()
           .filter()
           .anyOf(
@@ -733,13 +734,9 @@ class SDKManager {
           return item.clientMsgId == msgModel.clientMsgId;
         });
         if (index != -1) {
-          msgModel = modelList[index];
+          modelList[index].sendStatus = sendStatus;
         }
-        if (resp != null) {
-          msgModel.sendStatus = SendStatus.success;
-        } else {
-          msgModel.sendStatus = SendStatus.failed;
-        }
+        msgModel.sendStatus = sendStatus;
       }
       if (modelList.isNotEmpty) await msgModels().putAll(modelList);
       await _updateMsgConvList(msgModelList);
