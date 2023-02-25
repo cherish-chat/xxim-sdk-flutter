@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'package:isar/isar.dart';
 import 'package:xxim_core_flutter/xxim_core_flutter.dart';
 import 'package:xxim_sdk_flutter/src/tool/sdk_tool.dart';
@@ -44,6 +45,33 @@ class NoticeModel {
       ext: SDKTool.utf8Decode(noticeData.ext),
     );
   }
+
+  static NoticeModel fromJson(String source) {
+    Map<String, dynamic> map = json.decode(source);
+    return NoticeModel(
+      convId: map["convId"],
+      noticeId: map["noticeId"],
+      createTime: map["createTime"],
+      title: map["title"],
+      contentType: map["contentType"],
+      content: map["content"],
+      options: NoticeOptionsModel.fromJson(map["options"]),
+      ext: map["ext"],
+    );
+  }
+
+  String toJson() {
+    return json.encode({
+      "convId": convId,
+      "noticeId": noticeId,
+      "createTime": createTime,
+      "title": title,
+      "contentType": contentType,
+      "content": content,
+      "options": options.toJson(),
+      "ext": ext,
+    });
+  }
 }
 
 @Embedded()
@@ -61,5 +89,20 @@ class NoticeOptionsModel {
       storageForClient: options.storageForClient,
       updateConvNotice: options.updateConvNotice,
     );
+  }
+
+  static NoticeOptionsModel fromJson(String source) {
+    Map<String, dynamic> map = json.decode(source);
+    return NoticeOptionsModel(
+      storageForClient: map["storageForClient"],
+      updateConvNotice: map["updateConvNotice"],
+    );
+  }
+
+  String toJson() {
+    return json.encode({
+      "storageForClient": storageForClient ?? false,
+      "updateConvNotice": updateConvNotice ?? false,
+    });
   }
 }

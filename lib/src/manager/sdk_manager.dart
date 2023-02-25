@@ -721,6 +721,7 @@ class SDKManager {
       ),
     );
     await isar.writeTxn(() async {
+      int sendStatus = resp != null ? SendStatus.success : SendStatus.failed;
       List<MsgModel> modelList = await msgModels()
           .filter()
           .anyOf(
@@ -733,13 +734,9 @@ class SDKManager {
           return item.clientMsgId == msgModel.clientMsgId;
         });
         if (index != -1) {
-          msgModel = modelList[index];
+          modelList[index].sendStatus = sendStatus;
         }
-        if (resp != null) {
-          msgModel.sendStatus = SendStatus.success;
-        } else {
-          msgModel.sendStatus = SendStatus.failed;
-        }
+        msgModel.sendStatus = sendStatus;
       }
       if (modelList.isNotEmpty) await msgModels().putAll(modelList);
       await _updateMsgConvList(msgModelList);
@@ -763,7 +760,7 @@ class SDKManager {
   }
 
   /// 发送编辑消息
-  Future<bool> sendEditMsg(MsgModel msgModel) async {
+  Future<MsgModel?> sendEditMsg(MsgModel msgModel) async {
     Map<String, AesParams> convParams = await subscribeCallback.convParams();
     AesParams aesParams = convParams[msgModel.convId]!;
     MsgData msgData = MsgData(
@@ -810,7 +807,14 @@ class SDKManager {
         noticeContent: msgData.writeToBuffer(),
       ),
     );
-    return resp != null;
+    if (resp != null) {
+      await upsertMsg(
+        msgModel: msgModel,
+        includeMsgConv: true,
+      );
+      return msgModel;
+    }
+    return null;
   }
 
   Future upsertMsg({

@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'package:isar/isar.dart';
 import 'package:xxim_core_flutter/xxim_core_flutter.dart';
 import 'package:xxim_sdk_flutter/src/common/aes_params.dart';
@@ -78,6 +79,45 @@ class MsgModel {
       ext: SDKTool.utf8Decode(msgData.ext),
     );
   }
+
+  static MsgModel fromJson(String source) {
+    Map<String, dynamic> map = json.decode(source);
+    return MsgModel(
+      clientMsgId: map["clientMsgId"],
+      serverMsgId: map["serverMsgId"],
+      clientTime: map["clientTime"],
+      serverTime: map["serverTime"],
+      senderId: map["senderId"],
+      senderInfo: map["senderInfo"],
+      convId: map["convId"],
+      atUsers: map["atUsers"].toString().split(","),
+      contentType: map["contentType"],
+      content: map["content"],
+      seq: map["seq"],
+      options: MsgOptionsModel.fromJson(map["options"]),
+      offlinePush: MsgOfflinePushModel.fromJson(map["offlinePush"]),
+      ext: map["ext"],
+    );
+  }
+
+  String toJson() {
+    return json.encode({
+      "clientMsgId": clientMsgId,
+      "serverMsgId": serverMsgId ?? "",
+      "clientTime": clientTime,
+      "serverTime": serverTime,
+      "senderId": senderId,
+      "senderInfo": senderInfo,
+      "convId": convId,
+      "atUsers": atUsers.join(","),
+      "contentType": contentType,
+      "content": content,
+      "seq": seq,
+      "options": options.toJson(),
+      "offlinePush": offlinePush.toJson(),
+      "ext": ext,
+    });
+  }
 }
 
 @Embedded()
@@ -108,6 +148,29 @@ class MsgOptionsModel {
       updateUnreadCount: options.updateUnreadCount,
     );
   }
+
+  static MsgOptionsModel fromJson(String source) {
+    Map<String, dynamic> map = json.decode(source);
+    return MsgOptionsModel(
+      storageForServer: map["storageForServer"],
+      storageForClient: map["storageForClient"],
+      needDecrypt: map["needDecrypt"],
+      offlinePush: map["offlinePush"],
+      updateConvMsg: map["updateConvMsg"],
+      updateUnreadCount: map["updateUnreadCount"],
+    );
+  }
+
+  String toJson() {
+    return json.encode({
+      "storageForServer": storageForServer ?? false,
+      "storageForClient": storageForClient ?? false,
+      "needDecrypt": needDecrypt ?? false,
+      "offlinePush": offlinePush ?? false,
+      "updateConvMsg": updateConvMsg ?? false,
+      "updateUnreadCount": updateUnreadCount ?? false,
+    });
+  }
 }
 
 @Embedded()
@@ -128,5 +191,22 @@ class MsgOfflinePushModel {
       content: offlinePush.content,
       payload: offlinePush.payload,
     );
+  }
+
+  static MsgOfflinePushModel fromJson(String source) {
+    Map<String, dynamic> map = json.decode(source);
+    return MsgOfflinePushModel(
+      title: map["title"],
+      content: map["content"],
+      payload: map["payload"],
+    );
+  }
+
+  String toJson() {
+    return json.encode({
+      "title": title ?? "",
+      "content": content ?? "",
+      "payload": payload ?? "",
+    });
   }
 }
