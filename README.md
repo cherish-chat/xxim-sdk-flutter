@@ -31,7 +31,9 @@
          appVersion: "",
          language: "",
          networkUsed: "",
-         ext: utf8.encode(""),
+         aesKey: "",
+         aesIv: "",
+         ext: "",
        ),
        autoPullTime: const Duration(seconds: 20),
        pullMsgCount: 50,
@@ -97,13 +99,13 @@
        token: "",
        ext: utf8.encode(""),
        isarName: "",
-       convIdList: [],
+       convParams: {},
      );
 
 ## 打开拉取订阅
 
      sdk.openPullSubscribe(
-       convIdList: [],
+       convParams: {},
      );
 
 ## 关闭拉取订阅
@@ -133,6 +135,7 @@
 
      sdk.convManager.setConvRead(
        convId: "",
+       isSync: true ?? false,
      );
 
 ### 更新会话消息
@@ -195,7 +198,7 @@
        convId: "",
        contentType: ContentType.text,
        maxSeq: null,
-       size: 100,
+       size: 25,
      );
 
 ### 获取首个消息
@@ -318,7 +321,7 @@
      List<NoticeModel> noticeList = await sdk.noticeManager.getNoticeList(
        convId: "",
        offset: 0,
-       limit: 10,
+       limit: 25,
      );
 
 ### 获取单条通知
