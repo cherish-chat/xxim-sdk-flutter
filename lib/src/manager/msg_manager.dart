@@ -17,7 +17,7 @@ class MsgManager {
     required String convId,
     int? contentType,
     int? maxSeq,
-    int size = 100,
+    int size = 25,
   }) async {
     bool includeUpper = maxSeq == null;
     if (maxSeq == null) {
