@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:flutter/foundation.dart';
 import 'package:isar/isar.dart';
 import 'package:xxim_core_flutter/xxim_core_flutter.dart';
 import 'package:xxim_sdk_flutter/src/callback/subscribe_callback.dart';
@@ -839,5 +840,23 @@ class SDKManager {
       if (modelList.isNotEmpty) await msgModels().putAll(modelList);
       if (includeMsgConv) await _updateMsgConvList(msgModelList);
     });
+  }
+
+  Future<T?> findFirst<T>({
+    required Query<T> query,
+  }) async {
+    if (kIsWeb) {
+      return query.findFirst();
+    }
+    return query.findFirstSync();
+  }
+
+  Future<List<T>> findAll<T>({
+    required Query<T> query,
+  }) async {
+    if (kIsWeb) {
+      return query.findAll();
+    }
+    return query.findAllSync();
   }
 }
