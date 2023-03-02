@@ -50,6 +50,7 @@ class TipContent {
 class ImageContent {
   String imageName;
   String imagePath;
+  List<int> imageBytes;
   String imageUrl;
   int width;
   int height;
@@ -58,6 +59,7 @@ class ImageContent {
   ImageContent({
     required this.imageName,
     required this.imagePath,
+    required this.imageBytes,
     required this.imageUrl,
     this.width = 0,
     this.height = 0,
@@ -69,6 +71,7 @@ class ImageContent {
     return ImageContent(
       imageName: map["imageName"],
       imagePath: map["imagePath"],
+      imageBytes: (map["imageBytes"] ?? []).cast<int>(),
       imageUrl: map["imageUrl"],
       width: map["width"],
       height: map["height"],
@@ -80,6 +83,7 @@ class ImageContent {
     return json.encode({
       "imageName": imageName,
       "imagePath": imagePath,
+      "imageBytes": imageBytes,
       "imageUrl": imageUrl,
       "width": width,
       "height": height,
@@ -92,6 +96,7 @@ class ImageContent {
 class AudioContent {
   String audioName;
   String audioPath;
+  List<int> audioBytes;
   String audioUrl;
   List<int> decibels;
   int duration;
@@ -100,6 +105,7 @@ class AudioContent {
   AudioContent({
     required this.audioName,
     required this.audioPath,
+    required this.audioBytes,
     required this.audioUrl,
     this.decibels = const [],
     this.duration = 0,
@@ -111,8 +117,9 @@ class AudioContent {
     return AudioContent(
       audioName: map["audioName"],
       audioPath: map["audioPath"],
+      audioBytes: (map["audioBytes"] ?? []).cast<int>(),
       audioUrl: map["audioUrl"],
-      decibels: map["decibels"],
+      decibels: (map["decibels"] ?? []).cast<int>(),
       duration: map["duration"],
       size: map["size"],
     );
@@ -122,6 +129,7 @@ class AudioContent {
     return json.encode({
       "audioName": audioName,
       "audioPath": audioPath,
+      "audioBytes": audioBytes,
       "audioUrl": audioUrl,
       "decibels": decibels,
       "duration": duration,
@@ -134,9 +142,11 @@ class AudioContent {
 class VideoContent {
   String coverName;
   String coverPath;
+  List<int> coverBytes;
   String coverUrl;
   String videoName;
   String videoPath;
+  List<int> videoBytes;
   String videoUrl;
   int duration;
   int width;
@@ -146,9 +156,11 @@ class VideoContent {
   VideoContent({
     required this.coverName,
     required this.coverPath,
+    required this.coverBytes,
     required this.coverUrl,
     required this.videoName,
     required this.videoPath,
+    required this.videoBytes,
     required this.videoUrl,
     this.duration = 0,
     this.width = 0,
@@ -161,9 +173,11 @@ class VideoContent {
     return VideoContent(
       coverName: map["coverName"],
       coverPath: map["coverPath"],
+      coverBytes: (map["coverBytes"] ?? []).cast<int>(),
       coverUrl: map["coverUrl"],
       videoName: map["videoName"],
       videoPath: map["videoPath"],
+      videoBytes: (map["videoBytes"] ?? []).cast<int>(),
       videoUrl: map["videoUrl"],
       duration: map["duration"],
       width: map["width"],
@@ -176,9 +190,11 @@ class VideoContent {
     return json.encode({
       "coverName": coverName,
       "coverPath": coverPath,
+      "coverBytes": coverBytes,
       "coverUrl": coverUrl,
       "videoName": videoName,
       "videoPath": videoPath,
+      "videoBytes": videoBytes,
       "videoUrl": videoUrl,
       "duration": duration,
       "width": width,
@@ -192,6 +208,7 @@ class VideoContent {
 class FileContent {
   String fileName;
   String filePath;
+  List<int> fileBytes;
   String fileUrl;
   String type;
   int size;
@@ -199,6 +216,7 @@ class FileContent {
   FileContent({
     required this.fileName,
     required this.filePath,
+    required this.fileBytes,
     required this.fileUrl,
     this.type = "",
     this.size = 0,
@@ -209,6 +227,7 @@ class FileContent {
     return FileContent(
       fileName: map["fileName"],
       filePath: map["filePath"],
+      fileBytes: (map["fileBytes"] ?? []).cast<int>(),
       fileUrl: map["fileUrl"],
       type: map["type"],
       size: map["size"],
@@ -219,6 +238,7 @@ class FileContent {
     return json.encode({
       "fileName": fileName,
       "filePath": filePath,
+      "fileBytes": fileBytes,
       "fileUrl": fileUrl,
       "type": type,
       "size": size,
@@ -371,7 +391,7 @@ class RichTextContent {
   static RichTextContent fromJson(String content) {
     Map<String, dynamic> map = json.decode(content);
     return RichTextContent(
-      list: map["list"],
+      list: (map["list"] ?? []).cast<Map>(),
     );
   }
 
