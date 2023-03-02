@@ -17,6 +17,7 @@ import 'package:xxim_sdk_flutter/src/tool/sdk_tool.dart';
 
 class XXIMSDK {
   XXIMCore? _xximCore;
+  bool? _isCxnParams;
   SDKManager? _sdkManager;
   late ConvManager convManager;
   late MsgManager msgManager;
@@ -57,9 +58,11 @@ class XXIMSDK {
                 cxnParams: cxnParams,
               ));
             });
+            _isCxnParams = true;
             connectListener.success();
           },
           onClose: (code, error) {
+            _isCxnParams = false;
             _sdkManager?.closeDatabase();
             closePullSubscribe();
             connectListener.close(code, error);
@@ -108,7 +111,7 @@ class XXIMSDK {
 
   /// 是否连接
   bool isConnect() {
-    return _xximCore?.isConnect() ?? false;
+    return (_xximCore?.isConnect() ?? false) && _isCxnParams == true;
   }
 
   /// 设置连接参数
