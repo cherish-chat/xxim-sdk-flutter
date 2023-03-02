@@ -508,7 +508,7 @@ class SDKManager {
     ReadContent readContent = ReadContent.fromJson(content);
     ReadModel? readModel = await readModels()
         .filter()
-        .senderIdEqualTo(readContent.senderId!)
+        .senderIdEqualTo(readContent.senderId)
         .and()
         .convIdEqualTo(readContent.convId)
         .findFirst();
@@ -519,7 +519,7 @@ class SDKManager {
       }
     } else {
       readModel = ReadModel(
-        senderId: readContent.senderId!,
+        senderId: readContent.senderId,
         convId: readContent.convId,
         seq: readContent.seq,
       );

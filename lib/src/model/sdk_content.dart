@@ -27,7 +27,7 @@ class TipContent {
 
   TipContent({
     required this.tip,
-    required this.ext,
+    this.ext = "",
   });
 
   static TipContent fromJson(String content) {
@@ -51,6 +51,7 @@ class ImageContent {
   String imageName;
   String imagePath;
   String imageUrl;
+  List<int> imageBytes;
   int width;
   int height;
   int size;
@@ -59,6 +60,7 @@ class ImageContent {
     required this.imageName,
     required this.imagePath,
     required this.imageUrl,
+    required this.imageBytes,
     this.width = 0,
     this.height = 0,
     this.size = 0,
@@ -70,6 +72,7 @@ class ImageContent {
       imageName: map["imageName"],
       imagePath: map["imagePath"],
       imageUrl: map["imageUrl"],
+      imageBytes: (map["imageBytes"] ?? []).cast<int>(),
       width: map["width"],
       height: map["height"],
       size: map["size"],
@@ -81,6 +84,7 @@ class ImageContent {
       "imageName": imageName,
       "imagePath": imagePath,
       "imageUrl": imageUrl,
+      "imageBytes": imageBytes,
       "width": width,
       "height": height,
       "size": size,
@@ -93,6 +97,7 @@ class AudioContent {
   String audioName;
   String audioPath;
   String audioUrl;
+  List<int> audioBytes;
   List<int> decibels;
   int duration;
   int size;
@@ -101,6 +106,7 @@ class AudioContent {
     required this.audioName,
     required this.audioPath,
     required this.audioUrl,
+    required this.audioBytes,
     this.decibels = const [],
     this.duration = 0,
     this.size = 0,
@@ -112,7 +118,8 @@ class AudioContent {
       audioName: map["audioName"],
       audioPath: map["audioPath"],
       audioUrl: map["audioUrl"],
-      decibels: map["decibels"],
+      audioBytes: (map["audioBytes"] ?? []).cast<int>(),
+      decibels: (map["decibels"] ?? []).cast<int>(),
       duration: map["duration"],
       size: map["size"],
     );
@@ -123,6 +130,7 @@ class AudioContent {
       "audioName": audioName,
       "audioPath": audioPath,
       "audioUrl": audioUrl,
+      "audioBytes": audioBytes,
       "decibels": decibels,
       "duration": duration,
       "size": size,
@@ -135,9 +143,11 @@ class VideoContent {
   String coverName;
   String coverPath;
   String coverUrl;
+  List<int> coverBytes;
   String videoName;
   String videoPath;
   String videoUrl;
+  List<int> videoBytes;
   int duration;
   int width;
   int height;
@@ -147,9 +157,11 @@ class VideoContent {
     required this.coverName,
     required this.coverPath,
     required this.coverUrl,
+    required this.coverBytes,
     required this.videoName,
     required this.videoPath,
     required this.videoUrl,
+    required this.videoBytes,
     this.duration = 0,
     this.width = 0,
     this.height = 0,
@@ -162,9 +174,11 @@ class VideoContent {
       coverName: map["coverName"],
       coverPath: map["coverPath"],
       coverUrl: map["coverUrl"],
+      coverBytes: (map["coverBytes"] ?? []).cast<int>(),
       videoName: map["videoName"],
       videoPath: map["videoPath"],
       videoUrl: map["videoUrl"],
+      videoBytes: (map["videoBytes"] ?? []).cast<int>(),
       duration: map["duration"],
       width: map["width"],
       height: map["height"],
@@ -177,9 +191,11 @@ class VideoContent {
       "coverName": coverName,
       "coverPath": coverPath,
       "coverUrl": coverUrl,
+      "coverBytes": coverBytes,
       "videoName": videoName,
       "videoPath": videoPath,
       "videoUrl": videoUrl,
+      "videoBytes": videoBytes,
       "duration": duration,
       "width": width,
       "height": height,
@@ -193,6 +209,7 @@ class FileContent {
   String fileName;
   String filePath;
   String fileUrl;
+  List<int> fileBytes;
   String type;
   int size;
 
@@ -200,6 +217,7 @@ class FileContent {
     required this.fileName,
     required this.filePath,
     required this.fileUrl,
+    required this.fileBytes,
     this.type = "",
     this.size = 0,
   });
@@ -210,6 +228,7 @@ class FileContent {
       fileName: map["fileName"],
       filePath: map["filePath"],
       fileUrl: map["fileUrl"],
+      fileBytes: (map["fileBytes"] ?? []).cast<int>(),
       type: map["type"],
       size: map["size"],
     );
@@ -220,6 +239,7 @@ class FileContent {
       "fileName": fileName,
       "filePath": filePath,
       "fileUrl": fileUrl,
+      "fileBytes": fileBytes,
       "type": type,
       "size": size,
     });
@@ -371,7 +391,7 @@ class RichTextContent {
   static RichTextContent fromJson(String content) {
     Map<String, dynamic> map = json.decode(content);
     return RichTextContent(
-      list: map["list"],
+      list: (map["list"] ?? []).cast<Map>(),
     );
   }
 
@@ -440,12 +460,12 @@ class CustomContent {
 
 /// 已读消息
 class ReadContent {
-  String? senderId;
+  String senderId;
   String convId;
   int seq;
 
   ReadContent({
-    this.senderId,
+    this.senderId = "",
     required this.convId,
     required this.seq,
   });
