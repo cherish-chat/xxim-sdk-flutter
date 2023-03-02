@@ -27,22 +27,30 @@ class MsgManager {
       if (msgModel != null) {
         maxSeq = msgModel.seq;
       } else {
-        RecordModel? recordModel = await _sdkManager
-            .recordModels()
-            .filter()
-            .convIdEqualTo(convId)
-            .findFirst();
+        RecordModel? recordModel = await _sdkManager.findFirst(
+          query: _sdkManager
+              .recordModels()
+              .filter()
+              .convIdEqualTo(
+                convId,
+              )
+              .build(),
+        );
         if (recordModel != null) {
           maxSeq = recordModel.maxSeq;
         }
       }
     }
     if (maxSeq == null) return [];
-    RecordModel? recordModel = await _sdkManager
-        .recordModels()
-        .filter()
-        .convIdEqualTo(convId)
-        .findFirst();
+    RecordModel? recordModel = await _sdkManager.findFirst(
+      query: _sdkManager
+          .recordModels()
+          .filter()
+          .convIdEqualTo(
+            convId,
+          )
+          .build(),
+    );
     int minSeq = maxSeq - size;
     if (recordModel != null) {
       minSeq = minSeq > recordModel.minSeq ? minSeq : recordModel.minSeq;
@@ -97,74 +105,82 @@ class MsgManager {
     bool includeUpper = true,
     bool? deleted,
   }) {
-    return _sdkManager.msgModels().buildQuery<MsgModel>(
-      filter: FilterGroup.and([
-        FilterCondition.equalTo(
-          property: "convId",
-          value: convId,
-        ),
-        if (contentType != null)
+    return _sdkManager.findAll(
+      query: _sdkManager.msgModels().buildQuery<MsgModel>(
+        filter: FilterGroup.and([
           FilterCondition.equalTo(
-            property: "contentType",
-            value: contentType,
+            property: "convId",
+            value: convId,
           ),
-        FilterCondition.between(
-          property: "seq",
-          lower: minSeq,
-          includeLower: false,
-          upper: maxSeq,
-          includeUpper: includeUpper,
-        ),
-        if (deleted != null)
-          FilterCondition.equalTo(
-            property: "deleted",
-            value: deleted,
+          if (contentType != null)
+            FilterCondition.equalTo(
+              property: "contentType",
+              value: contentType,
+            ),
+          FilterCondition.between(
+            property: "seq",
+            lower: minSeq,
+            includeLower: false,
+            upper: maxSeq,
+            includeUpper: includeUpper,
           ),
-      ]),
-      sortBy: [
-        const SortProperty(
-          property: "seq",
-          sort: Sort.desc,
-        ),
-      ],
-    ).findAll();
+          if (deleted != null)
+            FilterCondition.equalTo(
+              property: "deleted",
+              value: deleted,
+            ),
+        ]),
+        sortBy: [
+          const SortProperty(
+            property: "seq",
+            sort: Sort.desc,
+          ),
+        ],
+      ),
+    );
   }
 
   /// 获取首个消息
   Future<MsgModel?> getFirstMsg({
     required String convId,
   }) {
-    return _sdkManager
-        .msgModels()
-        .filter()
-        .convIdEqualTo(convId)
-        .sortBySeqDesc()
-        .findFirst();
+    return _sdkManager.findFirst(
+      query: _sdkManager
+          .msgModels()
+          .filter()
+          .convIdEqualTo(convId)
+          .sortBySeqDesc()
+          .build(),
+    );
   }
 
   /// 获取单条消息
   Future<MsgModel?> getSingleMsg({
     required String clientMsgId,
   }) {
-    return _sdkManager
-        .msgModels()
-        .filter()
-        .clientMsgIdEqualTo(clientMsgId)
-        .findFirst();
+    return _sdkManager.findFirst(
+      query: _sdkManager
+          .msgModels()
+          .filter()
+          .clientMsgIdEqualTo(clientMsgId)
+          .build(),
+    );
   }
 
   /// 获取多条消息
   Future<List<MsgModel>> getMultipleMsg({
     required List<String> clientMsgIdList,
   }) {
-    return _sdkManager
-        .msgModels()
-        .filter()
-        .anyOf(
-          clientMsgIdList,
-          (q, element) => q.clientMsgIdEqualTo(element),
-        )
-        .findAll();
+    return _sdkManager.findAll(
+      query: _sdkManager
+          .msgModels()
+          .filter()
+          .anyOf(
+            clientMsgIdList,
+            (q, element) => q.clientMsgIdEqualTo(element),
+          )
+          .build(),
+    );
   }
 
   /// 拉取云端消息
@@ -682,15 +698,28 @@ class MsgManager {
     );
   }
 
+  /// 更新插入消息列表
+  Future upsertMsgList({
+    required List<MsgModel> msgModelList,
+    bool includeMsgConv = false,
+  }) {
+    return _sdkManager.upsertMsgList(
+      msgModelList: msgModelList,
+      includeMsgConv: includeMsgConv,
+    );
+  }
+
   /// 删除消息
   Future deleteMsg({
     required String clientMsgId,
   }) async {
-    MsgModel? msgModel = await _sdkManager
-        .msgModels()
-        .filter()
-        .clientMsgIdEqualTo(clientMsgId)
-        .findFirst();
+    MsgModel? msgModel = await _sdkManager.findFirst(
+      query: _sdkManager
+          .msgModels()
+          .filter()
+          .clientMsgIdEqualTo(clientMsgId)
+          .build(),
+    );
     if (msgModel == null) return;
     msgModel.contentType = MsgContentType.unknown;
     msgModel.content = "";
@@ -704,13 +733,15 @@ class MsgManager {
   Future clearMsg({
     required String convId,
   }) async {
-    List<MsgModel> list = await _sdkManager
-        .msgModels()
-        .filter()
-        .convIdEqualTo(
-          convId,
-        )
-        .findAll();
+    List<MsgModel> list = await _sdkManager.findAll(
+      query: _sdkManager
+          .msgModels()
+          .filter()
+          .convIdEqualTo(
+            convId,
+          )
+          .build(),
+    );
     if (list.isEmpty) return;
     await _sdkManager.isar.writeTxn(() async {
       for (MsgModel msgModel in list) {
