@@ -701,6 +701,17 @@ class MsgManager {
     );
   }
 
+  /// 更新插入消息列表
+  Future upsertMsgList({
+    required List<MsgModel> msgModelList,
+    bool includeMsgConv = false,
+  }) {
+    return _sdkManager.upsertMsgList(
+      msgModelList: msgModelList,
+      includeMsgConv: includeMsgConv,
+    );
+  }
+
   /// 删除消息
   Future deleteMsg({
     required String clientMsgId,

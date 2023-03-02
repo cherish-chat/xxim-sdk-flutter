@@ -664,16 +664,12 @@ class SDKManager {
     required int deliverAfter,
   }) async {
     if (senderInfo != null) {
-      await isar.writeTxn((isar) async {
-        List<MsgModel> modelList = [];
-        for (MsgModel msgModel in msgModelList) {
-          msgModel.senderInfo = senderInfo;
-          if (msgModel.options.storageForClient) {
-            modelList.add(msgModel);
-          }
-        }
-        if (modelList.isNotEmpty) await msgModels().putAll(modelList);
-      });
+      List<MsgModel> modelList = [];
+      for (MsgModel msgModel in msgModelList) {
+        msgModel.senderInfo = senderInfo;
+        modelList.add(msgModel);
+      }
+      await upsertMsgList(msgModelList: modelList);
     }
     Map<String, AesParams> convParams = await subscribeCallback.convParams();
     SendMsgListResp? resp = await xximCore.sendMsgList(
@@ -823,6 +819,22 @@ class SDKManager {
         await msgModels().put(msgModel);
       }
       if (includeMsgConv) await _updateMsgConvList([msgModel]);
+    });
+  }
+
+  Future upsertMsgList({
+    required List<MsgModel> msgModelList,
+    bool includeMsgConv = false,
+  }) async {
+    await isar.writeTxn((isar) async {
+      List<MsgModel> modelList = [];
+      for (MsgModel msgModel in msgModelList) {
+        if (msgModel.options.storageForClient) {
+          modelList.add(msgModel);
+        }
+      }
+      if (modelList.isNotEmpty) await msgModels().putAll(modelList);
+      if (includeMsgConv) await _updateMsgConvList(msgModelList);
     });
   }
 
