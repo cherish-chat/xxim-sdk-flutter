@@ -295,6 +295,7 @@ class SDKManager {
   ) async {
     bool? status;
     if (noticeData.contentType == NoticeContentType.read) {
+      if (noticeData.content.isEmpty) return;
       late ReadContent readContent;
       await isar.writeTxn(() async {
         readContent = await _handleReadMsg(
@@ -303,6 +304,7 @@ class SDKManager {
       });
       status = await noticeListener?.readMsg(readContent);
     } else if (noticeData.contentType == NoticeContentType.edit) {
+      if (noticeData.content.isEmpty) return;
       late MsgModel msgModel;
       await isar.writeTxn(() async {
         msgModel = await _handleEditMsg(
