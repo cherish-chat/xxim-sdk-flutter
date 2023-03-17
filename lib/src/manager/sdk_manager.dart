@@ -95,6 +95,14 @@ class SDKManager {
     await Isar.getInstance(isarName)?.close();
   }
 
+  /// 关闭所有数据库
+  Future closeAllDatabase() async {
+    Set<String> names = Isar.instanceNames;
+    for (String name in names) {
+      await Isar.getInstance(name)?.close();
+    }
+  }
+
   /// 记录表
   IsarCollection<RecordModel> recordModels() {
     return isar.recordModels;
@@ -295,6 +303,7 @@ class SDKManager {
   ) async {
     bool? status;
     if (noticeData.contentType == NoticeContentType.read) {
+      if (noticeData.content.isEmpty) return;
       late ReadContent readContent;
       await isar.writeTxn(() async {
         readContent = await _handleReadMsg(
@@ -303,6 +312,7 @@ class SDKManager {
       });
       status = await noticeListener?.readMsg(readContent);
     } else if (noticeData.contentType == NoticeContentType.edit) {
+      if (noticeData.content.isEmpty) return;
       late MsgModel msgModel;
       await isar.writeTxn(() async {
         msgModel = await _handleEditMsg(

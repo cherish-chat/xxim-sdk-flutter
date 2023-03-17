@@ -59,11 +59,19 @@ class SDKTool {
   }
 
   static List<int> utf8Encode(String value) {
-    return utf8.encode(value);
+    try {
+      return utf8.encode(value);
+    } catch (_) {
+      return [];
+    }
   }
 
   static String utf8Decode(List<int> bytes) {
-    return utf8.decode(bytes);
+    try {
+      return utf8.decode(bytes);
+    } catch (_) {
+      return "";
+    }
   }
 
   static List<int> aesEncode({

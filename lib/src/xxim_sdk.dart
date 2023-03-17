@@ -64,7 +64,6 @@ class XXIMSDK {
           },
           onClose: (code, error) {
             _isCxnParams = false;
-            _sdkManager?.closeDatabase();
             closePullSubscribe();
             connectListener.close(code, error);
           },
@@ -106,7 +105,6 @@ class XXIMSDK {
 
   /// 断连
   void disconnect() {
-    _sdkManager?.closeDatabase();
     _xximCore?.disconnect();
     closePullSubscribe();
   }
@@ -114,6 +112,27 @@ class XXIMSDK {
   /// 是否连接
   bool isConnect() {
     return (_xximCore?.isConnect() ?? false) && _isCxnParams == true;
+  }
+
+  /// 打开数据库
+  Future? openDatabase({
+    required String userId,
+    String? isarName,
+  }) {
+    return _sdkManager?.openDatabase(
+      userId: userId,
+      isarName: isarName,
+    );
+  }
+
+  /// 关闭数据库
+  Future? closeDatabase() {
+    return _sdkManager?.closeDatabase();
+  }
+
+  /// 关闭所有数据库
+  Future? closeAllDatabase() {
+    return _sdkManager?.closeAllDatabase();
   }
 
   /// 设置连接参数
@@ -150,7 +169,7 @@ class XXIMSDK {
     String? isarName,
     Map<String, AesParams>? convParams,
   }) async {
-    await _sdkManager?.openDatabase(
+    await openDatabase(
       userId: userId,
       isarName: isarName,
     );
@@ -163,7 +182,6 @@ class XXIMSDK {
       ),
     );
     if (resp == null) {
-      await _sdkManager?.closeDatabase();
       return false;
     }
     openPullSubscribe(
