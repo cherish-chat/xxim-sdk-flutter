@@ -18,6 +18,7 @@ class MsgManager {
     int? contentType,
     int? maxSeq,
     int size = 25,
+    bool padding = true,
   }) async {
     bool includeUpper = maxSeq == null;
     if (maxSeq == null) {
@@ -59,32 +60,34 @@ class MsgManager {
     }
     if (minSeq < 0) minSeq = 0;
     if (maxSeq <= minSeq) return [];
-    List<String> expectList = SDKTool.generateSeqList(minSeq, maxSeq);
-    List<MsgModel> list = await _getMsgList(
-      convId,
-      contentType,
-      minSeq,
-      maxSeq,
-    );
-    if (expectList.length - list.length != 0) {
-      List<String> seqList = [];
-      for (String seq in expectList) {
-        int index = list.indexWhere((msgModel) {
-          return seq == msgModel.seq.toString();
-        });
-        if (index == -1) {
-          seqList.add(seq);
+    if (padding) {
+      List<String> expectList = SDKTool.generateSeqList(minSeq, maxSeq);
+      List<MsgModel> localList = await _getMsgList(
+        convId,
+        contentType,
+        minSeq,
+        maxSeq,
+      );
+      if (expectList.length - localList.length != 0) {
+        List<String> seqList = [];
+        for (String seq in expectList) {
+          int index = localList.indexWhere((msgModel) {
+            return seq == msgModel.seq.toString();
+          });
+          if (index == -1) {
+            seqList.add(seq);
+          }
         }
-      }
-      if (seqList.isNotEmpty) {
-        await _sdkManager.pullMsgDataList(
-          [
-            BatchGetMsgListByConvIdReq_Item(
-              convId: convId,
-              seqList: seqList,
-            ),
-          ],
-        );
+        if (seqList.isNotEmpty) {
+          await _sdkManager.pullMsgDataList(
+            [
+              BatchGetMsgListByConvIdReq_Item(
+                convId: convId,
+                seqList: seqList,
+              ),
+            ],
+          );
+        }
       }
     }
     return _getMsgList(
