@@ -185,7 +185,7 @@ const MsgModelSchema = CollectionSchema(
   getId: _msgModelGetId,
   getLinks: _msgModelGetLinks,
   attach: _msgModelAttach,
-  version: '3.0.5',
+  version: '3.0.2',
 );
 
 int _msgModelEstimateSize(

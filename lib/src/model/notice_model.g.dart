@@ -102,7 +102,7 @@ const NoticeModelSchema = CollectionSchema(
   getId: _noticeModelGetId,
   getLinks: _noticeModelGetLinks,
   attach: _noticeModelAttach,
-  version: '3.0.5',
+  version: '3.0.2',
 );
 
 int _noticeModelEstimateSize(

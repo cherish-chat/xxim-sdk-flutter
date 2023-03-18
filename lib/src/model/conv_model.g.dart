@@ -141,7 +141,7 @@ const ConvModelSchema = CollectionSchema(
   getId: _convModelGetId,
   getLinks: _convModelGetLinks,
   attach: _convModelAttach,
-  version: '3.0.5',
+  version: '3.0.2',
 );
 
 int _convModelEstimateSize(
