@@ -8,14 +8,6 @@
 
 支持Flutter6端开发。惺惺是一个100%开源社交平台，每个人都可以搭建自己的服务器，掌握数据的所有权。
 
-它是空安全的，为什么没有空安全标识？
-
-问题参考：[Flutter Issues](https://github.com/flutter/flutter/issues/44937)
-
-问题参考：[Pana Issues](https://github.com/dart-lang/pana/issues/891)
-
-放心使用，因为它：💪 Building with sound null safety 💪
-
 ## 初始化
 
      XXIMSDK sdk = XXIMSDK();

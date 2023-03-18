@@ -344,7 +344,7 @@ class SDKManager {
     for (MsgData msgData in msgDataList) {
       MsgModel msgModel = MsgModel.fromProto(
         msgData,
-        convParams[msgData.convId]!,
+        convParams[msgData.convId],
       );
       msgModel.sendStatus = SendStatus.success;
       msgModelList.add(msgModel);
@@ -686,7 +686,7 @@ class SDKManager {
       reqId: SDKTool.getUUId(),
       req: SendMsgListReq(
         msgDataList: msgModelList.map((msgModel) {
-          AesParams aesParams = convParams[msgModel.convId]!;
+          AesParams? aesParams = convParams[msgModel.convId];
           return MsgData(
             clientMsgId: msgModel.clientMsgId,
             clientTime: msgModel.clientTime.toString(),
@@ -696,7 +696,7 @@ class SDKManager {
             convId: msgModel.convId,
             atUsers: msgModel.atUsers,
             contentType: msgModel.contentType,
-            content: msgModel.options.needDecrypt
+            content: msgModel.options.needDecrypt && aesParams != null
                 ? SDKTool.aesEncode(
                     key: aesParams.key,
                     iv: aesParams.iv,
@@ -765,7 +765,7 @@ class SDKManager {
   /// 发送编辑消息
   Future<MsgModel?> sendEditMsg(MsgModel msgModel) async {
     Map<String, AesParams> convParams = await subscribeCallback.convParams();
-    AesParams aesParams = convParams[msgModel.convId]!;
+    AesParams? aesParams = convParams[msgModel.convId];
     MsgData msgData = MsgData(
       clientMsgId: msgModel.clientMsgId,
       serverMsgId: msgModel.serverMsgId,
@@ -776,7 +776,7 @@ class SDKManager {
       convId: msgModel.convId,
       atUsers: msgModel.atUsers,
       contentType: msgModel.contentType,
-      content: msgModel.options.needDecrypt
+      content: msgModel.options.needDecrypt && aesParams != null
           ? SDKTool.aesEncode(
               key: aesParams.key,
               iv: aesParams.iv,
