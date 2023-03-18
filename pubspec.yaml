@@ -5,7 +5,7 @@ homepage: https://github.com/cherish-chat/xxim-sdk-flutter
 repository: https://github.com/cherish-chat/xxim-sdk-flutter
 
 environment:
-  sdk: '>=2.18.5 <3.0.0'
+  sdk: '>=2.19.4 <3.0.0'
   flutter: ">=2.5.0"
 
 dependencies:
@@ -16,15 +16,15 @@ dependencies:
   uuid: ^3.0.7
   encrypt: ^5.0.1
   hive: ^2.2.3
-  isar: ^3.0.5
-  isar_flutter_libs: ^3.0.5
+  isar: ^3.0.2
+  isar_flutter_libs: ^3.0.2
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^2.0.0
   build_runner: ^2.3.2
-  isar_generator: ^3.0.5
+  isar_generator: ^3.0.2
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

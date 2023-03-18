@@ -27,7 +27,6 @@ class SDKManager {
   final Duration autoPullTime;
   final int pullMsgCount;
   final List<CollectionSchema> isarSchemas;
-  final int isarMaxSizeMiB;
   final bool isarInspector;
   final SubscribeCallback subscribeCallback;
   final IsarListener? isarListener;
@@ -43,7 +42,6 @@ class SDKManager {
     required this.autoPullTime,
     required this.pullMsgCount,
     required this.isarSchemas,
-    required this.isarMaxSizeMiB,
     required this.isarInspector,
     required this.subscribeCallback,
     this.isarListener,
@@ -83,7 +81,6 @@ class SDKManager {
         ],
         directory: directory,
         name: this.isarName,
-        maxSizeMiB: isarMaxSizeMiB,
         inspector: isarInspector,
       );
     }

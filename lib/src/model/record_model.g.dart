@@ -68,7 +68,7 @@ const RecordModelSchema = CollectionSchema(
   getId: _recordModelGetId,
   getLinks: _recordModelGetLinks,
   attach: _recordModelAttach,
-  version: '3.0.5',
+  version: '3.0.2',
 );
 
 int _recordModelEstimateSize(
