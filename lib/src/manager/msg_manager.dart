@@ -198,20 +198,21 @@ class MsgManager {
     );
   }
 
-  /// 发送正在输入
-  Future<bool> sendTyping({
+  /// 创建正在输入
+  Future<MsgModel> createTyping({
     required String convId,
     required TypingContent content,
+    MsgOptionsModel? options,
+    MsgOfflinePushModel? offlinePush,
     String ext = "",
-  }) async {
-    return sendMsgList(
-      msgModelList: [
-        await _sdkManager.createMsg(
-          convId: convId,
-          atUsers: [],
-          contentType: MsgContentType.typing,
-          content: content.toJson(),
-          options: MsgOptionsModel(
+  }) {
+    return _sdkManager.createMsg(
+      convId: convId,
+      atUsers: [],
+      contentType: MsgContentType.typing,
+      content: content.toJson(),
+      options: options ??
+          MsgOptionsModel(
             storageForServer: false,
             storageForClient: false,
             needDecrypt: false,
@@ -219,31 +220,52 @@ class MsgManager {
             updateConvMsg: false,
             updateUnreadCount: false,
           ),
-          offlinePush: MsgOfflinePushModel(
+      offlinePush: offlinePush ??
+          MsgOfflinePushModel(
             title: "",
             content: "",
             payload: "",
           ),
+      ext: ext,
+    );
+  }
+
+  /// 发送正在输入
+  Future<bool> sendTyping({
+    required String convId,
+    required TypingContent content,
+    MsgOptionsModel? options,
+    MsgOfflinePushModel? offlinePush,
+    String ext = "",
+  }) async {
+    return sendMsgList(
+      msgModelList: [
+        await createTyping(
+          convId: convId,
+          content: content,
+          options: options,
+          offlinePush: offlinePush,
           ext: ext,
         ),
       ],
     );
   }
 
-  /// 发送提示消息
-  Future<bool> sendTip({
+  /// 创建提示消息
+  Future<MsgModel> createTip({
     required String convId,
     required TipContent content,
+    MsgOptionsModel? options,
+    MsgOfflinePushModel? offlinePush,
     String ext = "",
-  }) async {
-    return sendMsgList(
-      msgModelList: [
-        await _sdkManager.createMsg(
-          convId: convId,
-          atUsers: [],
-          contentType: MsgContentType.tip,
-          content: content.toJson(),
-          options: MsgOptionsModel(
+  }) {
+    return _sdkManager.createMsg(
+      convId: convId,
+      atUsers: [],
+      contentType: MsgContentType.tip,
+      content: content.toJson(),
+      options: options ??
+          MsgOptionsModel(
             storageForServer: true,
             storageForClient: true,
             needDecrypt: false,
@@ -251,11 +273,31 @@ class MsgManager {
             updateConvMsg: false,
             updateUnreadCount: false,
           ),
-          offlinePush: MsgOfflinePushModel(
+      offlinePush: offlinePush ??
+          MsgOfflinePushModel(
             title: "",
             content: "",
             payload: "",
           ),
+      ext: ext,
+    );
+  }
+
+  /// 发送提示消息
+  Future<bool> sendTip({
+    required String convId,
+    required TipContent content,
+    MsgOptionsModel? options,
+    MsgOfflinePushModel? offlinePush,
+    String ext = "",
+  }) async {
+    return sendMsgList(
+      msgModelList: [
+        await createTip(
+          convId: convId,
+          content: content,
+          options: options,
+          offlinePush: offlinePush,
           ext: ext,
         ),
       ],
