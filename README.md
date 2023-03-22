@@ -15,6 +15,7 @@
        directory: "",
        requestTimeout: const Duration(seconds: 10),
        rsaPublicKey: "",
+       aesKey: "",
        cxnParams: CxnParams(
          deviceModel: "",
          deviceId: "",
@@ -23,8 +24,6 @@
          appVersion: "",
          language: "",
          networkUsed: "",
-         aesKey: "",
-         aesIv: "",
          ext: "",
        ),
        autoPullTime: const Duration(seconds: 20),
@@ -81,6 +80,7 @@
 
      sdk.setCxnParams(
        rsaPublicKey: "",
+       aesKey: "",
        cxnParams: cxnParams,
      );
 
