@@ -11,7 +11,10 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  xxim_core_flutter: ^1.0.0
+  xxim_core_flutter:
+    git:
+      url: https://github.com/cherish-chat/xxim-core-flutter
+      ref: develop
   uuid: ^3.0.7
   encrypt: ^5.0.1
   hive: ^2.2.3

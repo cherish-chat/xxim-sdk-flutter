@@ -27,7 +27,8 @@ class XXIMSDK {
   void init({
     required String? directory,
     Duration requestTimeout = const Duration(seconds: 10),
-    String rsaPublicKey = "",
+    required String rsaPublicKey,
+    required String aesKey,
     required CxnParams cxnParams,
     Duration autoPullTime = const Duration(seconds: 20),
     int pullMsgCount = 50,
@@ -55,6 +56,7 @@ class XXIMSDK {
               await Future.delayed(const Duration(milliseconds: 5));
               return !(await setCxnParams(
                 rsaPublicKey: rsaPublicKey,
+                aesKey: aesKey,
                 cxnParams: cxnParams,
               ));
             });
@@ -135,7 +137,8 @@ class XXIMSDK {
 
   /// 设置连接参数
   Future<bool> setCxnParams({
-    String rsaPublicKey = "",
+    required String rsaPublicKey,
+    required String aesKey,
     required CxnParams cxnParams,
   }) async {
     String hiveName = "xxim";
@@ -154,6 +157,7 @@ class XXIMSDK {
       reqId: SDKTool.getUUId(),
       packageId: packageId,
       rsaPublicKey: rsaPublicKey,
+      aesKey: aesKey,
       cxnParams: cxnParams,
     );
     return status == true;
