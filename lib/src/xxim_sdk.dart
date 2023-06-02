@@ -14,8 +14,12 @@ import 'package:xxim_sdk_flutter/src/manager/msg_manager.dart';
 import 'package:xxim_sdk_flutter/src/manager/notice_manager.dart';
 import 'package:xxim_sdk_flutter/src/manager/sdk_manager.dart';
 import 'package:xxim_sdk_flutter/src/tool/sdk_tool.dart';
+import 'package:xxim_sdk_flutter/src/common/platform/platform_none.dart'
+    if (dart.library.html) 'package:xxim_sdk_flutter/src/common/platform/platform_html.dart'
+    if (dart.library.io) 'package:xxim_sdk_flutter/src/common/platform/platform_io.dart';
 
 class XXIMSDK {
+  String _hiveName = "xxim";
   XXIMCore? _xximCore;
   bool? _isCxnParams;
   SDKManager? _sdkManager;
@@ -25,7 +29,7 @@ class XXIMSDK {
 
   /// 初始化
   void init({
-    required String? directory,
+    required String directory,
     Duration requestTimeout = const Duration(seconds: 10),
     required String rsaPublicKey,
     required String aesKey,
@@ -43,7 +47,10 @@ class XXIMSDK {
     NoticeListener? noticeListener,
     UnreadListener? unreadListener,
   }) {
-    if (directory != null && directory.isNotEmpty) {
+    if (SDKPlatform.isDesktop) {
+      _hiveName = SDKTool.getUUId();
+    }
+    if (directory.isNotEmpty) {
       Hive.init(directory);
     }
     _xximCore = XXIMCore()
@@ -141,12 +148,11 @@ class XXIMSDK {
     required String aesKey,
     required CxnParams cxnParams,
   }) async {
-    String hiveName = "xxim";
     Box box;
-    if (Hive.isBoxOpen(hiveName)) {
-      box = Hive.box(hiveName);
+    if (Hive.isBoxOpen(_hiveName)) {
+      box = Hive.box(_hiveName);
     } else {
-      box = await Hive.openBox(hiveName);
+      box = await Hive.openBox(_hiveName);
     }
     String packageId = box.get("packageId", defaultValue: "");
     if (packageId.isEmpty) {
