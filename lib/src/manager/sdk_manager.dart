@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'package:flutter/foundation.dart';
 import 'package:isar/isar.dart';
 import 'package:xxim_core_flutter/xxim_core_flutter.dart';
 import 'package:xxim_sdk_flutter/src/callback/subscribe_callback.dart';
@@ -20,10 +19,13 @@ import 'package:xxim_sdk_flutter/src/model/read_model.dart';
 import 'package:xxim_sdk_flutter/src/model/record_model.dart';
 import 'package:xxim_sdk_flutter/src/model/sdk_content.dart';
 import 'package:xxim_sdk_flutter/src/tool/sdk_tool.dart';
+import 'package:xxim_sdk_flutter/src/common/platform/platform_none.dart'
+    if (dart.library.html) 'package:xxim_sdk_flutter/src/common/platform/platform_html.dart'
+    if (dart.library.io) 'package:xxim_sdk_flutter/src/common/platform/platform_io.dart';
 
 class SDKManager {
   final XXIMCore xximCore;
-  final String? directory;
+  final String directory;
   final Duration autoPullTime;
   final int pullMsgCount;
   final List<CollectionSchema> isarSchemas;
@@ -852,7 +854,7 @@ class SDKManager {
   Future<T?> findFirst<T>({
     required Query<T> query,
   }) async {
-    if (kIsWeb) {
+    if (SDKPlatform.isWeb) {
       return query.findFirst();
     }
     return query.findFirstSync();
@@ -861,7 +863,7 @@ class SDKManager {
   Future<List<T>> findAll<T>({
     required Query<T> query,
   }) async {
-    if (kIsWeb) {
+    if (SDKPlatform.isWeb) {
       return query.findAll();
     }
     return query.findAllSync();
